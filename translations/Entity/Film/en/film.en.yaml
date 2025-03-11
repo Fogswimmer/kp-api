@@ -1,0 +1,5 @@
+film:
+  name: "Name"
+  genre: "Genre"
+  director: "Director"
+  actors: "Actors"

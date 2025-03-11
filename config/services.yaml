@@ -1,0 +1,34 @@
+parameters:
+    person_uploads: "%kernel.project_dir%/public/uploads/person"
+    film_uploads: "%kernel.project_dir%/public/uploads/films"
+    user_uploads: "%kernel.project_dir%/public/uploads/user"
+    uploads_dir: "%kernel.project_dir%/public/uploads"
+    public_dir: "%kernel.project_dir%/public"
+services:
+    # app.normalizer.object_normalizer:
+    #     class: Symfony\Component\Serializer\Normalizer\ObjectNormalizer
+    #     tags: [serializer.normalizer]
+    #     arguments:
+    #         $propertyInfoExtractor: null
+    #         $defaultContext: 
+    #             circular_reference_handler: '@App\Serializer\CircularReferenceHandler'
+    #             maxDepth: 10
+    #             ignored_attributes: ['insertedOn', 'updatedOn', 'deletedOn', 'updatedOn'']
+    gedmo.listener.timestampable:
+        class: Gedmo\Timestampable\TimestampableListener
+        tags:
+            - { name: doctrine.event_subscriber, connection: default }
+        calls:
+            - [ setAnnotationReader, [ '@annotation_reader' ] ]
+    _defaults:
+        autowire: true     
+        autoconfigure: true
+    App\:
+        resource: '../src/'
+        exclude:
+            - '../src/DependencyInjection/'
+            - '../src/Entity/'
+            - '../src/Kernel.php'
+    App\Service\FileSystemService:
+        arguments:
+        - "@slugger"

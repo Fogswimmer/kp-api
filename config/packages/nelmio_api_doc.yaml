@@ -1,0 +1,10 @@
+nelmio_api_doc:
+    documentation:
+        info:
+            title: Kinopoisk Lite
+            description: This is a documentation for the Kinopoisk Lite API!
+            version: 1.0.0
+            host: localhost
+    areas: # to filter documented areas
+        path_patterns:
+            - ^/api(?!/doc$) # Accepts routes under /api except /api/doc
