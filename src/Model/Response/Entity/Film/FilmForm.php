@@ -44,6 +44,8 @@ class FilmForm
 
   public ?string $trailer = null;
 
+  public ?string $poster = null;
+
   public function getId(): int
   {
     return $this->id;
@@ -232,6 +234,19 @@ class FilmForm
   {
     return $this->trailer;
   }
+
+  public function getPoster(): ?string
+  {
+    return $this->poster;
+  }
+
+  public function setPoster(?string $poster): static
+  {
+    $this->poster = $poster;
+
+    return $this;
+  }
+
 
 
 }

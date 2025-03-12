@@ -85,6 +85,7 @@ class FilmMapper
       ->setDescription($film->getDescription())
       ->setAge($film->getAge())
       ->setTrailer($film->getTrailer())
+      ->setPoster($film->getPoster())
     ;
   }
 

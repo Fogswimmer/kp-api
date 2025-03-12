@@ -378,13 +378,11 @@ class FilmService
     return $this->findForm($film->getId());
   }
 
-  
-
   public function deleteFromGallery(int $id, array $fileNames): FilmForm
   {
     $film = $this->find($id);
     $dirName = $this->specifyFilmGalleryPath($film->getId());
-    $foundPictures = [];
+    $foundPictures = []; 
 
     foreach ($fileNames as $fileName) {
       $foundPictures[] = $this->fileSystemService->searchFiles($dirName, $fileName);
