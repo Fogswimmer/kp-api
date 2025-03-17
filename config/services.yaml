@@ -32,3 +32,9 @@ services:
     App\Service\FileSystemService:
         arguments:
         - "@slugger"
+    App\EntityListener\FilmListener:
+        tags:
+            - { name: doctrine.orm.entity_listener, entity: App\Entity\Film, event: prePersist }
+            - { name: doctrine.orm.entity_listener, entity: App\Entity\Film, event: preUpdate }
+        arguments:
+            $slugger: '@Symfony\Component\String\Slugger\SluggerInterface'

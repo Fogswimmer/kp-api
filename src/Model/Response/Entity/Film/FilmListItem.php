@@ -5,7 +5,15 @@ use OpenApi\Attributes as OA;
 
 class FilmListItem
 {
-  public function __construct(?int $id, ?string $name = null, int $releaseYear = null, ?string $poster = null, ?string $description = null, ?string $rating = null, array $assessments = [])
+  public function __construct(?int $id, 
+  ?string $name = null, 
+  int $releaseYear = null, 
+  ?string $poster = null, 
+  ?string $description = null, 
+  ?string $rating = null, 
+  array $assessments = [],
+  ?string $slug = null
+  )
   {
     $this->id = $id;
     $this->name = $name;
@@ -14,7 +22,7 @@ class FilmListItem
     $this->description = $description;
     $this->rating = $rating;
     $this->assessments = $assessments;
-
+    $this->slug = $slug;
   }
   #[OA\Property(example: 1)]
   public ?int $id;
@@ -35,6 +43,8 @@ class FilmListItem
   public string $rating = '';
 
   public array $assessments = [];
+
+  public ?string $slug = '';
 
   public function getId(): int
   {
@@ -129,6 +139,16 @@ class FilmListItem
     return $this->assessments;
   }
 
+  public function getSlug(): ?string
+  {
+    return $this->slug;
+  }
 
+  public function setSlug(?string $slug): static
+  {
+    $this->slug = $slug;
+
+    return $this;
+  }
 
 }

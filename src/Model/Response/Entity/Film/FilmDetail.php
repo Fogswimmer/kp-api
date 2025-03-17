@@ -38,6 +38,8 @@ class FilmDetail
 
   #[OA\Property(example: 'https://example.com/image.jpg')]
   public ?string $cover = null;
+
+
   public ?array $assessments = [];
   public ?string $createdAt = null;
 
@@ -47,8 +49,9 @@ class FilmDetail
   public ?array $publisherData = [];
 
   public ?string $poster = null;
-
   public ?string $trailer = null;
+
+  public ?string $slug = null;
 
   public function getId(): int
   {
@@ -280,6 +283,18 @@ class FilmDetail
   public function getTrailer(): ?string
   {
     return $this->trailer;
+  }
+
+  public function getSlug(): ?string
+  {
+    return $this->slug;
+  }
+
+  public function setSlug(?string $slug): static
+  {
+    $this->slug = $slug;
+
+    return $this;
   }
 
 

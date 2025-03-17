@@ -38,24 +38,45 @@ class FilmController extends AbstractController
   }
 
   /**
-   * Find a film by id
+   * Check films presence in the DB
    */
-  #[Route(path: '/api/films/{id}',
+  #[Route(
+    path: 'api/films/check',
+    name: 'api_film_check',
+    methods: ['GET']
+  )]
+  #[OA\Response(
+    response: 200,
+    description: 'Successful response',
+  )]
+  public function checkEmpty(): Response
+  {
+    return $this->json(
+      ['present' => $this->filmService->checkFilmsPresence()]
+    );
+  }
+
+  /**
+   * Find a film by slug
+   */
+  #[Route(path: '/api/films/get/{slug}',
     name: 'api_film',
     methods: ['GET'],
-    requirements: ['id' => '\d+'])]
+    requirements: ['slug' => '[a-z0-9-]+']
+  )
+  ]
   #[OA\Response(
     response: 200,
     description: 'Successful response',
     content: new Model(type: FilmDetail::class)
   )]
-  public function find(int $id, #[MapQueryString] LocaleDto $dto): Response
+  public function find(string $slug, #[MapQueryString] LocaleDto $dto): Response
   {
     $status = Response::HTTP_OK;
     $data = null;
 
     try {
-      $data = $this->filmService->get($id, $dto->locale);
+      $data = $this->filmService->get($slug, $dto->locale);
     } catch (FilmNotFoundException $e) {
       $status = Response::HTTP_NOT_FOUND;
       $this->logger->error($e);
@@ -65,24 +86,26 @@ class FilmController extends AbstractController
   }
 
   /**
-   * Find a film form by id
+   * Find a film form by slug
    */
-  #[Route(path: '/api/films/{id}/form',
+  #[Route(path: '/api/films/{slug}/form',
     name: 'api_film_form',
     methods: ['GET'],
-    requirements: ['id' => '\d+'])]
+    requirements: ['slug' => '[a-z0-9-]+']
+  )
+  ]
   #[OA\Response(
     response: 200,
     description: 'Successful response',
     content: new Model(type: FilmForm::class)
   )]
-  public function findForm(int $id): Response
+  public function findForm(string $slug): Response
   {
     $status = Response::HTTP_OK;
     $data = null;
 
     try {
-      $data = $this->filmService->findForm($id);
+      $data = $this->filmService->findForm($slug);
     } catch (FilmNotFoundException $e) {
       $status = Response::HTTP_NOT_FOUND;
       $this->logger->error($e);
@@ -95,7 +118,7 @@ class FilmController extends AbstractController
    * Find 10 latest films
    */
   #[Route(
-    path: '/api/films/latest',
+    path: '/api/films-latest',
     name: 'api_film_latest',
     methods: ['GET'],
   )]
@@ -364,22 +387,26 @@ class FilmController extends AbstractController
     return $this->json($data, $status);
   }
 
-  /**
-   * Check films presence in the DB
-   */
   #[Route(
-    path: 'api/films/check',
-    name: 'api_film_check',
-    methods: ['GET']
+    path: 'api/films/{filmId}/assess/{assessmentId}',
+    name: 'api_film_assessment_delete',
+    methods: ['DELETE']
   )]
-  #[OA\Response(
-    response: 200,
-    description: 'Successful response',
-  )]
-  public function checkEmpty(): Response
-  {
-    return $this->json(
-      ['present' => $this->filmService->checkFilmsPresence()]
-    );
+  public function deleteAssessment(
+    int $filmId,
+    int $assessmentId,
+  ): Response {
+    $data = null;
+    $status = Response::HTTP_OK;
+    try {
+      $user = $this->getUser();
+      $data = $this->filmService->deleteAssessment($filmId, $assessmentId, $user);
+    } catch (\Throwable $e) {
+      $this->logger->error($e);
+      $data = $e->getMessage();
+      $status = Response::HTTP_INTERNAL_SERVER_ERROR;
+    }
+    return $this->json($data, $status);
   }
+
 }

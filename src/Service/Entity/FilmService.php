@@ -24,8 +24,10 @@ use App\Repository\FilmRepository;
 use App\Repository\PersonRepository;
 use App\Repository\UserRepository;
 use App\Service\FileSystemService;
-use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\Security\Http\Attribute\CurrentUser;
+use App\Exception\Denied\AccessDeniedException;
+use App\Exception\NotFound\AssessmentNotFoundException;
+use App\EntityListener\FilmListener;
 
 class FilmService
 {
@@ -37,7 +39,8 @@ class FilmService
     private FilmMapper $filmMapper,
     private PersonMapper $personMapper,
     private FileSystemService $fileSystemService,
-    private ActorRoleRepository $actorRoleRepository
+    private ActorRoleRepository $actorRoleRepository,
+    private FilmListener $filmListener
   ) {
   }
 
@@ -80,27 +83,35 @@ class FilmService
 
   public function checkFilmsPresence(): bool
   {
+    $films = $this->repository->findAll();
+    foreach ($films as $film) {
+      if ($film->getSlug() === null) {
+        $slug = $this->filmListener->generateSlug($film);
+        $film->setSlug($slug);
+      }
+      $this->repository->store($film);
+    }
     return $this->repository->findAll() !== [];
   }
 
-  public function get(int $id, ?string $locale = null): FilmDetail
+  public function get(string $slug, ?string $locale = null): FilmDetail
   {
     $filmDetail = $this
       ->filmMapper
-      ->mapToDetail($this->find($id), new FilmDetail(), $locale);
-
+      ->mapToDetail($this->find($slug), new FilmDetail(), $locale);
+    $id = $filmDetail->getId();
     $galleryPaths = $this->setGalleryPaths($id);
     $filmDetail->setGallery($galleryPaths);
 
     return $filmDetail;
   }
 
-  public function findForm(int $id): FilmForm
+  public function findForm(string $slug): FilmForm
   {
-    $film = $this->find($id);
+    $film = $this->find($slug);
     $form = $this->filmMapper->mapToForm($film, new FilmForm());
 
-    $galleryPaths = $this->setGalleryPaths($id);
+    $galleryPaths = $this->setGalleryPaths($film->getId());
     $form->setGallery($galleryPaths);
 
     return $form;
@@ -176,7 +187,7 @@ class FilmService
   {
     $film = new Film();
     $actorIds = $dto->actorIds;
-    
+
     foreach ($actorIds as $actorId) {
       $actor = $this->personRepository->find($actorId);
       if (null === $actor) {
@@ -188,7 +199,7 @@ class FilmService
 
     $directorId = $dto->directorId;
     $director = $this->personRepository->find($directorId);
-    
+
     if (null === $director) {
       throw new PersonNotFoundException();
     }
@@ -203,7 +214,7 @@ class FilmService
 
     $producerId = $dto->producerId;
     $producer = $this->personRepository->find($producerId);
-    
+
     if (null === $producer) {
       throw new PersonNotFoundException();
     }
@@ -211,7 +222,7 @@ class FilmService
     $film->setProducer($producer);
     $writerId = $dto->writerId;
     $writer = $this->personRepository->find($writerId);
-    
+
     if (null === $writer) {
       throw new PersonNotFoundException();
     }
@@ -220,14 +231,14 @@ class FilmService
 
     $composerId = $dto->composerId;
     $composer = $this->personRepository->find($composerId);
-    
+
     if (null === $composer) {
       throw new PersonNotFoundException();
     }
 
     $film->setComposer($composer);
     $roleNames = $dto->roleNames ?? [];
-    
+
     if (count($roleNames) !== 0) {
       foreach ($roleNames as $roleName) {
         $role = new ActorRole();
@@ -382,7 +393,7 @@ class FilmService
   {
     $film = $this->find($id);
     $dirName = $this->specifyFilmGalleryPath($film->getId());
-    $foundPictures = []; 
+    $foundPictures = [];
 
     foreach ($fileNames as $fileName) {
       $foundPictures[] = $this->fileSystemService->searchFiles($dirName, $fileName);
@@ -395,6 +406,27 @@ class FilmService
     }
 
     return $this->findForm($film->getId());
+  }
+
+  public function deleteAssessment(int $filmId, int $assessmentId, User $user): FilmForm
+  {
+    $film = $this->find($filmId);
+    $assessment = $this->assessmentRepository->find($assessmentId);
+
+    if (null === $assessment) {
+      throw new AssessmentNotFoundException();
+    }
+
+    if ($user->getRoles() !== ['ROLE_ADMIN', 'ROLE_USER']) {
+      if ($assessment->getAuthor()->getId() !== $user->getId()) {
+        throw new AccessDeniedException();
+      }
+    }
+
+    $this->assessmentRepository->remove($assessment);
+
+    return $this->findForm($film->getId());
+
   }
 
   private function setGalleryPaths(int $id): array
@@ -432,11 +464,9 @@ class FilmService
     return $subDirByIdPath;
   }
 
-  
-
-  private function find(int $id): Film
+  private function find(string $slug): Film
   {
-    $film = $this->repository->find($id);
+    $film = $this->repository->findOneBy(['slug' => $slug]);
 
     if (null === $film) {
       throw new FilmNotFoundException();

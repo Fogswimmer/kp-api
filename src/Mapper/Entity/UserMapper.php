@@ -17,7 +17,9 @@ class UserMapper
       ->setDisplayName($user->getDisplayName())
       ->setCover($user->getCover())
       ->setAvatar($user->getAvatar())
-      ->setLastLogin($user->getLastLogin());
+      ->setLastLogin($user->getLastLogin())
+      ->setRoles($user->getRoles())
+      ;
       // ->setAssessmentsData($user->getAssessments()->toArray());
   }
 

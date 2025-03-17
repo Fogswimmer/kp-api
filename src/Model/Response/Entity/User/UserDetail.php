@@ -24,6 +24,8 @@ class UserDetail
 
   public ?array $assessmentsData = [];
 
+  public ?array $roles = [];
+
 
 
   public function getId(): int
@@ -142,6 +144,18 @@ class UserDetail
   public function setAssessmentsData(?array $assessmentsData): static
   {
     $this->assessmentsData = $assessmentsData;
+
+    return $this;
+  }
+
+  public function getRoles(): ?array
+  {
+    return $this->roles;
+  }
+
+  public function setRoles(?array $roles): static
+  {
+    $this->roles = $roles;
 
     return $this;
   }

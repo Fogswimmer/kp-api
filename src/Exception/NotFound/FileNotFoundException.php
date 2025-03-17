@@ -1,5 +1,5 @@
 <?php
-namespace  App\Exception\NotFound;
+namespace App\Exception\NotFound;
 class FileNotFoundException extends \RuntimeException
 {
   public function __construct()

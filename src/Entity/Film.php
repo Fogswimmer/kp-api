@@ -92,6 +92,9 @@ class Film
   #[ORM\Column(length: 255, nullable: true)]
   private ?string $trailer = null;
 
+  #[ORM\Column(length: 255, nullable: true, unique: true)]
+  private ?string $slug = null;
+
   public function __construct()
   {
     $this->actors = new ArrayCollection();
@@ -431,6 +434,18 @@ class Film
   public function setTrailer(?string $trailer): static
   {
       $this->trailer = $trailer;
+
+      return $this;
+  }
+
+  public function getSlug(): ?string
+  {
+      return $this->slug;
+  }
+
+  public function setSlug(?string $slug): static
+  {
+      $this->slug = $slug;
 
       return $this;
   }
