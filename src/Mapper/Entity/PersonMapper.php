@@ -21,7 +21,8 @@ class PersonMapper
   public function mapToEntityList(array $persons): PersonList
   {
     $items = array_map(
-      fn(Person $person) => $this->mapToEntityListItem($person, new PersonListItem),
+      fn(Person $person) =>
+      $this->mapToEntityListItem($person, new PersonListItem),
       $persons
     );
 
@@ -33,7 +34,9 @@ class PersonMapper
     return $model
       ->setId($person->getId())
       ->setName($person->getFullname())
-      ->setAvatar($person->getAvatar() ?: '');
+      ->setAvatar($person->getAvatar() ?: '')
+      ->setSlug($person->getSlug())
+    ;
   }
 
   public function mapToListItem(Person $person): PersonListItem
@@ -41,6 +44,8 @@ class PersonMapper
     return new PersonListItem(
       $person->getId(),
       $person->getFullname(),
+      $person->getAvatar(),
+      $person->getSlug()
     );
   }
 
@@ -83,10 +88,15 @@ class PersonMapper
 
   public function mapSpecialtyNamesIncludingGender(Person $person, ?string $locale): array
   {
-    return array_map(fn(Specialty $specialty) => $specialty->trans(
-      $this->translator, 
-      $locale, 
-      $person->getGender()), $person->getSpecialties());
+    return array_map(
+      fn(Specialty $specialty) =>
+      $specialty->trans(
+        $this->translator,
+        $locale,
+        $person->getGender(),
+      ),
+      $person->getSpecialties(),
+    );
   }
 
 

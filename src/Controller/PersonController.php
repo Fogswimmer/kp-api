@@ -33,13 +33,33 @@ class PersonController extends AbstractController
 		private LoggerInterface $logger,
 	) {
 	}
+
+	/**
+	 * Check if the person list exists
+	 */
+	#[Route(
+		path: 'api/persons-check',
+		name: 'api_person_check',
+		methods: ['GET']
+	)]
+	#[OA\Response(
+		response: 200,
+		description: 'Successful response',
+		content: new Model(type: PersonPaginateList::class)
+	)]
+	public function checkEmpty(): Response
+	{
+		return $this->json(
+			['present' => $this->personService->checkPersonsPresence()]
+		);
+	}
 	/**
 	 * Find a person by id
 	 */
-	#[Route(path: '/api/persons/{id}',
+	#[Route(path: '/api/persons/get/{slug}',
 		name: 'api_person',
 		methods: ['GET'],
-		requirements: ['id' => '\d+']
+		requirements: ['slug' => '[a-z0-9-]+']
 	)
 	]
 	#[OA\Response(
@@ -47,13 +67,13 @@ class PersonController extends AbstractController
 		description: 'Successful response',
 		content: new Model(type: PersonDetail::class)
 	)]
-	public function find(int $id, LocaleDto $dto): Response
+	public function find(string $slug, #[MapQueryString] LocaleDto $dto): Response
 	{
 		$status = Response::HTTP_OK;
 		$data = null;
 
 		try {
-			$data = $this->personService->get($id, $dto->locale);
+			$data = $this->personService->get($slug, $dto->locale);
 		} catch (PersonNotFoundException $e) {
 			$status = Response::HTTP_NOT_FOUND;
 			$this->logger->error($e);
@@ -67,7 +87,7 @@ class PersonController extends AbstractController
 	 * Find a person's form by id
 	 */
 
-	#[Route(path: '/api/persons/{id}/form',
+	#[Route(path: '/api/persons/{slug}/form',
 		name: 'api_person_form',
 		methods: ['GET'],
 	)
@@ -77,13 +97,13 @@ class PersonController extends AbstractController
 		description: 'Successful response',
 		content: new Model(type: PersonForm::class)
 	)]
-	public function form(int $id): Response
+	public function form(string $slug): Response
 	{
 		$status = Response::HTTP_OK;
 		$data = null;
 
 		try {
-			$data = $this->personService->findForm($id);
+			$data = $this->personService->findForm( $slug);
 
 		} catch (PersonNotFoundException $e) {
 			$status = Response::HTTP_NOT_FOUND;
@@ -110,27 +130,6 @@ class PersonController extends AbstractController
 	public function filter(#[MapQueryString] ?PersonQueryDto $dto = new PersonQueryDto()): Response
 	{
 		return $this->json($this->personService->filter($dto));
-	}
-
-	/**
-	 * Check if the person list exists
-	 */
-	#[Route(
-		path: 'api/persons/check',
-		name: 'api_person_check',
-		methods: ['GET']
-	)]
-	#[OA\Response(
-		response: 200,
-		description: 'Successful response',
-		content: new Model(type: PersonPaginateList::class)
-	)]
-
-	public function checkEmpty(): Response
-	{
-		return $this->json(
-			['present' => $this->personService->checkPersonsPresence()]
-		);
 	}
 
 	/**
@@ -171,9 +170,10 @@ class PersonController extends AbstractController
 	 * Update a person by id
 	 */
 	#[Route(
-		path: 'api/persons/{id}',
+		path: 'api/persons/get/{slug}',
 		name: 'api_person_update',
-		methods: ['POST', 'PUT']
+		methods: ['POST', 'PUT'],
+		requirements: ['slug' => '[a-z0-9-]+']
 	)]
 	#[OA\Response(
 		response: 200,
@@ -183,7 +183,7 @@ class PersonController extends AbstractController
 	#[OA\Response(response: 500, description: 'An error occurred while updating the person')]
 
 	public function update(
-		int $id,
+		string $slug,
 		#[MapRequestPayload] ?PersonDto $dto,
 	): Response {
 
@@ -192,7 +192,7 @@ class PersonController extends AbstractController
 
 		try {
 
-			$data = $this->personService->update($id, $dto);
+			$data = $this->personService->update($slug, $dto);
 		} catch (\Throwable $e) {
 			$this->logger->error($e);
 			$data = $e->getMessage();
@@ -398,7 +398,7 @@ class PersonController extends AbstractController
 	 * Get popular actors
 	 */
 	#[Route(
-		path: 'api/persons/actors-popular',
+		path: 'api/persons/actors/popular',
 		name: 'api_person_actors_popular',
 		methods: ['GET']
 	)]

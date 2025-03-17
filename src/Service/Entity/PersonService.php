@@ -18,6 +18,7 @@ use App\Repository\UserRepository;
 use App\Service\FileSystemService;
 use Symfony\Component\Security\Http\Attribute\CurrentUser;
 use Symfony\Contracts\Translation\TranslatorInterface;
+use App\EntityListener\PersonListener;
 
 class PersonService
 {
@@ -28,15 +29,17 @@ class PersonService
         private FileSystemService $fileSystemService,
         private TranslatorInterface $translator,
         private UserRepository $userRepository,
-    ) {}
+        private PersonListener $personListener
+    ) {
+    }
 
-    public function get(int $id, ?string $locale = null): PersonDetail
+    public function get(string $slug, ?string $locale = null): PersonDetail
     {
-        $person = $this->find($id);
+        $person = $this->find($slug);
+        $id = $person->getId();
         $personDetail = $this
             ->personMapper
             ->mapToDetail($person, new PersonDetail(), $locale);
-
         $photoPaths = $this->setPhotosPaths($id);
         $personDetail->setPhotos($photoPaths);
         if (!$personDetail->getCover()) {
@@ -45,9 +48,11 @@ class PersonService
         return $personDetail;
     }
 
-    public function findForm(int $id): PersonForm
+    public function findForm(string $slug): PersonForm
     {
-        $person = $this->find($id);
+
+        $person = $this->find($slug);
+        $id = $person->getId();
         $form = $this->personMapper->mapToForm($person, new PersonForm());
         $photoPaths = $this->setPhotosPaths($id);
         $form->setPhotos($photoPaths);
@@ -83,9 +88,9 @@ class PersonService
         return $this->findForm($person->getId());
     }
 
-    public function update(int $id, PersonDto $dto): PersonForm
+    public function update(string $slug, PersonDto $dto): PersonForm
     {
-        $person = $this->repository->find($id);
+        $person = $this->find($slug);
 
         if (null === $person) {
             throw new PersonNotFoundException();
@@ -164,7 +169,7 @@ class PersonService
         $person = $this->find($id);
         $dirName = $this->specifyPersonPhotosPath($person->getId());
         $currentFile = $this->fileSystemService->searchFiles($dirName, 'cover')[0] ?? null;
-        
+
         if (null !== $currentFile) {
             $this->fileSystemService->removeFile($currentFile);
         }
@@ -172,7 +177,7 @@ class PersonService
         $this->fileSystemService->upload($file, $dirName, 'cover');
         $fullPath = $this->fileSystemService->searchFiles($dirName, 'cover')[0] ?? '';
         $shortPath = $this->fileSystemService->getShortPath($fullPath);
-        
+
         if (file_exists($fullPath)) {
             $person->setCover($shortPath);
             $this->repository->store($person);
@@ -187,7 +192,7 @@ class PersonService
         $person = $this->find($id);
         $dirName = $this->specifyPersonPhotosPath($person->getId());
         $foundPictures = [];
-        
+
         foreach ($fileNames as $fileName) {
             $foundPictures[] = $this->fileSystemService->searchFiles($dirName, $fileName);
         }
@@ -205,7 +210,7 @@ class PersonService
     {
         $persons = $this->repository->findAll();
         $directors = [];
-        
+
         foreach ($persons as $person) {
             $specialties = $person->getSpecialties();
             foreach ($specialties as $specialty) {
@@ -346,17 +351,15 @@ class PersonService
 
     public function checkPersonsPresence(): bool
     {
-        return $this->repository->findAll() !== [];
-    }
-
-    private function find(int $id): Person
-    {
-        $person = $this->repository->find($id);
-        if (null === $person) {
-            throw new PersonNotFoundException();
+        $persons = $this->repository->findAll();
+        foreach ($persons as $person) {
+            if ($person->getSlug() === null) {
+                $slug = $this->personListener->generateSlug($person);
+                $person->setSlug($slug);
+            }
+            $this->repository->store($person);
         }
-
-        return $person;
+        return $this->repository->findAll() !== [];
     }
 
     private function setPhotosPaths(int $id): array
@@ -403,5 +406,15 @@ class PersonService
         $this->fileSystemService->createDir($subDirByIdPath);
 
         return $subDirByIdPath;
+    }
+
+    private function find (string $slug) : Person {
+        $person = $this->repository->findOneBy(['slug' => $slug]);
+
+        if (null === $person) {
+            throw new PersonNotFoundException();
+        }
+
+        return $person;
     }
 }

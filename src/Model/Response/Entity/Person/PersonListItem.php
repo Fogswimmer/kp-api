@@ -9,11 +9,13 @@ class PersonListItem
   public function __construct(
     ?int $id = null,
     ?string $fullName = null,
-    ?string $avatar = null
+    ?string $avatar = null,
+    ?string $slug = null
   ) {
     $this->id = $id;
     $this->name = $fullName;
     $this->avatar = $avatar;
+    $this->slug = $slug;
   }
 
   #[OA\Property(example: 1)]
@@ -23,6 +25,8 @@ class PersonListItem
 
   #[OA\Property(example: 'https://example.com/avatar.jpg')]
   public ?string $avatar;
+
+  public ?string $slug;
 
 
   public function getId(): int
@@ -56,6 +60,18 @@ class PersonListItem
   public function setAvatar(?string $avatar): static
   {
     $this->avatar = $avatar;
+
+    return $this;
+  }
+
+  public function getSlug(): ?string
+  {
+    return $this->slug;
+  }
+
+  public function setSlug(?string $slug): static
+  {
+    $this->slug = $slug;
 
     return $this;
   }
