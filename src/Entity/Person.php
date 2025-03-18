@@ -87,6 +87,9 @@ class Person
   #[ORM\Column(length: 255, nullable: true)]
   private ?string $slug = null;
 
+  #[ORM\Column(length: 255, nullable: true)]
+  private ?string $internationalName = null;
+
 
 
   public function __construct()
@@ -439,6 +442,18 @@ class Person
   public function setSlug(?string $slug): static
   {
       $this->slug = $slug;
+
+      return $this;
+  }
+
+  public function getInternationalName(): ?string
+  {
+      return $this->internationalName;
+  }
+
+  public function setInternationalName(?string $internationalName): static
+  {
+      $this->internationalName = $internationalName;
 
       return $this;
   }

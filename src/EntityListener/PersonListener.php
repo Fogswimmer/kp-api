@@ -26,8 +26,13 @@ class PersonListener
 
     public function generateSlug(Person $person): string
     {
-        $underscopedFullname = str_replace(' ' , '_', strtolower($person->getFullName())); ;
-        $slug = $this->slugger->slug($underscopedFullname);
+        $uniqueId = uniqid();
+        $slug = $this->slugger->slug($person->getInternationalName())->lower();
+
+        if ($person->getSlug() === $slug) {
+            $slug = $this->slugger->slug($person->getInternationalName())->lower() . '-' . $uniqueId;
+        }
+
         return $slug;
     }
 }

@@ -16,13 +16,11 @@ class PersonForm
   #[OA\Property(example: '1984-01-01')]
   public ?string $birthday = null;
 
-
   #[OA\Property(example: [2, 3])]
   public array $actedInfilmIds = [];
 
   #[OA\Property(example: [1, 2])]
   public array $specialtyIds = [];
-
 
   #[OA\Property(example: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.')]
   public ?string $bio = null;
@@ -31,11 +29,16 @@ class PersonForm
 
   #[OA\Property(example: 'avatar.jpg')]
   public ?string $avatar = null;
-
   public ?array $photos = [];
   #[OA\Property(example: ['actor', 'director'])]
   public ?array $specialtyNames = [];
+  #[OA\Property(example: 18)]
   public int $age = 0;
+  #[OA\Property(example: 'John Doe')]
+  public ?string $slug = null;
+
+  #[OA\Property(example: 'John Doe')]
+  public ?string $internationalName = null;
 
   public function getId(): int
   {
@@ -103,8 +106,6 @@ class PersonForm
 
     return $this;
   }
-
-
 
   public function getSpecialtyIds(): array
   {
@@ -179,6 +180,30 @@ class PersonForm
   public function setAge(int $age): static
   {
     $this->age = $age;
+
+    return $this;
+  }
+
+  public function getSlug(): ?string
+  {
+    return $this->slug;
+  }
+
+  public function setSlug(?string $slug): static
+  {
+    $this->slug = $slug;
+
+    return $this;
+  }
+
+  public function getInternationalName(): ?string
+  {
+    return $this->internationalName;
+  }
+
+  public function setInternationalName(?string $internationalName): static
+  {
+    $this->internationalName = $internationalName;
 
     return $this;
   }

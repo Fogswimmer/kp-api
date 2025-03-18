@@ -46,6 +46,10 @@ class FilmForm
 
   public ?string $poster = null;
 
+  public ?string $slug = null;
+
+  public ?string $internationalName = null;
+
   public function getId(): int
   {
     return $this->id;
@@ -247,6 +251,27 @@ class FilmForm
     return $this;
   }
 
+  public function getSlug(): ?string
+  {
+    return $this->slug;
+  }
 
+  public function setSlug(?string $slug): static
+  {
+    $this->slug = $slug;
+
+    return $this;
+  }
+  public function getInternationalName(): ?string
+  {
+    return $this->internationalName;
+  }
+
+  public function setInternationalName(?string $internationalName): static
+  {
+    $this->internationalName = $internationalName;
+
+    return $this;
+  }
 
 }

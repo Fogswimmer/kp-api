@@ -51,6 +51,11 @@ class PersonDetail
 
   public ?array $filmWorks = [];
 
+  #[OA\Property(example: 'John Doe')]
+  public ?string $slug = null;
+
+  public ?string $internationalName = null;
+
   public function getId(): int
   {
     return $this->id;
@@ -248,6 +253,30 @@ class PersonDetail
   {
     return $this->filmWorks;
 
+  }
+  
+  public function getSlug(): ?string
+  {
+    return $this->slug;
+  }
+
+  public function setSlug(?string $slug): static
+  {
+    $this->slug = $slug;
+
+    return $this;
+  }
+
+  public function getInternationalName(): ?string
+  {
+    return $this->internationalName;
+  }
+
+  public function setInternationalName(?string $internationalName): static
+  {
+    $this->internationalName = $internationalName;
+
+    return $this;
   }
 
 }

@@ -34,6 +34,7 @@ class FilmRepository extends ServiceEntityRepository
 			$search = trim(strtolower($search));
 			$queryBuilder
 				->where($queryBuilder->expr()->like('LOWER(f.name)', ':search'))
+				->orWhere($queryBuilder->expr()->like('LOWER(f.internationalName)', ':search'))
 				->setParameter('search', "%{$search}%");
 		}
 		$queryBuilder

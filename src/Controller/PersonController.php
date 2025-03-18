@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Dto\Common\LocaleDto;
+use Exception;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\HttpKernel\Attribute\MapQueryString;
@@ -84,12 +85,13 @@ class PersonController extends AbstractController
 
 
 	/**
-	 * Find a person's form by id
+	 * Find a person's form by slug
 	 */
 
-	#[Route(path: '/api/persons/{slug}/form',
+	#[Route(path: '/api/persons/{slug}/form/',
 		name: 'api_person_form',
 		methods: ['GET'],
+		requirements: ['slug' => '[a-z0-9-]+']
 	)
 	]
 	#[OA\Response(
@@ -99,15 +101,17 @@ class PersonController extends AbstractController
 	)]
 	public function form(string $slug): Response
 	{
+
 		$status = Response::HTTP_OK;
 		$data = null;
 
 		try {
 			$data = $this->personService->findForm( $slug);
 
-		} catch (PersonNotFoundException $e) {
-			$status = Response::HTTP_NOT_FOUND;
+		} catch (\Throwable $e) {
 			$this->logger->error($e);
+			$data = $e->getMessage();
+			$status = Response::HTTP_INTERNAL_SERVER_ERROR;
 		}
 		return $this->json($data, $status);
 	}
@@ -170,10 +174,10 @@ class PersonController extends AbstractController
 	 * Update a person by id
 	 */
 	#[Route(
-		path: 'api/persons/get/{slug}',
+		path: 'api/persons/{id}',
 		name: 'api_person_update',
 		methods: ['POST', 'PUT'],
-		requirements: ['slug' => '[a-z0-9-]+']
+		requirements: ['id' => '[0-9]+']
 	)]
 	#[OA\Response(
 		response: 200,
@@ -183,17 +187,18 @@ class PersonController extends AbstractController
 	#[OA\Response(response: 500, description: 'An error occurred while updating the person')]
 
 	public function update(
-		string $slug,
+		int $id,
 		#[MapRequestPayload] ?PersonDto $dto,
 	): Response {
 
 		$data = null;
 		$status = Response::HTTP_OK;
-
+		
+		$data = $this->personService->update($id, $dto);
 		try {
 
-			$data = $this->personService->update($slug, $dto);
-		} catch (\Throwable $e) {
+		} 
+		catch (\Throwable $e) {
 			$this->logger->error($e);
 			$data = $e->getMessage();
 			$status = Response::HTTP_INTERNAL_SERVER_ERROR;

@@ -12,7 +12,8 @@ class FilmListItem
   ?string $description = null, 
   ?string $rating = null, 
   array $assessments = [],
-  ?string $slug = null
+  ?string $slug = null,
+  ?string $internationalName = null
   )
   {
     $this->id = $id;
@@ -23,6 +24,7 @@ class FilmListItem
     $this->rating = $rating;
     $this->assessments = $assessments;
     $this->slug = $slug;
+    $this->internationalName = $internationalName;
   }
   #[OA\Property(example: 1)]
   public ?int $id;
@@ -45,6 +47,8 @@ class FilmListItem
   public array $assessments = [];
 
   public ?string $slug = '';
+
+  public ?string $internationalName = '';
 
   public function getId(): int
   {
@@ -147,6 +151,18 @@ class FilmListItem
   public function setSlug(?string $slug): static
   {
     $this->slug = $slug;
+
+    return $this;
+  }
+
+  public function getInternationalName(): ?string
+  {
+    return $this->internationalName;
+  }
+
+  public function setInternationalName(?string $internationalName): static
+  {
+    $this->internationalName = $internationalName;
 
     return $this;
   }

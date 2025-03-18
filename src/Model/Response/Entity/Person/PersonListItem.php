@@ -10,12 +10,14 @@ class PersonListItem
     ?int $id = null,
     ?string $fullName = null,
     ?string $avatar = null,
-    ?string $slug = null
+    ?string $slug = null,
+    ?string $internationalName = null
   ) {
     $this->id = $id;
     $this->name = $fullName;
     $this->avatar = $avatar;
     $this->slug = $slug;
+    $this->internationalName = $internationalName;
   }
 
   #[OA\Property(example: 1)]
@@ -27,6 +29,8 @@ class PersonListItem
   public ?string $avatar;
 
   public ?string $slug;
+
+  public ?string $internationalName = null;
 
 
   public function getId(): int
@@ -72,6 +76,18 @@ class PersonListItem
   public function setSlug(?string $slug): static
   {
     $this->slug = $slug;
+
+    return $this;
+  }
+
+  public function getInternationalName(): ?string
+  {
+    return $this->internationalName;
+  }
+
+  public function setInternationalName(?string $internationalName): static
+  {
+    $this->internationalName = $internationalName;
 
     return $this;
   }

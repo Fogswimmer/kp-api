@@ -9,6 +9,8 @@ class PersonDto
     public readonly ?string $firstname = '',
     #[OA\Property(example: 'Jackson')]
     public readonly ?string $lastname = '',
+    #[OA\Property(example: 'Peter Jackson')]
+    public readonly ?string $internationalName = '',
     #[OA\Property(example: 1)]
     public readonly ?int $genderId = 1,
     #[OA\Property(example: '1986-06-05')]

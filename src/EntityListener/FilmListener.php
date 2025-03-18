@@ -26,7 +26,13 @@ class FilmListener
 
     public function generateSlug(Film $film): string
     {
-        $slug = $this->slugger->slug($film->getName())->lower();
+        $uniqueId = uniqid();
+        $slug = $this->slugger->slug($film->getInternationalName())->lower();
+
+        if ($film->getSlug() === $slug) {
+            $slug = $this->slugger->slug($film->getInternationalName())->lower() . '-' . $uniqueId;
+        }
+
         return $slug;
     }
 }

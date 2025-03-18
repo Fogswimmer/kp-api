@@ -50,13 +50,16 @@ class PersonService
 
     public function findForm(string $slug): PersonForm
     {
-
         $person = $this->find($slug);
+
         $id = $person->getId();
+
         $form = $this->personMapper->mapToForm($person, new PersonForm());
         $photoPaths = $this->setPhotosPaths($id);
+        
         $form->setPhotos($photoPaths);
         $form->setCover($this->specifyCoverPath($id));
+        
         return $form;
     }
 
@@ -66,6 +69,7 @@ class PersonService
         $person
             ->setFirstname($dto->firstname)
             ->setLastname($dto->lastname)
+            ->setInternationalName($dto->internationalName)
             ->setBirthday($dto->birthday)
             ->setGender($dto->genderId)
             ->setPublisher($user);
@@ -85,12 +89,12 @@ class PersonService
         $this->repository->store($person);
         $this->userRepository->store($user);
 
-        return $this->findForm($person->getId());
+        return $this->findForm($person->getSlug());
     }
 
-    public function update(string $slug, PersonDto $dto): PersonForm
+    public function update(int $id, PersonDto $dto): PersonForm
     {
-        $person = $this->find($slug);
+        $person = $this->repository->find($id);
 
         if (null === $person) {
             throw new PersonNotFoundException();
@@ -100,12 +104,15 @@ class PersonService
         $person->setLastname($dto->lastname);
         $person->setBirthday($dto->birthday);
         $person->setGender($dto->genderId);
+        $person->setInternationalName($dto->internationalName);
 
         $specialties = [];
         $specialtyIds = $dto->specialtyIds;
+
         foreach ($specialtyIds as $specialtyId) {
             $specialties[] = Specialty::matchIdAndSpecialty($specialtyId);
         }
+
         $person->setSpecialties($specialties);
 
         if ($dto->bio !== null) {
@@ -121,7 +128,7 @@ class PersonService
 
         $this->repository->store($person);
 
-        return $this->findForm($person->getId());
+        return $this->findForm($person->getSlug());
     }
 
     public function delete(int $id): void
@@ -142,7 +149,7 @@ class PersonService
 
     public function uploadPhotos(int $id, array $files): PersonForm
     {
-        $person = $this->find($id);
+        $person = $this->repository->find($id);
         $dirName = $this->specifyPersonPhotosPath($person->getId());
 
         $currentFiles = $this->fileSystemService->searchFiles($dirName, 'photo-*');
@@ -161,7 +168,7 @@ class PersonService
             $this->fileSystemService->upload($file, $dirName, $indexedFileName);
         }
 
-        return $this->findForm($person->getId());
+        return $this->findForm($person->getSlug());
     }
 
     public function uploadCover(int $id, $file): PersonForm
@@ -183,7 +190,7 @@ class PersonService
             $this->repository->store($person);
         }
 
-        return $this->findForm($person->getId());
+        return $this->findForm($person->getSlug());
     }
 
 
@@ -203,7 +210,7 @@ class PersonService
             }
         }
 
-        return $this->findForm($person->getId());
+        return $this->findForm($person->getSlug());
     }
 
     public function listDirectors(): array
@@ -359,6 +366,7 @@ class PersonService
             }
             $this->repository->store($person);
         }
+
         return $this->repository->findAll() !== [];
     }
 
@@ -388,7 +396,7 @@ class PersonService
 
     private function specifyCoverPath(int $id): string
     {
-        $person = $this->find($id);
+        $person = $this->repository->find($id);
         $dirName = $this->specifyPersonPhotosPath($person->getId());
 
         $files = $this->fileSystemService->searchFiles($dirName, 'cover');
@@ -408,7 +416,8 @@ class PersonService
         return $subDirByIdPath;
     }
 
-    private function find (string $slug) : Person {
+    private function find(string $slug): Person
+    {
         $person = $this->repository->findOneBy(['slug' => $slug]);
 
         if (null === $person) {

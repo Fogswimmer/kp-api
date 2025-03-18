@@ -36,6 +36,7 @@ class PersonMapper
       ->setName($person->getFullname())
       ->setAvatar($person->getAvatar() ?: '')
       ->setSlug($person->getSlug())
+      ->setInternationalName($person->getInternationalName())
     ;
   }
 
@@ -45,7 +46,8 @@ class PersonMapper
       $person->getId(),
       $person->getFullname(),
       $person->getAvatar(),
-      $person->getSlug()
+      $person->getSlug(),
+      $person->getInternationalName()
     );
   }
 
@@ -67,7 +69,10 @@ class PersonMapper
       ->setCreatedAt($person->getCreatedAt()->format('Y-m-d'))
       ->setUpdatedAt($person->getUpdatedAt()->format('Y-m-d'))
       ->setPublisherData($person->getPublisher() ? $this->mapPublisherData($person->getPublisher()) : [])
-      ->setFilmWorks($this->mapToFilmWorks($person));
+      ->setFilmWorks($this->mapToFilmWorks($person))
+      ->setSlug($person->getSlug())
+      ->setInternationalName($person->getInternationalName())
+    ;
   }
 
   public function mapToForm(Person $person, PersonForm $model): PersonForm
@@ -83,7 +88,10 @@ class PersonMapper
       ->setBio($person->getBio() ?: '')
       ->setCover($person->getCover() ?: '')
       ->setAvatar($person->getAvatar() ?: '')
-      ->setAge($person->getAge());
+      ->setAge($person->getAge())
+      ->setSlug($person->getSlug())
+      ->setInternationalName($person->getInternationalName())
+    ;
   }
 
   public function mapSpecialtyNamesIncludingGender(Person $person, ?string $locale): array

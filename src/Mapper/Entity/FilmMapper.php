@@ -35,6 +35,7 @@ class FilmMapper
       ->setReleaseYear($film->getReleaseYear())
       ->setPoster($film->getCover())
       ->setSlug($film->getSlug())
+      ->setInternationalName($film->getInternationalName())
     ;
   }
   public function mapToDetail(Film $film, FilmDetail $model, string $locale = 'ru'): FilmDetail
@@ -61,6 +62,7 @@ class FilmMapper
       ->setPoster($film->getPoster())
       ->setTrailer($film->getTrailer())
       ->setSlug($film->getSlug())
+      ->setInternationalName($film->getInternationalName())
     ;
   }
 
@@ -88,6 +90,8 @@ class FilmMapper
       ->setAge($film->getAge())
       ->setTrailer($film->getTrailer())
       ->setPoster($film->getPoster())
+      ->setSlug($film->getSlug())
+      ->setInternationalName($film->getInternationalName())
     ;
   }
 
@@ -103,7 +107,8 @@ class FilmMapper
       $this->mapAssessments(
         $film->getAssessments()->toArray()
       ),
-      $film->getSlug()
+      $film->getSlug(),
+      $film->getInternationalName()
 
     );
   }

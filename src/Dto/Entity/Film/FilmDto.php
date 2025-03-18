@@ -6,6 +6,8 @@ class FilmDto
   public function __construct(
     #[OA\Property(example: 'Star Wars')]
     public readonly ?string $name = null,
+    #[OA\Property(example: 'Star Wars')]
+    public readonly ?string $internationalName = null,
     #[OA\Property(example: 'The Empire Strikes Back')]
     public readonly ?string $slogan = null,
     #[OA\Property(example: [1, 2, 3])]

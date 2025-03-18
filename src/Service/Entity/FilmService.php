@@ -41,8 +41,7 @@ class FilmService
     private FileSystemService $fileSystemService,
     private ActorRoleRepository $actorRoleRepository,
     private FilmListener $filmListener
-  ) {
-  }
+  ) {}
 
   public function assess(
     int $id,
@@ -78,7 +77,7 @@ class FilmService
     $this->userRepository->store($assessment);
     $this->repository->store($film);
 
-    return $this->get($film->getId(), $locale);
+    return $this->get($film->getSlug(), $locale);
   }
 
   public function checkFilmsPresence(): bool
@@ -96,10 +95,12 @@ class FilmService
 
   public function get(string $slug, ?string $locale = null): FilmDetail
   {
+    $film = $this->find($slug);
     $filmDetail = $this
       ->filmMapper
       ->mapToDetail($this->find($slug), new FilmDetail(), $locale);
-    $id = $filmDetail->getId();
+    $id = $film->getId();
+
     $galleryPaths = $this->setGalleryPaths($id);
     $filmDetail->setGallery($galleryPaths);
 
@@ -156,7 +157,6 @@ class FilmService
     }
 
     return new FilmList($items);
-
   }
 
   public function filter(FilmQueryDto $filmQueryDto): FilmPaginateList
@@ -250,6 +250,7 @@ class FilmService
 
     $film
       ->setName($dto->name)
+      ->setInternationalName($dto->internationalName)
       ->setReleaseYear($dto->releaseYear)
       ->setDuration($dto->duration)
       ->setDescription($dto->description)
@@ -261,12 +262,12 @@ class FilmService
     $this->repository->store($film);
     $this->userRepository->store($user);
 
-    return $this->findForm($film->getId());
+    return $this->findForm($film->getSlug());
   }
 
   public function update(int $id, FilmDto $dto, string $locale): FilmDetail
   {
-    $film = $this->find($id);
+    $film = $this->repository->find($id);
     $actorIds = $dto->actorIds;
 
     $newActors = [];
@@ -329,32 +330,26 @@ class FilmService
 
     $film
       ->setName($dto->name)
+      ->setInternationalName($dto->internationalName)
       ->setReleaseYear($dto->releaseYear)
       ->setDuration($dto->duration)
       ->setDescription($dto->description)
       ->setAge($dto->age)
-      ->setSlogan($dto->slogan);
-
-    if ($dto->cover !== null) {
-      $film->setCover($dto->cover);
-    }
-
-    if ($dto->poster !== null) {
-      $film->setPoster($dto->poster);
-    }
-
+      ->setSlogan($dto->slogan)
+      ->setPoster($dto->poster)
+    ;
     if ($dto->trailer !== null) {
       $film->setTrailer($dto->trailer);
     }
 
     $this->repository->store($film);
 
-    return $this->get($film->getId(), $locale);
+    return $this->get($film->getSlug(), $locale);
   }
 
   public function delete(int $id): void
   {
-    $film = $this->find($id);
+    $film = $this->repository->find($id);
     $galleryFiles = $this->fileSystemService->searchFiles($this->specifyFilmGalleryPath($id), 'picture-*');
 
     foreach ($galleryFiles as $file) {
@@ -366,7 +361,7 @@ class FilmService
 
   public function uploadGallery(int $id, array $files): FilmForm
   {
-    $film = $this->find($id);
+    $film = $this->repository->find($id);
     $dirName = $this->specifyFilmGalleryPath($film->getId());
     $currentFiles = $this->fileSystemService->searchFiles($dirName, 'picture-*');
 
@@ -386,7 +381,7 @@ class FilmService
       $this->fileSystemService->upload($file, $dirName, $indexedFileName);
     }
 
-    return $this->findForm($film->getId());
+    return $this->findForm($film->getSlug());
   }
 
   public function deleteFromGallery(int $id, array $fileNames): FilmForm
@@ -405,7 +400,7 @@ class FilmService
       }
     }
 
-    return $this->findForm($film->getId());
+    return $this->findForm($film->getSlug());
   }
 
   public function deleteAssessment(int $filmId, int $assessmentId, User $user): FilmForm
@@ -425,8 +420,7 @@ class FilmService
 
     $this->assessmentRepository->remove($assessment);
 
-    return $this->findForm($film->getId());
-
+    return $this->findForm($film->getSlug());
   }
 
   private function setGalleryPaths(int $id): array

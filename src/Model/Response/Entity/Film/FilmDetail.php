@@ -39,7 +39,6 @@ class FilmDetail
   #[OA\Property(example: 'https://example.com/image.jpg')]
   public ?string $cover = null;
 
-
   public ?array $assessments = [];
   public ?string $createdAt = null;
 
@@ -50,8 +49,9 @@ class FilmDetail
 
   public ?string $poster = null;
   public ?string $trailer = null;
-
   public ?string $slug = null;
+
+  public ?string $internationalName = null;
 
   public function getId(): int
   {
@@ -297,5 +297,16 @@ class FilmDetail
     return $this;
   }
 
+  public function getInternationalName(): ?string
+  {
+    return $this->internationalName;
+  }
+
+  public function setInternationalName(?string $internationalName): static
+  {
+    $this->internationalName = $internationalName;
+
+    return $this;
+  }
 
 }
