@@ -115,7 +115,7 @@ class FilmController extends AbstractController
   }
 
   /**
-   * Find 10 latest films
+   * Find 6 latest films
    */
   #[Route(
     path: '/api/films-latest',
@@ -131,7 +131,7 @@ class FilmController extends AbstractController
   {
     $status = Response::HTTP_OK;
     $data = null;
-    $count = 10;
+    $count = 6;
     try {
       $data = $this->filmService->latest($count);
     } catch (FilmNotFoundException $e) {
@@ -140,6 +140,34 @@ class FilmController extends AbstractController
     }
     return $this->json($data, $status);
   }
+
+  /**
+   * Find 6 top films
+   */
+  #[Route(
+    path: '/api/films-top',
+    name: 'api_film_top',
+    methods: ['GET'],
+  )]
+  #[OA\Response(
+    response: 200,
+    description: 'Successful response',
+    content: new Model(type: FilmList::class)
+  )]
+  public function top(): Response
+  {
+    $status = Response::HTTP_OK;
+    $data = null;
+    $count = 6;
+    try {
+      $data = $this->filmService->top($count);
+    } catch (FilmNotFoundException $e) {
+      $status = Response::HTTP_NOT_FOUND;
+      $this->logger->error($e);
+    }
+    return $this->json($data, $status);
+  }
+
 
   /**
    * Find films with similar genres

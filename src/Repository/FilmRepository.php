@@ -77,4 +77,14 @@ class FilmRepository extends ServiceEntityRepository
 
 		return $queryBuilder->getQuery()->getResult();
 	}
+
+	public function findTop(int $count): array
+	{
+		return $this
+			->createQueryBuilder('f')
+			->orderBy('f.rating', 'DESC')
+			->setMaxResults($count)
+			->getQuery()
+			->getResult();
+	}
 }

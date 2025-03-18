@@ -135,6 +135,23 @@ class FilmService
     return new FilmList($items);
   }
 
+  public function top(int $count): FilmList
+  {
+    $films = $this->repository->findTop($count);
+
+    $items = array_map(
+      fn(Film $film) => $this->filmMapper->mapToListItem($film),
+      $films
+    );
+
+    foreach ($items as $item) {
+      $galleryPaths = $this->setGalleryPaths($item->getId());
+      $item->setGallery($galleryPaths);
+    }
+
+    return new FilmList($items);
+  }
+
   public function similarGenre(int $id): FilmList
   {
     $film = $this->find($id);
