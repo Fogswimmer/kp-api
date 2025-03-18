@@ -83,6 +83,7 @@ class FilmRepository extends ServiceEntityRepository
 		return $this
 			->createQueryBuilder('f')
 			->orderBy('f.rating', 'DESC')
+			->where('f.rating IS NOT NULL AND f.rating >= 4')
 			->setMaxResults($count)
 			->getQuery()
 			->getResult();
