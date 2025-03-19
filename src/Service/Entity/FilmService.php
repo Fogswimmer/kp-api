@@ -152,30 +152,6 @@ class FilmService
     return new FilmList($items);
   }
 
-  public function similarGenre(int $id): FilmList
-  {
-    $film = $this->find($id);
-    $genres = $film->getGenres();
-    $genreIds = [];
-
-    foreach ($genres as $genre) {
-      $genreIds[] = $genre->value;
-    }
-
-    $films = $this->repository->findWithSimilarGenres($genreIds);
-    $items = array_map(
-      fn(Film $film) => $this->filmMapper->mapToListItem($film),
-      $films
-    );
-
-    foreach ($items as $item) {
-      $galleryPaths = $this->setGalleryPaths($item->getId());
-      $item->setGallery($galleryPaths);
-    }
-
-    return new FilmList($items);
-  }
-
   public function filter(FilmQueryDto $filmQueryDto): FilmPaginateList
   {
     $totalPages = 1;
@@ -422,7 +398,7 @@ class FilmService
 
   public function deleteAssessment(int $filmId, int $assessmentId, User $user): FilmForm
   {
-    $film = $this->find($filmId);
+    $film = $this->repository->find($filmId);
     $assessment = $this->assessmentRepository->find($assessmentId);
 
     if (null === $assessment) {

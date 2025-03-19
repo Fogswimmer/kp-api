@@ -34,8 +34,7 @@ class FilmController extends AbstractController
   public function __construct(
     private FilmService $filmService,
     private LoggerInterface $logger,
-  ) {
-  }
+  ) {}
 
   /**
    * Check films presence in the DB
@@ -59,11 +58,13 @@ class FilmController extends AbstractController
   /**
    * Find a film by slug
    */
-  #[Route(path: '/api/films/get/{slug}',
-    name: 'api_film',
-    methods: ['GET'],
-    requirements: ['slug' => '[a-z0-9-]+']
-  )
+  #[
+    Route(
+      path: '/api/films/get/{slug}',
+      name: 'api_film',
+      methods: ['GET'],
+      requirements: ['slug' => '[a-z0-9-]+']
+    )
   ]
   #[OA\Response(
     response: 200,
@@ -88,11 +89,13 @@ class FilmController extends AbstractController
   /**
    * Find a film form by slug
    */
-  #[Route(path: '/api/films/{slug}/form',
-    name: 'api_film_form',
-    methods: ['GET'],
-    requirements: ['slug' => '[a-z0-9-]+']
-  )
+  #[
+    Route(
+      path: '/api/films/{slug}/form',
+      name: 'api_film_form',
+      methods: ['GET'],
+      requirements: ['slug' => '[a-z0-9-]+']
+    )
   ]
   #[OA\Response(
     response: 200,
@@ -168,34 +171,6 @@ class FilmController extends AbstractController
     return $this->json($data, $status);
   }
 
-
-  /**
-   * Find films with similar genres
-   */
-  #[Route(
-    path: '/api/films/similar-genres/{id}',
-    name: 'api_film_similar_genres',
-    methods: ['GET'],
-    requirements: ['id' => '\d+']
-  )]
-  #[OA\Response(
-    response: 200,
-    description: 'Successful response',
-    content: new Model(type: FilmList::class)
-  )]
-  public function similarGenre(int $id): Response
-  {
-    $status = Response::HTTP_OK;
-    $data = $this->filmService->similarGenre($id);
-    try {
-      $data = $this->filmService->similarGenre($id);
-    } catch (FilmNotFoundException $e) {
-      $status = Response::HTTP_NOT_FOUND;
-      $this->logger->error($e);
-    }
-
-    return $this->json($data, $status);
-  }
 
   /**
    * Filter films by query params
@@ -436,5 +411,4 @@ class FilmController extends AbstractController
     }
     return $this->json($data, $status);
   }
-
 }

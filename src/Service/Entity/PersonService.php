@@ -133,7 +133,7 @@ class PersonService
 
     public function delete(int $id): void
     {
-        $person = $this->find($id);
+        $person = $this->repository->find($id);
         $films = $person->getFilms();
 
         foreach ($films as $film) {
@@ -173,7 +173,7 @@ class PersonService
 
     public function uploadCover(int $id, $file): PersonForm
     {
-        $person = $this->find($id);
+        $person = $this->repository->find($id);
         $dirName = $this->specifyPersonPhotosPath($person->getId());
         $currentFile = $this->fileSystemService->searchFiles($dirName, 'cover')[0] ?? null;
 
@@ -196,7 +196,7 @@ class PersonService
 
     public function deletePhotos(int $id, array $fileNames): PersonForm
     {
-        $person = $this->find($id);
+        $person = $this->repository->find($id);
         $dirName = $this->specifyPersonPhotosPath($person->getId());
         $foundPictures = [];
 

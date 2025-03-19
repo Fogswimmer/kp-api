@@ -131,7 +131,7 @@ class PersonMapper
         case Specialty::ACTOR:
           $films = $person->getFilms()->toArray();
           $actedInFilms = array_map(fn(Film $film) => [
-            'id' => $film->getId(),
+            'slug' => $film->getSlug(),
             'name' => $film->getName(),
             'releaseYear' => $film->getReleaseYear(),
             'cover' => $film->getCover() ?: '',
@@ -141,7 +141,7 @@ class PersonMapper
         case Specialty::DIRECTOR:
           $films = $person->getDirectedFilms()->toArray();
           $directedFilms = array_map(fn(Film $film) => [
-            'id' => $film->getId(),
+            'slug' => $film->getSlug(),
             'name' => $film->getName(),
             'releaseYear' => $film->getReleaseYear(),
             'cover' => $film->getCover() ?: '',
@@ -151,7 +151,7 @@ class PersonMapper
         case Specialty::PRODUCER:
           $films = $person->getProducedFilms()->toArray();
           $producedFilms = array_map(fn(Film $film) => [
-            'id' => $film->getId(),
+            'slug' => $film->getSlug(),
             'name' => $film->getName(),
             'releaseYear' => $film->getReleaseYear(),
             'cover' => $film->getCover() ?: '',
@@ -160,7 +160,7 @@ class PersonMapper
         case Specialty::COMPOSER:
           $films = $person->getProducedFilms()->toArray();
           $composedFilms = array_map(fn(Film $film) => [
-            'id' => $film->getId(),
+            'slug' => $film->getSlug(),
             'name' => $film->getName(),
             'releaseYear' => $film->getReleaseYear(),
             'cover' => $film->getCover() ?: '',
@@ -169,7 +169,7 @@ class PersonMapper
         case Specialty::WRITER:
           $films = $person->getProducedFilms()->toArray();
           $writtenFilms = array_map(fn(Film $film) => [
-            'id' => $film->getId(),
+            'slug' => $film->getSlug(),
             'name' => $film->getName(),
             'releaseYear' => $film->getReleaseYear(),
             'cover' => $film->getCover() ?: '',
@@ -179,14 +179,6 @@ class PersonMapper
     }
 
     return array_filter($filmWorks, fn($filmWork) => $filmWork !== null);
-  }
-
-  private function matchSpecialtyIdsToTranslations(array $specialties)
-  {
-    foreach ($specialties as $specialty) {
-      $specialtyId = $specialty->value;
-      Specialty::tryFrom($specialtyId);
-    }
   }
 
   private function mapPublisherData(User $publisher): array
@@ -202,8 +194,4 @@ class PersonMapper
     return array_map(fn(Specialty $specialty) => $specialty->value, $specialties);
   }
 
-  private function mapSpecialties(array $specialties): array
-  {
-    return array_map(fn(Specialty $specialty) => $specialty->trans($this->translator), $specialties);
-  }
 }

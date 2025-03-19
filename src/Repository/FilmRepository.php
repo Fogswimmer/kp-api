@@ -67,17 +67,6 @@ class FilmRepository extends ServiceEntityRepository
 			->getResult();
 	}
 
-	public function findWithSimilarGenres(array $genreIds): array
-	{
-		$queryBuilder = $this->createQueryBuilder('f');
-
-		$queryBuilder
-			->where('f.genres @> :genreIds')
-			->setParameter('genreIds', '{' . implode(',', $genreIds) . '}', \Doctrine\DBAL\Types\Types::STRING);
-
-		return $queryBuilder->getQuery()->getResult();
-	}
-
 	public function findTop(int $count): array
 	{
 		return $this

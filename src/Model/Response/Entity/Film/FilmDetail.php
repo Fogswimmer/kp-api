@@ -20,16 +20,19 @@ class FilmDetail
 
   #[OA\Property(example: 1966)]
   public int $releaseYear;
-  public array $actorNames = [];
+
   #[OA\Property(example: 'sci-fi')]
   public ?string $preview;
+
   #[OA\Property(example: 'A new hope is on the way!')]
   public ?string $description;
+
   #[OA\Property(example: 9.5)]
   public ?float $rating;
 
   #[OA\Property(example: 18)]
   public ?int $age;
+
   #[OA\Property(example: '2:25:00')]
   public ?string $duration;
 
@@ -38,17 +41,24 @@ class FilmDetail
 
   #[OA\Property(example: 'https://example.com/image.jpg')]
   public ?string $cover = null;
-
+  
+  #[OA\Property(example: [])]
   public ?array $assessments = [];
+
   public ?string $createdAt = null;
 
   public ?string $updatedAt = null;
+
   public ?array $actorsData = [];
+
   public ?array $teamData = [];
+
   public ?array $publisherData = [];
 
   public ?string $poster = null;
+
   public ?string $trailer = null;
+
   public ?string $slug = null;
 
   public ?string $internationalName = null;

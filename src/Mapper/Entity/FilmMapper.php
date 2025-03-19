@@ -185,7 +185,7 @@ class FilmMapper
     return array_map(
       function (Person $actor) {
         return [
-          'id' => $actor->getId(),
+          'slug' => $actor->getSlug(),
           'name' => $actor->getFullname(),
           'avatar' => $actor->getAvatar(),
         ];
@@ -200,7 +200,7 @@ class FilmMapper
     $directorData = [];
     if ($film->getDirectedBy()) {
       $directorData = [
-        'id' => $film->getDirectedBy()->getId() ?? null,
+        'slug' => $film->getDirectedBy()->getSlug() ?? null,
         'name' => $film->getDirectedBy()->getFullName() ?? null,
         'avatar' => $film->getDirectedBy()->getAvatar() ?? null,
       ];
@@ -209,7 +209,7 @@ class FilmMapper
     $writerData = [];
     if ($film->getWriter()) {
       $writerData = [
-        'id' => $film->getWriter()->getId() ?? null,
+        'slug' => $film->getWriter()->getSlug() ?? null,
         'name' => $film->getWriter()->getFullName() ?? null,
         'avatar' => $film->getWriter()->getAvatar() ?? null
       ];
@@ -218,7 +218,7 @@ class FilmMapper
     $producerData = [];
     if ($film->getProducer()) {
       $producerData = [
-        'id' => $film->getProducer()->getId() ?? null,
+        'slug' => $film->getProducer()->getSlug() ?? null,
         'name' => $film->getProducer()->getFullName() ?? null,
         'avatar' => $film->getProducer()->getAvatar() ?? null,
       ];
@@ -227,7 +227,7 @@ class FilmMapper
     $composerData = [];
     if ($film->getComposer()) {
       $composerData = [
-        'id' => $film->getComposer()->getId() ?? null,
+        'slug' => $film->getComposer()->getSlug() ?? null,
         'name' => $film->getComposer()->getFullName() ?? null,
         'avatar' => $film->getComposer()->getAvatar() ?? null,
       ];
@@ -236,7 +236,7 @@ class FilmMapper
     return array_map(
       function ($data) {
         return [
-          'id' => $data['id'] ?? null,
+          'slug' => $data['slug'] ?? null,
           'name' => $data['name'] ?? null,
           'avatar' => $data['avatar'] ?? null,
         ];

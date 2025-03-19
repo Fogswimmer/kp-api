@@ -35,7 +35,7 @@ class PersonRepository extends ServiceEntityRepository
 			$queryBuilder
 				->where($queryBuilder->expr()->like('LOWER(p.firstname)', ':search'))
 				->orWhere($queryBuilder->expr()->like('LOWER(p.lastname)', ':search'))
-				->orWhere($queryBuilder->expr()->like('LOWER(f.internationalName)', ':search'))
+				->orWhere($queryBuilder->expr()->like('LOWER(p.internationalName)', ':search'))
 				->setParameter('search', "%{$search}%");
 		}
 		if ($sortBy === 'age') {
