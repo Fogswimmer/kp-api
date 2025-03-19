@@ -49,7 +49,7 @@ class FilmService
     ?string $locale,
     #[CurrentUser] User $user,
   ): FilmDetail {
-    $film = $this->find($id);
+    $film = $this->repository->find($id);
 
     if (null === $user) {
       throw new \Exception();

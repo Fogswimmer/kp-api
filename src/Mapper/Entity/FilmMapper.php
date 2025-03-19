@@ -1,5 +1,7 @@
 <?php
+
 namespace App\Mapper\Entity;
+
 use App\Entity\Film;
 use App\Enum\Genres;
 use App\Model\Response\Entity\Film\FilmDetail;
@@ -10,12 +12,12 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 use App\Entity\Assessment;
 use App\Entity\User;
 use App\Entity\Person;
+
 class FilmMapper
 {
   public function __construct(
     private TranslatorInterface $translator,
-  ) {
-  }
+  ) {}
 
   public function mapToEntityList(array $films): FilmList
   {
@@ -109,19 +111,7 @@ class FilmMapper
       ),
       $film->getSlug(),
       $film->getInternationalName()
-
     );
-  }
-  private function getActorNames(Film $film): array
-  {
-    $actorsIds = $this->getActorsIds($film);
-
-    $namesArr = [];
-    for ($i = 0; $i < count($actorsIds); $i++) {
-      $namesArr[] = $film->getActors()[$i]->getFullname();
-    }
-
-    return $namesArr;
   }
 
   private function mapGenresToIds(array $genres): array
@@ -132,16 +122,6 @@ class FilmMapper
     }
 
     return $ids;
-  }
-
-  private function getActorAvatars(Film $film): array
-  {
-    $avatarsArr = [];
-    foreach ($film->getActors() as $actor) {
-      $avatarsArr[] = $actor->getAvatar();
-    }
-
-    return $avatarsArr;
   }
 
   private function getActorsIds(Film $film): array
@@ -156,7 +136,7 @@ class FilmMapper
 
   private function mapAssessments(array $assessments): array
   {
-    return array_map(
+    $assessmentsArr = array_map(
       function (Assessment $assessment) {
         return [
           'id' => $assessment->getId(),
@@ -170,6 +150,12 @@ class FilmMapper
       },
       $assessments
     );
+
+    usort($assessmentsArr, function ($a, $b) {
+      return $b['createdAt'] <=> $a['createdAt'];
+    }); 
+
+    return $assessmentsArr;
   }
 
   private function mapPublisherData(User $publisher): array
@@ -244,5 +230,4 @@ class FilmMapper
       [$directorData, $writerData, $producerData, $composerData]
     );
   }
-
 }
