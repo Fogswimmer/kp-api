@@ -56,15 +56,15 @@ class UserService
   public function uploadAvatar(User $user, $file): UserDetail
   {
     $dirname = $this->specifyUserAvatarsPath($user->getId());
-    $currentFile = $this->fileSystemService->searchFiles($dirname, 'avatar')[0] ?? null;
-    
+    $currentFile = $this->fileSystemService->searchFiles($dirname, 'avatar-*')[0] ?? null;
+    // dd($currentFile);
     if (null !== $currentFile) {
       $this->fileSystemService->removeFile($currentFile);
     }
 
-    $this->fileSystemService->upload($file, $dirname, 'avatar');
+    $this->fileSystemService->upload($file, $dirname, 'avatar-' . uniqid());
 
-    $fullPath = $this->fileSystemService->searchFiles($dirname, 'avatar')[0] ?? '';
+    $fullPath = $this->fileSystemService->searchFiles($dirname, 'avatar-*')[0] ?? '';
     $shortPath = $this->fileSystemService->getShortPath($fullPath);
 
     if (file_exists($fullPath)) {
@@ -79,15 +79,15 @@ class UserService
   {
     $user = $this->find($id);
     $dirname = $this->specifyCoversPath($user->getId());
-    $currentFile = $this->fileSystemService->searchFiles($dirname, )[0] ?? null;
+    $currentFile = $this->fileSystemService->searchFiles($dirname, 'cover-*' )[0] ?? null;
     
     if (null !== $currentFile) {
       $this->fileSystemService->removeFile($currentFile);
     }
 
-    $this->fileSystemService->upload($file, $dirname, );
+    $this->fileSystemService->upload($file, $dirname, 'cover-' . uniqid());
     
-    $fullPath = $this->fileSystemService->searchFiles($dirname, )[0] ?? '';
+    $fullPath = $this->fileSystemService->searchFiles($dirname, 'cover-*')[0] ?? '';
     $shortPath = $this->fileSystemService->getShortPath($fullPath);
     
     if (file_exists($fullPath)) {

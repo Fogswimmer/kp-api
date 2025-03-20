@@ -171,7 +171,6 @@ class FilmController extends AbstractController
     return $this->json($data, $status);
   }
 
-
   /**
    * Filter films by query params
    */
