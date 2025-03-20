@@ -30,7 +30,7 @@ class UserController extends AbstractController
             return $this->json(['error' => 'Token not found']);
         }
 
-        $user = $this->getUser();
+        $user = $this->getUser(); 
         
         if (null !== $user) {
             $user->setLastLogin(new \DateTime());
