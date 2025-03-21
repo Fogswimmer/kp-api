@@ -29,7 +29,7 @@ class UserController extends AbstractController
         if (null === $token) {
             return $this->json(['error' => 'Token not found']);
         }
-
+        /** @var ?User $user */
         $user = $this->getUser(); 
         
         if (null !== $user) {
