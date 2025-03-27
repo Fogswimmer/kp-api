@@ -379,7 +379,7 @@ class FilmService
 
   public function deleteFromGallery(int $id, array $fileNames): FilmForm
   {
-    $film = $this->find($id);
+    $film = $this->repository->find($id);
     $dirName = $this->specifyFilmGalleryPath($film->getId());
     $foundPictures = [];
 
@@ -410,8 +410,17 @@ class FilmService
         throw new AccessDeniedException();
       }
     }
-
     $this->assessmentRepository->remove($assessment);
+
+    $newAssessments = $film->getAssessments()->toArray();
+
+    $film->setRating(
+      array_sum(array_map(function (Assessment $assessment) {
+        return $assessment->getRating();
+      }, $newAssessments)) / count($newAssessments)
+    );
+
+    $this->repository->store($film);
 
     return $this->findForm($film->getSlug());
   }

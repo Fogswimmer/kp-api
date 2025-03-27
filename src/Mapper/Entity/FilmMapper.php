@@ -65,6 +65,7 @@ class FilmMapper
       ->setTrailer($film->getTrailer())
       ->setSlug($film->getSlug())
       ->setInternationalName($film->getInternationalName())
+      ->setAssessmentsGraph($this->createAssessmentsGraph($film->getAssessments()->toArray()))
     ;
   }
 
@@ -153,9 +154,30 @@ class FilmMapper
 
     usort($assessmentsArr, function ($a, $b) {
       return $b['createdAt'] <=> $a['createdAt'];
-    }); 
+    });
 
     return $assessmentsArr;
+  }
+
+  private function createAssessmentsGraph(array $assessments)
+  {
+    $ratings = array_map(function (Assessment $assessment) {
+      return $assessment->getRating();
+    }, $assessments);
+
+    $graph = array_count_values($ratings);
+    $mappedGraph = array_map(function ($count, $rating) use ($ratings) {
+      return [
+        'count' => $count,
+        'rating' => $rating,
+      ];
+    }, $graph, array_keys($graph));
+
+    usort($mappedGraph, function ($a, $b) {
+      return $b['count'] <=> $a['count'];
+    });
+
+    return $mappedGraph;
   }
 
   private function mapPublisherData(User $publisher): array

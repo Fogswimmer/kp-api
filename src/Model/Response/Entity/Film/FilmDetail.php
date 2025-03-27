@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Model\Response\Entity\Film;
 
 use OpenApi\Attributes as OA;
@@ -41,7 +42,7 @@ class FilmDetail
 
   #[OA\Property(example: 'https://example.com/image.jpg')]
   public ?string $cover = null;
-  
+
   #[OA\Property(example: [])]
   public ?array $assessments = [];
 
@@ -62,6 +63,8 @@ class FilmDetail
   public ?string $slug = null;
 
   public ?string $internationalName = null;
+
+  public ?array $assessmentsGraph = [];
 
   public function getId(): int
   {
@@ -319,4 +322,15 @@ class FilmDetail
     return $this;
   }
 
+  public function getAssessmentsGraph(): array
+  {
+    return $this->assessmentsGraph;
+  }
+
+  public function setAssessmentsGraph(array $assessmentsGraph): static
+  {
+    $this->assessmentsGraph = $assessmentsGraph;
+
+    return $this;
+  }
 }
