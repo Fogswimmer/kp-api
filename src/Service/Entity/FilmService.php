@@ -95,10 +95,10 @@ class FilmService
 
   public function get(string $slug, ?string $locale = null): FilmDetail
   {
-    $film = $this->find($slug);
+    $film = $this->findBySlug($slug);
     $filmDetail = $this
       ->filmMapper
-      ->mapToDetail($this->find($slug), new FilmDetail(), $locale);
+      ->mapToDetail($film, new FilmDetail(), $locale);
     $id = $film->getId();
 
     $galleryPaths = $this->setGalleryPaths($id);
@@ -109,7 +109,7 @@ class FilmService
 
   public function findForm(string $slug): FilmForm
   {
-    $film = $this->find($slug);
+    $film = $this->findBySlug($slug);
     $form = $this->filmMapper->mapToForm($film, new FilmForm());
 
     $galleryPaths = $this->setGalleryPaths($film->getId());
@@ -460,7 +460,7 @@ class FilmService
     return $subDirByIdPath;
   }
 
-  private function find(string $slug): Film
+  private function findBySlug(string $slug): Film
   {
     $film = $this->repository->findOneBy(['slug' => $slug]);
 

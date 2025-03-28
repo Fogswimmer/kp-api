@@ -35,7 +35,7 @@ class PersonService
 
     public function get(string $slug, ?string $locale = null): PersonDetail
     {
-        $person = $this->find($slug);
+        $person = $this->findBySlug($slug);
         $id = $person->getId();
         $personDetail = $this
             ->personMapper
@@ -50,7 +50,7 @@ class PersonService
 
     public function findForm(string $slug): PersonForm
     {
-        $person = $this->find($slug);
+        $person = $this->findBySlug($slug);
 
         $id = $person->getId();
 
@@ -139,7 +139,9 @@ class PersonService
         foreach ($films as $film) {
             $person->removeFilm($film);
         }
+
         $galleryFiles = $this->fileSystemService->searchFiles($this->specifyPersonPhotosPath($id), 'photo-*');
+        
         foreach ($galleryFiles as $file) {
             $this->fileSystemService->removeFile($file);
         }
@@ -155,11 +157,13 @@ class PersonService
         $currentFiles = $this->fileSystemService->searchFiles($dirName, 'photo-*');
 
         $currentFileIndexes = [];
+        
         foreach ($currentFiles as $file) {
             if (preg_match('/photo-(\d+)/', $file, $matches)) {
                 $currentFileIndexes[] = (int) $matches[1];
             }
         }
+
         $maxIndex = !empty($currentFileIndexes) ? max($currentFileIndexes) : 0;
 
         foreach ($files as $file) {
@@ -182,6 +186,7 @@ class PersonService
         }
 
         $this->fileSystemService->upload($file, $dirName, 'cover');
+        
         $fullPath = $this->fileSystemService->searchFiles($dirName, 'cover')[0] ?? '';
         $shortPath = $this->fileSystemService->getShortPath($fullPath);
 
@@ -416,7 +421,7 @@ class PersonService
         return $subDirByIdPath;
     }
 
-    private function find(string $slug): Person
+    private function findBySlug(string $slug): Person
     {
         $person = $this->repository->findOneBy(['slug' => $slug]);
 
