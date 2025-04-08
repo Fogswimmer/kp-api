@@ -6,7 +6,6 @@ use Symfony\Component\HttpFoundation\File\Exception\FileException;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\String\Slugger\SluggerInterface;
 use App\Exception\NotFound\FileNotFoundException;
-use App\Exception\Unique\UniqueFileException;
 
 
 class FileSystemService
@@ -83,7 +82,4 @@ class FileSystemService
       unlink($path);
     } 
   }
-
-
-
 }

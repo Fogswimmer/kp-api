@@ -4,6 +4,7 @@ parameters:
     user_uploads: "%kernel.project_dir%/public/uploads/user"
     uploads_dir: "%kernel.project_dir%/public/uploads"
     public_dir: "%kernel.project_dir%/public"
+    app_domain: "%env(APP_DOMAIN)%"
 services:
     # app.normalizer.object_normalizer:
     #     class: Symfony\Component\Serializer\Normalizer\ObjectNormalizer

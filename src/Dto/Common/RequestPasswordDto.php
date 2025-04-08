@@ -9,8 +9,6 @@ class RequestPasswordDto
     public readonly ?string $email = null,
     #[OA\Property(example: 'password')]
     public readonly ?string $password = null,
-    #[OA\Property(example: 'ru')]
-    public readonly ?string $locale = null,
   ) {
   }
 }

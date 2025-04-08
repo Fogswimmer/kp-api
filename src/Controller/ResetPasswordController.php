@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Dto\Common\RequestPasswordDto;
 use App\Entity\User;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
@@ -17,19 +18,25 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Attribute\MapRequestPayload;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+use Symfony\Contracts\Translation\TranslatorInterface;
+use Symfony\Component\HttpKernel\Attribute\MapQueryString;
+use App\Dto\Common\LocaleDto;
 
 #[Route('/api/reset-password')]
 class ResetPasswordController  extends AbstractController
 {
     public function __construct(
         private ResetPasswordHelperInterface $resetPasswordHelper,
-        private EntityManagerInterface $entityManager
+        private EntityManagerInterface $entityManager,
+        private TranslatorInterface $translator,
+        #[Autowire('%app_domain%')] private string $appDomain,
     ) {}
 
     #[Route('/request', name: 'app_reset_password_request', methods: ['POST'])]
     public function requestResetPassword(
         MailerInterface $mailer,
-        #[MapRequestPayload()] ?RequestPasswordDto $dto
+        #[MapRequestPayload()] ?RequestPasswordDto $dto,
+        #[MapQueryString] LocaleDto $localeDto
     ): Response {
         $email = $dto->email;
 
@@ -49,12 +56,20 @@ class ResetPasswordController  extends AbstractController
             return $this->json(['error' => 'Could not process reset request, because ' . $e->getReason()], 400);
         }
 
-        $resetUrl = "http://localhost:3000/password-reset/" . $resetToken->getToken();
+        $resetUrl = $this->appDomain .  "password-reset/" . $resetToken->getToken();
+
+        $from = 'no-reply@' . parse_url($this->appDomain, PHP_URL_HOST);
+        $to = $user->getEmail();
+        $subject = $this->translator->trans('subject', [], 'reset-password', $localeDto->locale);
+        $text = $this->translator->trans('text', 
+        ['%username%' => $user->getUsername(), '%resetUrl%' => $resetUrl], 
+        'reset-password', 
+        $localeDto->locale);
         $email = (new Email())
-            ->from('no-reply@example.com')
-            ->to($user->getEmail())
-            ->subject('Password Reset Request')
-            ->text("Use this token to reset your password: " . $resetUrl);
+            ->from($from)
+            ->to($to)
+            ->subject($subject)
+            ->text($text);
 
         $mailer->send($email);
 

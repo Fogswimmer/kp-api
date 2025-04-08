@@ -392,6 +392,10 @@ class FilmService
         $this->fileSystemService->removeFile($file);
       }
     }
+    // TODO
+    if ($film->getPoster() !== null && in_array($film->getPoster(), $fileNames)) {
+      $film->setPoster(null);
+    }
 
     return $this->findForm($film->getSlug());
   }
