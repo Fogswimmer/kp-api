@@ -18,18 +18,18 @@ class PersonMapper
   ) {
   }
 
-  public function mapToEntityList(array $persons): PersonList
+  public function mapToEntityList(array $persons, $locale = null): PersonList
   {
     $items = array_map(
       fn(Person $person) =>
-      $this->mapToEntityListItem($person, new PersonListItem),
+      $this->mapToEntityListItem($person, new PersonListItem, $locale),
       $persons
     );
 
     return new PersonList(array_values($items));
   }
 
-  public function mapToEntityListItem(Person $person, PersonListItem $model): PersonListItem
+  public function mapToEntityListItem(Person $person, PersonListItem $model, ?string $locale): PersonListItem
   {
     return $model
       ->setId($person->getId())
@@ -37,6 +37,8 @@ class PersonMapper
       ->setAvatar($person->getAvatar() ?: '')
       ->setSlug($person->getSlug())
       ->setInternationalName($person->getInternationalName())
+      ->setSpecialtyNames($this->mapSpecialtyNamesIncludingGender($person, $locale))
+      ->setBio($person->getBio() ?: '')
     ;
   }
 
@@ -178,7 +180,9 @@ class PersonMapper
       }
     }
 
-    return array_filter($filmWorks, fn($filmWork) => $filmWork !== null);
+    $filteredFilmWorks = array_filter($filmWorks, fn($filmWork) => $filmWork !== null);
+
+    return array_map(fn($filmWork) => array_values($filmWork), $filteredFilmWorks);
   }
 
   private function mapPublisherData(User $publisher): array

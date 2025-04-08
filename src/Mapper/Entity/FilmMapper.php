@@ -114,7 +114,6 @@ class FilmMapper
       $film->getInternationalName()
     );
   }
-
   private function mapGenresToIds(array $genres): array
   {
     $ids = [];

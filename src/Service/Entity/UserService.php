@@ -57,7 +57,6 @@ class UserService
   {
     $dirname = $this->specifyUserAvatarsPath($user->getId());
     $currentFile = $this->fileSystemService->searchFiles($dirname, 'avatar-*')[0] ?? null;
-    // dd($currentFile);
     if (null !== $currentFile) {
       $this->fileSystemService->removeFile($currentFile);
     }
@@ -73,29 +72,6 @@ class UserService
     }
 
     return $this->userMapper->mapToDetail($user, new UserDetail());
-  }
-
-  public function uploadCover(int $id, $file): User
-  {
-    $user = $this->find($id);
-    $dirname = $this->specifyCoversPath($user->getId());
-    $currentFile = $this->fileSystemService->searchFiles($dirname, 'cover-*' )[0] ?? null;
-    
-    if (null !== $currentFile) {
-      $this->fileSystemService->removeFile($currentFile);
-    }
-
-    $this->fileSystemService->upload($file, $dirname, 'cover-' . uniqid());
-    
-    $fullPath = $this->fileSystemService->searchFiles($dirname, 'cover-*')[0] ?? '';
-    $shortPath = $this->fileSystemService->getShortPath($fullPath);
-    
-    if (file_exists($fullPath)) {
-      $user->setCover($shortPath);
-      $this->userRepository->store($user);
-    }
-
-    return $this->findForm($user->getId());
   }
 
   public function get(int $id): User
@@ -141,23 +117,12 @@ class UserService
 
     return $avatarDirPath;
   }
-
-  private function specifyCoversPath(int $id): string
-  {
-    $subDirByIdPath = $this->createUploadsDir($id);
-
-    $coverDirPath = $subDirByIdPath . DIRECTORY_SEPARATOR;
-    $this->fileSystemService->createDir($coverDirPath);
-
-    return $coverDirPath;
-  }
-
   private function createUploadsDir(int $id): string
   {
     $userMainUploadsDir = $this->fileSystemService->getUploadsDirname('user');
 
     $stringId = strval($id);
-    $subDirByIdPath = $userMainUploadsDir . DIRECTORY_SEPARATOR . $stringId . DIRECTORY_SEPARATOR . 'cover';
+    $subDirByIdPath = $userMainUploadsDir . DIRECTORY_SEPARATOR . $stringId . DIRECTORY_SEPARATOR . 'avatar';
 
     $this->fileSystemService->createDir($subDirByIdPath);
 

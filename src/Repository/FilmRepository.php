@@ -27,7 +27,7 @@ class FilmRepository extends ServiceEntityRepository
 		$limit = $filmQueryDto->limit;
 		$sortBy = $filmQueryDto->sortBy;
 		$order = $filmQueryDto->order;
-
+	
 		$queryBuilder = $this->createQueryBuilder('f')->where('1 = 1');;
 
 		if (!empty($search)) {

@@ -98,24 +98,6 @@ class UserController extends AbstractController
         return $this->json($data, $status);
     }
 
-    #[Route('api/users/{id}/cover', name: 'api_user_cover', methods: ['POST'])]
-    public function uploadCover(int $id, Request $request): Response
-    {
-        $file = $request->files->get('file');
-        $status = Response::HTTP_OK;
-        $data = null;
-        
-        try {
-            $user = $this->userService->uploadCover($id, $file);
-            $data = $this->userMapper->mapToDetail($user, new UserDetail());
-        } catch (\Exception $e) {
-            $status = Response::HTTP_INTERNAL_SERVER_ERROR;
-            $data = $e->getMessage();
-        }
-
-        return $this->json($data, $status);
-    }
-
     #[Route('/api/logout', name: 'api_logout', methods: ['POST'])]
     public function logout(): Response
     {

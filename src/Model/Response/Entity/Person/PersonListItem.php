@@ -11,13 +11,17 @@ class PersonListItem
     ?string $fullName = null,
     ?string $avatar = null,
     ?string $slug = null,
-    ?string $internationalName = null
+    ?string $internationalName = null,
+    ?array $specialtyNames = [],
+    ?string $bio = null,
   ) {
     $this->id = $id;
     $this->name = $fullName;
     $this->avatar = $avatar;
     $this->slug = $slug;
     $this->internationalName = $internationalName;
+    $this->specialtyNames = $specialtyNames;
+    $this->bio = $bio;
   }
 
   #[OA\Property(example: 1)]
@@ -31,6 +35,11 @@ class PersonListItem
   public ?string $slug;
 
   public ?string $internationalName = null;
+
+  public ?array $specialtyNames = [];
+
+  public ?string $bio = null;
+
 
 
   public function getId(): int
@@ -88,6 +97,30 @@ class PersonListItem
   public function setInternationalName(?string $internationalName): static
   {
     $this->internationalName = $internationalName;
+
+    return $this;
+  }
+
+  public function getSpecialtyNames(): array
+  {
+    return $this->specialtyNames;
+  }
+
+  public function setSpecialtyNames(array $specialtyNames): static
+  {
+    $this->specialtyNames = $specialtyNames;
+
+    return $this;
+  }
+
+  public function getBio(): string
+  {
+    return $this->bio;
+  }
+
+  public function setBio(string $bio): static
+  {
+    $this->bio = $bio;
 
     return $this;
   }

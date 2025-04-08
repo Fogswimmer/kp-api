@@ -325,7 +325,7 @@ class PersonService
         ];
     }
 
-    public function listPopularActors(): PersonList
+    public function listPopularActors(string $locale): PersonList
     {
         $actors = $this->listActors();
         $popularActors = [];
@@ -335,7 +335,7 @@ class PersonService
             }
         }
 
-        return $this->personMapper->mapToEntityList($popularActors);
+        return $this->personMapper->mapToEntityList($popularActors, $locale);
     }
 
     public function filter(PersonQueryDto $personQueryDto): PersonPaginateList

@@ -55,7 +55,7 @@ class PersonController extends AbstractController
 		);
 	}
 	/**
-	 * Find a person by id
+	 * Find a person by slug
 	 */
 	#[Route(path: '/api/persons/get/{slug}',
 		name: 'api_person',
@@ -413,14 +413,14 @@ class PersonController extends AbstractController
 	)]
 	#[OA\Response(response: 500, description: 'An error occurred ')]
 
-	public function popluar(): Response
+	public function popluar(#[MapQueryString] LocaleDto $dto): Response
 	{
 
 		$data = null;
 		$status = Response::HTTP_OK;
 
 		try {
-			$data = $this->personService->listPopularActors();
+			$data = $this->personService->listPopularActors($dto->locale);
 		} catch (\Throwable $e) {
 			$this->logger->error($e);
 			$data = $e->getMessage();

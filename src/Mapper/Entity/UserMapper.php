@@ -15,12 +15,10 @@ class UserMapper
       ->setAbout($user->getAbout())
       ->setAge($user->getAge())
       ->setDisplayName($user->getDisplayName())
-      ->setCover($user->getCover())
       ->setAvatar($user->getAvatar())
       ->setLastLogin($user->getLastLogin())
       ->setRoles($user->getRoles())
       ;
-      // ->setAssessmentsData($user->getAssessments()->toArray());
   }
 
   private function mapAssessmentsData(array $assessments): array
