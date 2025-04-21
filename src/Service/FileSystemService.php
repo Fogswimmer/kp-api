@@ -62,7 +62,7 @@ class FileSystemService
 
   public function createDir(string $path): string
   {
-    if (!file_exists($path)) {
+    if (!is_dir($path)) {
       mkdir($path, 0777, true);
     }
 

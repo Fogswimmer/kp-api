@@ -91,7 +91,7 @@ class ResetPasswordController  extends AbstractController
             $this->json(['error' => 'User not found'], 400);
     }
 
-    #[Route('/reset/new-password/{token}', name: 'app_reset_password_new_password', methods: ['POST'])]
+    #[Route('/reset/{token}/new-password', name: 'app_reset_password_new_password', methods: ['POST'])]
     public function newPassword(
         #[MapRequestPayload()] ?RequestPasswordDto $dto,
         UserPasswordHasherInterface $passwordHasher,
