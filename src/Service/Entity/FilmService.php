@@ -179,6 +179,13 @@ class FilmService
   public function create(FilmDto $dto, #[CurrentUser] User $user): FilmForm
   {
     $film = new Film();
+    $genreIds = $dto->genreIds;
+    $genres = [];
+    foreach ($genreIds as $genreId) {
+      $genres[] = Genres::matchIdAndGenre($genreId);
+    }
+    $film->setGenres($genres);
+    
     $actorIds = $dto->actorIds;
 
     foreach ($actorIds as $actorId) {
@@ -198,13 +205,7 @@ class FilmService
     }
 
     $film->setDirectedBy($director);
-    $genreIds = $dto->genreIds;
-    $genres = [];
-    foreach ($genreIds as $genreId) {
-      $genres[] = Genres::matchIdAndGenre($genreId);
-    }
-    $film->setGenres($genres);
-
+    
     $producerId = $dto->producerId;
     $producer = $this->personRepository->find($producerId);
 
@@ -213,6 +214,7 @@ class FilmService
     }
 
     $film->setProducer($producer);
+    
     $writerId = $dto->writerId;
     $writer = $this->personRepository->find($writerId);
 
@@ -249,6 +251,7 @@ class FilmService
       ->setDescription($dto->description)
       ->setAge($dto->age)
       ->setSlogan($dto->slogan)
+      ->setTrailer($dto->trailer)
       ->setRating(0)
       ->setPublisher($user);
 

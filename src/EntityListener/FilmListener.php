@@ -27,11 +27,17 @@ class FilmListener
     public function generateSlug(Film $film): string
     {
         $uniqueId = uniqid();
-        $slug = $this->slugger->slug($film->getInternationalName())->lower();
-
-        if ($film->getSlug() === $slug) {
-            $slug = $this->slugger->slug($film->getInternationalName())->lower() . '-' . $uniqueId;
+        $slug = '';
+        if ($film->getInternationalName() !== null) {
+            $slug = $this->slugger->slug($film->getInternationalName())->lower();
+            if ($film->getSlug() === $slug) {
+                $slug = $this->slugger->slug($film->getInternationalName())->lower() . '-' . $uniqueId;
+            }
         }
+        else {
+            $slug = $this->slugger->slug($film->getName())->lower() . '-' . $uniqueId;
+        }
+
 
         return $slug;
     }

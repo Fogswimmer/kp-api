@@ -27,10 +27,15 @@ class PersonListener
     public function generateSlug(Person $person): string
     {
         $uniqueId = uniqid();
-        $slug = $this->slugger->slug($person->getInternationalName())->lower();
-
-        if ($person->getSlug() === $slug) {
-            $slug = $this->slugger->slug($person->getInternationalName())->lower() . '-' . $uniqueId;
+        $slug = '';
+        if ($person->getInternationalName() !== null) {
+            $slug = $this->slugger->slug($person->getInternationalName())->lower();
+            if ($person->getSlug() === $slug) {
+                $slug = $this->slugger->slug($person->getInternationalName())->lower() . '-' . $uniqueId;
+            }
+        }
+        else {
+            $slug = $this->slugger->slug($person->getFullName())->lower() . '-' . $uniqueId;
         }
 
         return $slug;
