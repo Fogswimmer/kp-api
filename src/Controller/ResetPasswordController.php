@@ -6,8 +6,6 @@ use App\Dto\Common\RequestPasswordDto;
 use App\Entity\User;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
-use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Mailer\MailerInterface;
@@ -17,7 +15,6 @@ use SymfonyCasts\Bundle\ResetPassword\Exception\ResetPasswordExceptionInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Attribute\MapRequestPayload;
-use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
 use Symfony\Component\HttpKernel\Attribute\MapQueryString;
 use App\Dto\Common\LocaleDto;
@@ -30,6 +27,7 @@ class ResetPasswordController  extends AbstractController
         private EntityManagerInterface $entityManager,
         private TranslatorInterface $translator,
         #[Autowire('%app_domain%')] private string $appDomain,
+        #[Autowire('%password_reset_url%')] private string $passwordResetUrl,
     ) {}
 
     #[Route('/request', name: 'app_reset_password_request', methods: ['POST'])]
@@ -52,31 +50,30 @@ class ResetPasswordController  extends AbstractController
 
         try {
             $resetToken = $this->resetPasswordHelper->generateResetToken($user);
+            $resetUrl = $this->passwordResetUrl . '/' . $resetToken->getToken();
+    
+            $from = 'noreply@' . parse_url($this->appDomain, PHP_URL_HOST);
+            $to = $user->getEmail();
+            $subject = $this->translator->trans('subject', [], 'reset-password', $localeDto->locale);
+            $text = $this->translator->trans('text', 
+            ['%username%' => $user->getUsername(), '%resetUrl%' => $resetUrl], 
+            'reset-password', 
+            $localeDto->locale);
+            $email = (new Email())
+                ->from($from)
+                ->to($to)
+                ->subject($subject)
+                ->text($text);
+    
+            $mailer->send($email);
         } catch (ResetPasswordExceptionInterface $e) {
             return $this->json(['error' => 'Could not process reset request, because ' . $e->getReason()], 400);
         }
 
-        $resetUrl = $this->appDomain .  "password-reset/" . $resetToken->getToken();
-
-        $from = 'no-reply@' . parse_url($this->appDomain, PHP_URL_HOST);
-        $to = $user->getEmail();
-        $subject = $this->translator->trans('subject', [], 'reset-password', $localeDto->locale);
-        $text = $this->translator->trans('text', 
-        ['%username%' => $user->getUsername(), '%resetUrl%' => $resetUrl], 
-        'reset-password', 
-        $localeDto->locale);
-        $email = (new Email())
-            ->from($from)
-            ->to($to)
-            ->subject($subject)
-            ->text($text);
-
-        $mailer->send($email);
-
         return  $this->json(['message' => 'Reset link sent successfully.']);
     }
 
-    #[Route('/reset/{token}', name: 'app_reset_password_verify_token', methods: ['POST'])]
+    #[Route('/validate/{token}', name: 'app_reset_password_verify_token', methods: ['POST'])]
     public function verifyToken(
         string $token
     ): Response {
@@ -91,7 +88,7 @@ class ResetPasswordController  extends AbstractController
             $this->json(['error' => 'User not found'], 400);
     }
 
-    #[Route('/reset/{token}/new-password', name: 'app_reset_password_new_password', methods: ['POST'])]
+    #[Route('/{token}/new-password', name: 'app_reset_password_new_password', methods: ['POST'])]
     public function newPassword(
         #[MapRequestPayload()] ?RequestPasswordDto $dto,
         UserPasswordHasherInterface $passwordHasher,
