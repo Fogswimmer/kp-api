@@ -17,6 +17,7 @@ class FileSystemService
     #[Autowire('%public_dir%')] private string $publicDir,
     #[Autowire('%film_uploads%')] private string $filmUploadsDir,
     #[Autowire('%user_uploads%')] private string $userAvatarDir,
+    #[Autowire('%app_domain%')] private string $appDomain,
   ) {
   }
   public function upload(UploadedFile $file, string $path, string $customFileName = null, ): string
@@ -41,7 +42,7 @@ class FileSystemService
   }
   public function getShortPath(string $path): string
   {
-    return str_replace($this->publicDir, '', $path);
+    return $this->appDomain . '/' . str_replace($this->publicDir, '', $path);
   }
 
   public function getPublicDir(): string
