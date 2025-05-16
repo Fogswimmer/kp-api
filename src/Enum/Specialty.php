@@ -15,7 +15,6 @@ enum Specialty: int implements TranslatableInterface
     case COMPOSER = 5;
     case EDITOR = 6;
 
-
     public function trans(TranslatorInterface $translator, ?string $locale = null, $gender = Gender::MALE): string
     {
         return match ($this) {
@@ -31,8 +30,6 @@ enum Specialty: int implements TranslatableInterface
     {
         return array_column(self::cases(), 'value');
     }
-
-
 
     public static function isValid(int $value): bool
     {
@@ -55,6 +52,11 @@ enum Specialty: int implements TranslatableInterface
     public static function matchIdAndTranslation(int $id, ?TranslatorInterface $translator = null, ?string $locale = null): string
     {
         return self::matchIdAndSpecialty($id)->trans($translator, $locale);
+    }
+
+    public static function matchSpecialty(self $specialty): bool
+    {
+        return in_array($specialty, self::cases(), true);
     }
 
     public static function list(?TranslatorInterface $translator = null, ?string $locale = null): array

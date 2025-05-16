@@ -252,9 +252,8 @@ class PersonDetail
   public function getFilmWorks(): array
   {
     return $this->filmWorks;
-
   }
-  
+
   public function getSlug(): ?string
   {
     return $this->slug;

@@ -419,49 +419,49 @@ class Film
 
   public function getPoster(): ?string
   {
-      return $this->poster;
+    return $this->poster;
   }
 
   public function setPoster(?string $poster): static
   {
-      $this->poster = $poster;
+    $this->poster = $poster;
 
-      return $this;
+    return $this;
   }
 
   public function getTrailer(): ?string
   {
-      return $this->trailer;
+    return $this->trailer;
   }
 
   public function setTrailer(?string $trailer): static
   {
-      $this->trailer = $trailer;
+    $this->trailer = $trailer;
 
-      return $this;
+    return $this;
   }
 
   public function getSlug(): ?string
   {
-      return $this->slug;
+    return $this->slug;
   }
 
   public function setSlug(?string $slug): static
   {
-      $this->slug = $slug;
+    $this->slug = $slug;
 
-      return $this;
+    return $this;
   }
 
   public function getInternationalName(): ?string
   {
-      return $this->internationalName;
+    return $this->internationalName;
   }
 
   public function setInternationalName(?string $internationalName): static
   {
-      $this->internationalName = $internationalName;
+    $this->internationalName = $internationalName;
 
-      return $this;
+    return $this;
   }
 }

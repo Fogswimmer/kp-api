@@ -17,7 +17,8 @@ class UserService
     private readonly UserPasswordHasherInterface $passwordHasher,
     private FileSystemService $fileSystemService,
     private readonly UserMapper $userMapper
-  ) {}
+  ) {
+  }
 
   public function login(int $id): User
   {

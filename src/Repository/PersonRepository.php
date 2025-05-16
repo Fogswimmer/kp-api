@@ -28,7 +28,8 @@ class PersonRepository extends ServiceEntityRepository
 		$sortBy = $personQueryDto->sortBy;
 		$order = $personQueryDto->order;
 
-		$queryBuilder = $this->createQueryBuilder('p')->where('1 = 1');;
+		$queryBuilder = $this->createQueryBuilder('p')->where('1 = 1');
+		;
 
 		if (!empty($search)) {
 			$search = trim(strtolower($search));

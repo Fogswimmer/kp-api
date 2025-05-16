@@ -41,7 +41,8 @@ class FilmService
     private FileSystemService $fileSystemService,
     private ActorRoleRepository $actorRoleRepository,
     private FilmListener $filmListener
-  ) {}
+  ) {
+  }
 
   public function assess(
     int $id,
@@ -185,7 +186,7 @@ class FilmService
       $genres[] = Genres::matchIdAndGenre($genreId);
     }
     $film->setGenres($genres);
-    
+
     $actorIds = $dto->actorIds;
 
     foreach ($actorIds as $actorId) {
@@ -205,7 +206,7 @@ class FilmService
     }
 
     $film->setDirectedBy($director);
-    
+
     $producerId = $dto->producerId;
     $producer = $this->personRepository->find($producerId);
 
@@ -214,7 +215,7 @@ class FilmService
     }
 
     $film->setProducer($producer);
-    
+
     $writerId = $dto->writerId;
     $writer = $this->personRepository->find($writerId);
 

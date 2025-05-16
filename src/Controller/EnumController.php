@@ -32,7 +32,6 @@ class EnumController extends AbstractController
     #[Route('/api/specialties/translations', name: 'specialties_list')]
     public function listSpecialties(#[MapQueryString] LocaleDto $dto): Response
     {
-
         return $this->json(Specialty::list($this->translator, $dto->locale), Response::HTTP_OK);
     }
 

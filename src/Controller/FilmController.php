@@ -34,7 +34,8 @@ class FilmController extends AbstractController
   public function __construct(
     private FilmService $filmService,
     private LoggerInterface $logger,
-  ) {}
+  ) {
+  }
 
   /**
    * Check films presence in the DB
@@ -60,11 +61,11 @@ class FilmController extends AbstractController
    */
   #[
     Route(
-      path: '/api/films/get/{slug}',
-      name: 'api_film',
-      methods: ['GET'],
-      requirements: ['slug' => '[a-z0-9-]+']
-    )
+    path: '/api/films/get/{slug}',
+    name: 'api_film',
+    methods: ['GET'],
+    requirements: ['slug' => '[a-z0-9-]+']
+  )
   ]
   #[OA\Response(
     response: 200,
@@ -91,11 +92,11 @@ class FilmController extends AbstractController
    */
   #[
     Route(
-      path: '/api/films/{slug}/form',
-      name: 'api_film_form',
-      methods: ['GET'],
-      requirements: ['slug' => '[a-z0-9-]+']
-    )
+    path: '/api/films/{slug}/form',
+    name: 'api_film_form',
+    methods: ['GET'],
+    requirements: ['slug' => '[a-z0-9-]+']
+  )
   ]
   #[OA\Response(
     response: 200,

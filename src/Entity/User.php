@@ -30,7 +30,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column]
     private array $roles = [];
 
-    
+
     /**
      * @var string The hashed password
      */
@@ -203,7 +203,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     public function addAssessment(Assessment $assessment): static
     {
-        if (! $this->assessments->contains($assessment)) {
+        if (!$this->assessments->contains($assessment)) {
             $this->assessments->add($assessment);
             $assessment->setAuthor($this);
         }

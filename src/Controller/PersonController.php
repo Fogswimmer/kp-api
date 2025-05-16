@@ -106,7 +106,7 @@ class PersonController extends AbstractController
 		$data = null;
 
 		try {
-			$data = $this->personService->findForm( $slug);
+			$data = $this->personService->findForm($slug);
 
 		} catch (\Throwable $e) {
 			$this->logger->error($e);
@@ -115,7 +115,6 @@ class PersonController extends AbstractController
 		}
 		return $this->json($data, $status);
 	}
-
 
 	/**
 	 * Filter persons by query params
@@ -193,12 +192,11 @@ class PersonController extends AbstractController
 
 		$data = null;
 		$status = Response::HTTP_OK;
-		
+
 		$data = $this->personService->update($id, $dto);
 		try {
 
-		} 
-		catch (\Throwable $e) {
+		} catch (\Throwable $e) {
 			$this->logger->error($e);
 			$data = $e->getMessage();
 			$status = Response::HTTP_INTERNAL_SERVER_ERROR;

@@ -10,7 +10,7 @@ use Gedmo\Timestampable\Traits\TimestampableEntity;
 class Assessment
 {
     use TimestampableEntity;
-    
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
