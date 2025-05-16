@@ -34,7 +34,7 @@ class Person
 
   #[ORM\Column(type: Types::DATETIME_IMMUTABLE)]
   private ?\DateTimeInterface $birthday = null;
-  
+
   #[ORM\Column(type: Types::SMALLINT, nullable: true)]
   private ?int $age = null;
 
@@ -90,8 +90,6 @@ class Person
   #[ORM\Column(length: 255, nullable: true)]
   private ?string $internationalName = null;
 
-
-
   public function __construct()
   {
     $this->actedInFilms = new ArrayCollection();
@@ -99,7 +97,6 @@ class Person
     $this->producedFilms = new ArrayCollection();
     $this->writtenFilms = new ArrayCollection();
   }
-
 
   public function getId(): ?int
   {
@@ -197,38 +194,33 @@ class Person
   }
 
   /**
-   * @return Collection<int, Specialty>
-   */
-
-
-  /**
    * @return Collection<int, Film>
    */
   public function getDirectedFilms(): Collection
   {
-      return $this->directedFilms;
+    return $this->directedFilms;
   }
 
   public function addDirectedFilm(Film $directedFilm): static
   {
-      if (!$this->directedFilms->contains($directedFilm)) {
-          $this->directedFilms->add($directedFilm);
-          $directedFilm->setDirectedBy($this);
-      }
+    if (!$this->directedFilms->contains($directedFilm)) {
+      $this->directedFilms->add($directedFilm);
+      $directedFilm->setDirectedBy($this);
+    }
 
-      return $this;
+    return $this;
   }
 
   public function removeDirectedFilm(Film $directedFilm): static
   {
-      if ($this->directedFilms->removeElement($directedFilm)) {
-          // set the owning side to null (unless already changed)
-          if ($directedFilm->getDirectedBy() === $this) {
-              $directedFilm->setDirectedBy(null);
-          }
+    if ($this->directedFilms->removeElement($directedFilm)) {
+      // set the owning side to null (unless already changed)
+      if ($directedFilm->getDirectedBy() === $this) {
+        $directedFilm->setDirectedBy(null);
       }
+    }
 
-      return $this;
+    return $this;
   }
 
   /**
@@ -236,29 +228,29 @@ class Person
    */
   public function getProducedFilms(): Collection
   {
-      return $this->producedFilms;
+    return $this->producedFilms;
   }
 
   public function addProducedFilm(Film $producedFilm): static
   {
-      if (!$this->producedFilms->contains($producedFilm)) {
-          $this->producedFilms->add($producedFilm);
-          $producedFilm->setProducer($this);
-      }
+    if (!$this->producedFilms->contains($producedFilm)) {
+      $this->producedFilms->add($producedFilm);
+      $producedFilm->setProducer($this);
+    }
 
-      return $this;
+    return $this;
   }
 
   public function removeProducedFilm(Film $producedFilm): static
   {
-      if ($this->producedFilms->removeElement($producedFilm)) {
-          // set the owning side to null (unless already changed)
-          if ($producedFilm->getProducer() === $this) {
-              $producedFilm->setProducer(null);
-          }
+    if ($this->producedFilms->removeElement($producedFilm)) {
+      // set the owning side to null (unless already changed)
+      if ($producedFilm->getProducer() === $this) {
+        $producedFilm->setProducer(null);
       }
+    }
 
-      return $this;
+    return $this;
   }
 
   /**
@@ -266,59 +258,59 @@ class Person
    */
   public function getWrittenFilms(): Collection
   {
-      return $this->writtenFilms;
+    return $this->writtenFilms;
   }
 
   public function addWrittenFilm(Film $writtenFilm): static
   {
-      if (!$this->writtenFilms->contains($writtenFilm)) {
-          $this->writtenFilms->add($writtenFilm);
-          $writtenFilm->setWriter($this);
-      }
+    if (!$this->writtenFilms->contains($writtenFilm)) {
+      $this->writtenFilms->add($writtenFilm);
+      $writtenFilm->setWriter($this);
+    }
 
-      return $this;
+    return $this;
   }
 
   public function removeWrittenFilm(Film $writtenFilm): static
   {
-      if ($this->writtenFilms->removeElement($writtenFilm)) {
-          // set the owning side to null (unless already changed)
-          if ($writtenFilm->getWriter() === $this) {
-              $writtenFilm->setWriter(null);
-          }
+    if ($this->writtenFilms->removeElement($writtenFilm)) {
+      // set the owning side to null (unless already changed)
+      if ($writtenFilm->getWriter() === $this) {
+        $writtenFilm->setWriter(null);
       }
+    }
 
-      return $this;
+    return $this;
   }
 
-    /**
+  /**
    * @return Collection<int, Film>
    */
   public function getComposedFilms(): Collection
   {
-      return $this->composedFilms;
+    return $this->composedFilms;
   }
 
   public function addComposedFilm(Film $composedFilm): static
   {
-      if (!$this->composedFilms->contains($composedFilm)) {
-          $this->composedFilms->add($composedFilm);
-          $composedFilm->setComposer($this);
-      }
+    if (!$this->composedFilms->contains($composedFilm)) {
+      $this->composedFilms->add($composedFilm);
+      $composedFilm->setComposer($this);
+    }
 
-      return $this;
+    return $this;
   }
 
   public function removeComposedFilm(Film $composedFilm): static
   {
-      if ($this->composedFilms->removeElement($composedFilm)) {
-          // set the owning side to null (unless already changed)
-          if ($composedFilm->getComposer() === $this) {
-              $composedFilm->setComposer(null);
-          }
+    if ($this->composedFilms->removeElement($composedFilm)) {
+      // set the owning side to null (unless already changed)
+      if ($composedFilm->getComposer() === $this) {
+        $composedFilm->setComposer(null);
       }
+    }
 
-      return $this;
+    return $this;
   }
 
   public function getAge(): ?int
@@ -337,7 +329,7 @@ class Person
   {
     return $this->specialties;
   }
-  
+
   public function setSpecialties(array $specialties): static
   {
     $this->specialties = $specialties;
@@ -366,96 +358,96 @@ class Person
 
   public function getBio(): ?string
   {
-      return $this->bio;
+    return $this->bio;
   }
 
   public function setBio(?string $bio): static
   {
-      $this->bio = $bio;
+    $this->bio = $bio;
 
-      return $this;
+    return $this;
   }
 
   public function getCover(): ?string
   {
-      return $this->cover;
+    return $this->cover;
   }
 
   public function setCover(?string $cover): static
   {
-      $this->cover = $cover;
+    $this->cover = $cover;
 
-      return $this;
+    return $this;
   }
 
   public function getActorRole(): ?ActorRole
   {
-      return $this->actorRole;
+    return $this->actorRole;
   }
 
   public function setActorRole(?ActorRole $actorRole): static
   {
-      // unset the owning side of the relation if necessary
-      if ($actorRole === null && $this->actorRole !== null) {
-          $this->actorRole->setPerson(null);
-      }
+    // unset the owning side of the relation if necessary
+    if ($actorRole === null && $this->actorRole !== null) {
+      $this->actorRole->setPerson(null);
+    }
 
-      // set the owning side of the relation if necessary
-      if ($actorRole !== null && $actorRole->getPerson() !== $this) {
-          $actorRole->setPerson($this);
-      }
+    // set the owning side of the relation if necessary
+    if ($actorRole !== null && $actorRole->getPerson() !== $this) {
+      $actorRole->setPerson($this);
+    }
 
-      $this->actorRole = $actorRole;
+    $this->actorRole = $actorRole;
 
-      return $this;
+    return $this;
   }
 
   public function getAvatar(): ?string
   {
-      return $this->avatar;
+    return $this->avatar;
   }
 
   public function setAvatar(?string $avatar): static
   {
-      $this->avatar = $avatar;
+    $this->avatar = $avatar;
 
-      return $this;
+    return $this;
   }
 
   public function getPublisher(): ?User
   {
-      return $this->publisher;
+    return $this->publisher;
   }
 
   public function setPublisher(?User $publisher): static
   {
-      $this->publisher = $publisher;
+    $this->publisher = $publisher;
 
-      return $this;
+    return $this;
   }
 
   public function getSlug(): ?string
   {
-      return $this->slug;
+    return $this->slug;
   }
 
   public function setSlug(?string $slug): static
   {
-      $this->slug = $slug;
+    $this->slug = $slug;
 
-      return $this;
+    return $this;
   }
 
   public function getInternationalName(): ?string
   {
-      return $this->internationalName;
+    return $this->internationalName;
   }
 
   public function setInternationalName(?string $internationalName): static
   {
-      $this->internationalName = $internationalName;
+    $this->internationalName = $internationalName;
 
-      return $this;
+    return $this;
   }
 
 }

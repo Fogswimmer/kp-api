@@ -17,6 +17,7 @@ class FileSystemService
     #[Autowire('%public_dir%')] private string $publicDir,
     #[Autowire('%film_uploads%')] private string $filmUploadsDir,
     #[Autowire('%user_uploads%')] private string $userAvatarDir,
+    #[Autowire('%app_domain%')] private string $appDomain,
   ) {
   }
   public function upload(UploadedFile $file, string $path, string $customFileName = null, ): string
@@ -29,9 +30,6 @@ class FileSystemService
       :
       ($fileName = $safeFilename . '-' . uniqid() . '.' . $file->guessExtension());
     try {
-      // if (file_exists($path . DIRECTORY_SEPARATOR . $fileName)) {
-      //   throw new UniqueFileException();
-      // }
       $file->move($path, $fileName);
     } catch (FileException $e) {
       throw new FileNotFoundException();
@@ -41,7 +39,7 @@ class FileSystemService
   }
   public function getShortPath(string $path): string
   {
-    return str_replace($this->publicDir, '', $path);
+    return $this->appDomain . '/' . str_replace($this->publicDir, '', $path);
   }
 
   public function getPublicDir(): string

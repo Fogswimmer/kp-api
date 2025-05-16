@@ -8,25 +8,14 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 enum Genres: int implements TranslatableInterface
 {
     case DRAMA = 1;
-
     case ACTION = 2;
-
     case COMEDY = 3;
-
     case THRILLER = 4;
-
     case ROMANCE = 5;
-
     case FANTASY = 6;
-
     case SCIENCE_FICTION = 7;
-
     case HORROR = 8;
-
     case DOCUMENTARY = 9;
-
-
-
 
     public function trans(TranslatorInterface $translator, ?string $locale = null): string
     {
@@ -42,7 +31,6 @@ enum Genres: int implements TranslatableInterface
             self::DOCUMENTARY => $translator->trans('documentary', locale: $locale, domain: 'genres'),
         };
     }
-
     public static function getValues(): array
     {
         return array_column(self::cases(), 'value');
@@ -52,7 +40,6 @@ enum Genres: int implements TranslatableInterface
     {
         return in_array($value, self::getValues(), true);
     }
-
     public static function list(?TranslatorInterface $translator = null, ?string $locale = null): array
     {
         return array_map(function (self $case) use ($translator, $locale) {

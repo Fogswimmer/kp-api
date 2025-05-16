@@ -21,10 +21,10 @@ enum Gender: int implements TranslatableInterface
   {
     return array_map(function (Gender $case) use ($translator, $locale) {
       return [
-          'name' => $translator ? $case->trans($translator, $locale) : $case->name,
-          'value' => $case->value,
+        'name' => $translator ? $case->trans($translator, $locale) : $case->name,
+        'value' => $case->value,
       ];
-  }, self::cases());
+    }, self::cases());
 
   }
 

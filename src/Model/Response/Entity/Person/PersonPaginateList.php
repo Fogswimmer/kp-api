@@ -31,11 +31,11 @@ class PersonPaginateList
 
 	public function getTotalPages(): int
 	{
-			return $this->totalPages;
+		return $this->totalPages;
 	}
 
 	public function getCurrentPage(): ?int
 	{
-			return $this->currentPage;
+		return $this->currentPage;
 	}
 }

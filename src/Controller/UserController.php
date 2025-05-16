@@ -19,24 +19,25 @@ class UserController extends AbstractController
     public function __construct(
         private readonly UserService $userService,
         private readonly UserMapper $userMapper
-    ) {}
+    ) {
+    }
 
     #[Route('/api/current-user', name: 'api_current_user', methods: ['POST', 'GET'])]
     public function index(Request $request): Response
     {
         $token = $request->headers->get('Authorization');
-        
+
         if (null === $token) {
             return $this->json(['error' => 'Token not found']);
         }
         /** @var ?User $user */
-        $user = $this->getUser(); 
-        
+        $user = $this->getUser();
+
         if (null !== $user) {
             $user->setLastLogin(new \DateTime());
             $mappedUser = $this->userMapper->mapToDetail($user, new UserDetail());
         }
-        
+
         return $this->json($mappedUser ?? null);
     }
 

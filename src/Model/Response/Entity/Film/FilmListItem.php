@@ -5,17 +5,17 @@ use OpenApi\Attributes as OA;
 
 class FilmListItem
 {
-  public function __construct(?int $id, 
-  ?string $name = null, 
-  int $releaseYear = null, 
-  ?string $poster = null, 
-  ?string $description = null, 
-  ?string $rating = null, 
-  array $assessments = [],
-  ?string $slug = null,
-  ?string $internationalName = null
-  )
-  {
+  public function __construct(
+    ?int $id,
+    ?string $name = null,
+    int $releaseYear = null,
+    ?string $poster = null,
+    ?string $description = null,
+    ?string $rating = null,
+    array $assessments = [],
+    ?string $slug = null,
+    ?string $internationalName = null
+  ) {
     $this->id = $id;
     $this->name = $name;
     $this->releaseYear = $releaseYear;
@@ -34,7 +34,7 @@ class FilmListItem
   public ?array $gallery = [];
   #[OA\Property(example: 1997)]
   public int $releaseYear;
-  
+
   #[OA\Property(example: 'poster.jpg')]
   public ?string $poster = '';
 

@@ -109,8 +109,6 @@ class PersonMapper
     );
   }
 
-
-
   private function mapFilmsToIds(Person $person): array
   {
     $films = $person->getFilms()->toArray();
@@ -120,79 +118,36 @@ class PersonMapper
 
   private function mapToFilmWorks(Person $person): array
   {
-      $filmWorks = [
-          'actedInFilms' => [],
-          'directedFilms' => [],
-          'producedFilms' => [],
-          'composedFilms' => [],
-          'writtenFilms' => [],
-      ];
-  
-      $specialties = $person->getSpecialties();
-      foreach ($specialties as $specialty) {
-          switch ($specialty) {
-              case Specialty::ACTOR:
-                  $films = $person->getFilms()->toArray();
-                  $actedInFilms = array_map(fn(Film $film) => [
-                      'slug' => $film->getSlug(),
-                      'name' => $film->getName(),
-                      'releaseYear' => $film->getReleaseYear(),
-                      'cover' => $film->getCover() ?: '',
-                  ], $films);
-                  $filmWorks['actedInFilms'] = count($actedInFilms) > 0 ? $actedInFilms : null;
-                  break;
-  
-              case Specialty::DIRECTOR:
-                  $films = $person->getDirectedFilms()->toArray();
-                  $directedFilms = array_map(fn(Film $film) => [
-                      'slug' => $film->getSlug(),
-                      'name' => $film->getName(),
-                      'releaseYear' => $film->getReleaseYear(),
-                      'cover' => $film->getCover() ?: '',
-                  ], $films);
-                  $filmWorks['directedFilms'] = count($directedFilms) > 0 ? $directedFilms : null;
-                  break;
-  
-              case Specialty::PRODUCER:
-                  $films = $person->getProducedFilms()->toArray();
-                  $producedFilms = array_map(fn(Film $film) => [
-                      'slug' => $film->getSlug(),
-                      'name' => $film->getName(),
-                      'releaseYear' => $film->getReleaseYear(),
-                      'cover' => $film->getCover() ?: '',
-                  ], $films);
-                  $filmWorks['producedFilms'] = count($producedFilms) > 0 ? $producedFilms : null;
-                  break;
-  
-              case Specialty::COMPOSER:
-                  $films = $person->getComposedFilms()->toArray(); // Обрати внимание на это!
-                  $composedFilms = array_map(fn(Film $film) => [
-                      'slug' => $film->getSlug(),
-                      'name' => $film->getName(),
-                      'releaseYear' => $film->getReleaseYear(),
-                      'cover' => $film->getCover() ?: '',
-                  ], $films);
-                  $filmWorks['composedFilms'] = count($composedFilms) > 0 ? $composedFilms : null;
-                  break;
-  
-              case Specialty::WRITER:
-                  $films = $person->getWrittenFilms()->toArray(); // И тут!
-                  $writtenFilms = array_map(fn(Film $film) => [
-                      'slug' => $film->getSlug(),
-                      'name' => $film->getName(),
-                      'releaseYear' => $film->getReleaseYear(),
-                      'cover' => $film->getCover() ?: '',
-                  ], $films);
-                  $filmWorks['writtenFilms'] = count($writtenFilms) > 0 ? $writtenFilms : null;
-                  break;
-          }
+    $filmTypes = [
+      Specialty::ACTOR->value => ['method' => 'getFilms', 'key' => 'actedInFilms'],
+      Specialty::DIRECTOR->value => ['method' => 'getDirectedFilms', 'key' => 'directedFilms'],
+      Specialty::PRODUCER->value => ['method' => 'getProducedFilms', 'key' => 'producedFilms'],
+      Specialty::COMPOSER->value => ['method' => 'getComposedFilms', 'key' => 'composedFilms'],
+      Specialty::WRITER->value => ['method' => 'getWrittenFilms', 'key' => 'writtenFilms'],
+    ];
+
+    $filmWorks = [];
+
+    foreach ($person->getSpecialties() as $specialty) {
+      if (!isset($filmTypes[$specialty->value])) {
+        continue;
       }
-  
-      $filteredFilmWorks = array_filter($filmWorks, fn($filmWork) => $filmWork !== null);
-  
-      return array_map(fn($filmWork) => array_values($filmWork), $filteredFilmWorks);
+
+      $config = $filmTypes[$specialty->value];
+      $films = $person->{$config['method']}()->toArray();
+
+      if (count($films) > 0) {
+        $filmWorks[$config['key']] = array_map(fn(Film $film) => [
+          'slug' => $film->getSlug(),
+          'name' => $film->getName(),
+          'releaseYear' => $film->getReleaseYear(),
+          'cover' => $film->getCover() ?: '',
+        ], $films);
+      }
+    }
+
+    return array_map(fn($filmWork) => array_values($filmWork), $filmWorks);
   }
-  
 
   private function mapPublisherData(User $publisher): array
   {

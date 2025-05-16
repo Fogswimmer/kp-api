@@ -5,29 +5,16 @@ namespace App\Model\Response\Entity\User;
 class UserDetail
 {
   public ?int $id;
-
   public ?string $username;
-
   public ?string $displayName;
-
   public ?string $email;
-
   public ?int $age;
-
   public ?string $about;
-
   public ?string $avatar;
-
   public ?string $cover;
-
   public ?string $lastLogin;
-
   public ?array $assessmentsData = [];
-
   public ?array $roles = [];
-
-
-
   public function getId(): int
   {
     return $this->id;

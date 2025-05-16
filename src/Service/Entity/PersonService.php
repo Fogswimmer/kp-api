@@ -56,10 +56,10 @@ class PersonService
 
         $form = $this->personMapper->mapToForm($person, new PersonForm());
         $photoPaths = $this->setPhotosPaths($id);
-        
+
         $form->setPhotos($photoPaths);
         $form->setCover($this->specifyCoverPath($id));
-        
+
         return $form;
     }
 
@@ -81,9 +81,11 @@ class PersonService
         }
         $specialtyIds = $dto->specialtyIds;
         $specialties = [];
+
         foreach ($specialtyIds as $specialtyId) {
             $specialties[] = Specialty::matchIdAndSpecialty($specialtyId);
         }
+
         $person->setSpecialties($specialties);
 
         $this->repository->store($person);
@@ -140,8 +142,11 @@ class PersonService
             $person->removeFilm($film);
         }
 
-        $galleryFiles = $this->fileSystemService->searchFiles($this->specifyPersonPhotosPath($id), 'photo-*');
-        
+        $galleryFiles = $this->fileSystemService->searchFiles(
+            $this->specifyPersonPhotosPath($id),
+            'photo-*'
+        );
+
         foreach ($galleryFiles as $file) {
             $this->fileSystemService->removeFile($file);
         }
@@ -157,7 +162,7 @@ class PersonService
         $currentFiles = $this->fileSystemService->searchFiles($dirName, 'photo-*');
 
         $currentFileIndexes = [];
-        
+
         foreach ($currentFiles as $file) {
             if (preg_match('/photo-(\d+)/', $file, $matches)) {
                 $currentFileIndexes[] = (int) $matches[1];
@@ -186,7 +191,7 @@ class PersonService
         }
 
         $this->fileSystemService->upload($file, $dirName, 'cover');
-        
+
         $fullPath = $this->fileSystemService->searchFiles($dirName, 'cover')[0] ?? '';
         $shortPath = $this->fileSystemService->getShortPath($fullPath);
 
@@ -217,117 +222,42 @@ class PersonService
 
         return $this->findForm($person->getSlug());
     }
-
-    public function listDirectors(): array
+    public function listSpecialistsBySpecialty(Specialty $specialty): array
     {
         $persons = $this->repository->findAll();
-        $directors = [];
-
+        $specialists = [];
         foreach ($persons as $person) {
             $specialties = $person->getSpecialties();
-            foreach ($specialties as $specialty) {
-                if ($specialty::DIRECTOR == $specialty) {
-                    $directors[] = $person;
-                    break;
-                }
-            }
-        }
-        return $directors;
-    }
-
-    public function listActors(): array
-    {
-        $persons = $this->repository->findAll();
-        $actors = [];
-        foreach ($persons as $person) {
-            $specialties = $person->getSpecialties();
-            foreach ($specialties as $specialty) {
-                if ($specialty::ACTOR == $specialty) {
-                    $actors[] = $person;
-                    break;
-                }
-            }
-        }
-        return $actors;
-    }
-
-    public function listProducers(): array
-    {
-        $persons = $this->repository->findAll();
-        $producers = [];
-        foreach ($persons as $person) {
-            $specialties = $person->getSpecialties();
-            foreach ($specialties as $specialty) {
-                if ($specialty::PRODUCER == $specialty) {
-                    $producers[] = $person;
+            foreach ($specialties as $specialtyItem) {
+                if ($specialtyItem::matchSpecialty($specialty)) {
+                    $specialists[] = $person;
                     break;
                 }
             }
         }
 
-        return $producers;
-    }
-
-    public function listWriters(): array
-    {
-        $persons = $this->repository->findAll();
-        $writers = [];
-        foreach ($persons as $person) {
-            $specialties = $person->getSpecialties();
-            foreach ($specialties as $specialty) {
-                if ($specialty::WRITER == $specialty) {
-                    $writers[] = $person;
-                    break;
-                }
-            }
-        }
-
-        return $writers;
-    }
-
-    public function listComposers(): array
-    {
-        $persons = $this->repository->findAll();
-        $composers = [];
-        foreach ($persons as $person) {
-            $specialties = $person->getSpecialties();
-            foreach ($specialties as $specialty) {
-                if ($specialty::COMPOSER == $specialty) {
-                    $composers[] = $person;
-                    break;
-                }
-            }
-        }
-
-        return $composers;
+        return $specialists;
     }
 
     public function listSpecialists(): array
     {
-        $actors = $this->listActors();
-        $directors = $this->listDirectors();
-        $producers = $this->listProducers();
-        $writers = $this->listWriters();
-        $composers = $this->listComposers();
-
-        $actorsList = $this->personMapper->mapToEntityList($actors);
-        $directorsList = $this->personMapper->mapToEntityList($directors);
-        $producersList = $this->personMapper->mapToEntityList($producers);
-        $writersList = $this->personMapper->mapToEntityList($writers);
-        $composersList = $this->personMapper->mapToEntityList($composers);
-
-        return [
-            'actors' => $actorsList,
-            'directors' => $directorsList,
-            'producers' => $producersList,
-            'writers' => $writersList,
-            'composers' => $composersList
+        $specialists = [
+            'actors' => $this->listSpecialistsBySpecialty(Specialty::ACTOR),
+            'directors' => $this->listSpecialistsBySpecialty(Specialty::DIRECTOR),
+            'producers' => $this->listSpecialistsBySpecialty(Specialty::PRODUCER),
+            'writers' => $this->listSpecialistsBySpecialty(Specialty::WRITER),
+            'composers' => $this->listSpecialistsBySpecialty(specialty: Specialty::COMPOSER)
         ];
+
+        return array_map(
+            fn(array $persons) => $this->personMapper->mapToEntityList($persons),
+            $specialists
+        );
     }
 
     public function listPopularActors(string $locale): PersonList
     {
-        $actors = $this->listActors();
+        $actors = $this->listSpecialistsBySpecialty(Specialty::ACTOR);
         $popularActors = [];
         foreach ($actors as $actor) {
             if (count($actor->getFilms()) > 2) {

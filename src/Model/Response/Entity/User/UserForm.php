@@ -7,15 +7,10 @@ use Symfony\Component\ExpressionLanguage\Node\FunctionNode;
 class UserForm
 {
   public ?int $id;
-
   public ?string $username;
-
   public ?string $email;
-
   public ?int $age;
-
   public ?string $about;
-
   public ?string $avatar;
 
   public function getId(): int

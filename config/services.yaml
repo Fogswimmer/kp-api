@@ -5,6 +5,7 @@ parameters:
     uploads_dir: "%kernel.project_dir%/public/uploads"
     public_dir: "%kernel.project_dir%/public"
     app_domain: "%env(APP_DOMAIN)%"
+    password_reset_url: "%env(PASSWORD_RESET_URL)%"
 services:
     # app.normalizer.object_normalizer:
     #     class: Symfony\Component\Serializer\Normalizer\ObjectNormalizer

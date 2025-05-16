@@ -17,7 +17,8 @@ class FilmMapper
 {
   public function __construct(
     private TranslatorInterface $translator,
-  ) {}
+  ) {
+  }
 
   public function mapToEntityList(array $films): FilmList
   {
@@ -69,11 +70,6 @@ class FilmMapper
     ;
   }
 
-  private function setFormattedDuration($duration): string
-  {
-    return sprintf('%02d:%02d', $duration->format('H'), $duration->format('i'));
-  }
-
   public function mapToForm(Film $film, FilmForm $model): FilmForm
   {
     return $model
@@ -114,24 +110,19 @@ class FilmMapper
       $film->getInternationalName()
     );
   }
+
+  private function setFormattedDuration($duration): string
+  {
+    return sprintf('%02d:%02d', $duration->format('H'), $duration->format('i'));
+  }
   private function mapGenresToIds(array $genres): array
   {
-    $ids = [];
-    foreach ($genres as $genre) {
-      $ids[] = $genre->value;
-    }
-
-    return $ids;
+    return array_map(fn(Genres $genre) => $genre->value, $genres);
   }
 
   private function getActorsIds(Film $film): array
   {
-    $idsArr = [];
-    foreach ($film->getActors() as $actor) {
-      $idsArr[] = $actor->getId();
-    }
-
-    return $idsArr;
+    return array_map(fn(Person $actor) => $actor->getId(), $film->getActors()->toArray());
   }
 
   private function mapAssessments(array $assessments): array
@@ -203,52 +194,20 @@ class FilmMapper
 
   private function mapFilmTeam(Film $film): array
   {
+    $mapPerson = function (?Person $person) {
+      return $person ? [
+        'slug' => $person->getSlug() ?? null,
+        'name' => $person->getFullName() ?? null,
+        'avatar' => $person->getAvatar() ?? null,
+      ] : [];
+    };
 
-    $directorData = [];
-    if ($film->getDirectedBy()) {
-      $directorData = [
-        'slug' => $film->getDirectedBy()->getSlug() ?? null,
-        'name' => $film->getDirectedBy()->getFullName() ?? null,
-        'avatar' => $film->getDirectedBy()->getAvatar() ?? null,
-      ];
-    }
-
-    $writerData = [];
-    if ($film->getWriter()) {
-      $writerData = [
-        'slug' => $film->getWriter()->getSlug() ?? null,
-        'name' => $film->getWriter()->getFullName() ?? null,
-        'avatar' => $film->getWriter()->getAvatar() ?? null
-      ];
-    }
-
-    $producerData = [];
-    if ($film->getProducer()) {
-      $producerData = [
-        'slug' => $film->getProducer()->getSlug() ?? null,
-        'name' => $film->getProducer()->getFullName() ?? null,
-        'avatar' => $film->getProducer()->getAvatar() ?? null,
-      ];
-    }
-
-    $composerData = [];
-    if ($film->getComposer()) {
-      $composerData = [
-        'slug' => $film->getComposer()->getSlug() ?? null,
-        'name' => $film->getComposer()->getFullName() ?? null,
-        'avatar' => $film->getComposer()->getAvatar() ?? null,
-      ];
-    }
-
-    return array_map(
-      function ($data) {
-        return [
-          'slug' => $data['slug'] ?? null,
-          'name' => $data['name'] ?? null,
-          'avatar' => $data['avatar'] ?? null,
-        ];
-      },
-      [$directorData, $writerData, $producerData, $composerData]
-    );
+    return [
+      $mapPerson($film->getDirectedBy()),
+      $mapPerson($film->getWriter()),
+      $mapPerson($film->getProducer()),
+      $mapPerson($film->getComposer())
+    ];
   }
+
 }
