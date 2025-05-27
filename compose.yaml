@@ -7,11 +7,11 @@ services:
     volumes:
     - .:/var/www/html
     depends_on:
-      db:
+      postgres:
         condition: service_healthy
-  db:
+  postgres:
     image: postgres:16
-    container_name: db
+    container_name: postgres
     environment:
       POSTGRES_DB: ${POSTGRES_DB}
       POSTGRES_USER: ${POSTGRES_USER}

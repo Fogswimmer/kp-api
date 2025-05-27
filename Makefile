@@ -1,4 +1,4 @@
-.PHONY: init init-perms fix-perms uploads jwt composer
+.PHONY: init init-perms fix-perms uploads jwt composer test
 
 CONTAINER_NAME=symfony
 
@@ -22,4 +22,7 @@ fix-perms:
 	docker exec $(CONTAINER_NAME) chown -R www-data:www-data var public/uploads
 	sudo chown -R $(USER_ID):$(GROUP_ID) .
 	sudo chmod -R ug+rwX var public/uploads
+
+test:
+	docker-compose -f compose.test.yaml up --build --abort-on-container-exit
 
