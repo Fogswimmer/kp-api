@@ -4,12 +4,13 @@ namespace App\Controller;
 
 use App\Dto\Common\RequestPasswordDto;
 use App\Entity\User;
+use App\Message\PasswordChangedMessage;
+use App\Service\NotificationService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
+use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Attribute\Route;
-use Symfony\Component\Mailer\MailerInterface;
-use Symfony\Component\Mime\Email;
 use SymfonyCasts\Bundle\ResetPassword\ResetPasswordHelperInterface;
 use SymfonyCasts\Bundle\ResetPassword\Exception\ResetPasswordExceptionInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -26,14 +27,14 @@ class ResetPasswordController extends AbstractController
         private ResetPasswordHelperInterface $resetPasswordHelper,
         private EntityManagerInterface $entityManager,
         private TranslatorInterface $translator,
-        #[Autowire('%app_domain%')] private string $appDomain,
+        private NotificationService $notificationService,
+        private MessageBusInterface $bus,
         #[Autowire('%password_reset_url%')] private string $passwordResetUrl,
     ) {
     }
 
     #[Route('/request', name: 'app_reset_password_request', methods: ['POST'])]
     public function requestResetPassword(
-        MailerInterface $mailer,
         #[MapRequestPayload()] ?RequestPasswordDto $dto,
         #[MapQueryString] LocaleDto $localeDto
     ): Response {
@@ -44,7 +45,8 @@ class ResetPasswordController extends AbstractController
         }
 
         $user = $this->entityManager->getRepository(User::class)->findOneBy(['email' => $email]);
-
+        $uname = $user->getDisplayName() ?: $user->getUsername();
+        
         if (!$user) {
             return $this->json(['error' => 'User not found'], 400);
         }
@@ -53,22 +55,15 @@ class ResetPasswordController extends AbstractController
             $resetToken = $this->resetPasswordHelper->generateResetToken($user);
             $resetUrl = $this->passwordResetUrl . '/' . $resetToken->getToken();
 
-            $from = 'noreply@' . parse_url($this->appDomain, PHP_URL_HOST);
             $to = $user->getEmail();
             $subject = $this->translator->trans('subject', [], 'reset-password', $localeDto->locale);
             $text = $this->translator->trans(
                 'text',
-                ['%username%' => $user->getUsername(), '%resetUrl%' => $resetUrl],
+                ['%username%' => $uname, '%resetUrl%' => $resetUrl],
                 'reset-password',
                 $localeDto->locale
             );
-            $email = (new Email())
-                ->from($from)
-                ->to($to)
-                ->subject($subject)
-                ->text($text);
-
-            $mailer->send($email);
+            $this->notificationService->sendEmail( $to, $subject, $text);
         } catch (ResetPasswordExceptionInterface $e) {
             return $this->json(['error' => 'Could not process reset request, because ' . $e->getReason()], 400);
         }
@@ -94,8 +89,9 @@ class ResetPasswordController extends AbstractController
     #[Route('/{token}/new-password', name: 'app_reset_password_new_password', methods: ['POST'])]
     public function newPassword(
         #[MapRequestPayload()] ?RequestPasswordDto $dto,
+        #[MapQueryString] LocaleDto $localeDto,
         UserPasswordHasherInterface $passwordHasher,
-        string $token
+        string $token,
     ): Response {
         $user = $this->resetPasswordHelper->validateTokenAndFetchUser($token);
 
@@ -114,6 +110,11 @@ class ResetPasswordController extends AbstractController
         $this->entityManager->flush();
         $this->resetPasswordHelper->removeResetRequest($token);
 
-        return $this->json(['message' => 'Password updated successfully.']);
+        $uname = $user->getDisplayName() ?: $user->getUsername();
+
+        $message = new PasswordChangedMessage($uname, $user->getEmail(), $localeDto->locale);
+        $this->bus->dispatch($message);
+
+        return $this->json(['message' => 'Password updated successfully']);
     }
 }
