@@ -2,15 +2,20 @@
 
 namespace App\Controller;
 
+use App\Dto\Common\LocaleDto;
 use App\Dto\Entity\User\UserDto;
 use App\Entity\User;
 use App\Mapper\Entity\UserMapper;
+use App\Message\LoginMessage;
 use App\Model\Response\Entity\User\UserDetail;
 use App\Service\Entity\UserService;
+use App\Service\NotificationService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Attribute\MapQueryString;
 use Symfony\Component\HttpKernel\Attribute\MapRequestPayload;
+use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\CurrentUser;
 
@@ -18,12 +23,13 @@ class UserController extends AbstractController
 {
     public function __construct(
         private readonly UserService $userService,
-        private readonly UserMapper $userMapper
+        private readonly UserMapper $userMapper,
+        private MessageBusInterface $bus,
     ) {
     }
 
     #[Route('/api/current-user', name: 'api_current_user', methods: ['POST', 'GET'])]
-    public function index(Request $request): Response
+    public function index(Request $request,  #[MapQueryString]LocaleDto $localeDto): Response
     {
         $token = $request->headers->get('Authorization');
 
@@ -37,6 +43,13 @@ class UserController extends AbstractController
             $user->setLastLogin(new \DateTime());
             $mappedUser = $this->userMapper->mapToDetail($user, new UserDetail());
         }
+
+        $uname = $user->getDisplayName() ?: $user->getUsername();
+        $ip = $request->getClientIp();
+        
+        $message = new LoginMessage($uname, $ip, $localeDto->locale, $user->getEmail());
+        
+        $this->bus->dispatch($message);
 
         return $this->json($mappedUser ?? null);
     }
