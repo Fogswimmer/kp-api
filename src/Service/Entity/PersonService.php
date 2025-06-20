@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Service\Entity;
 
 use App\Dto\Entity\Person\PersonQueryDto;
@@ -227,7 +228,10 @@ class PersonService
         $persons = $this->repository->findAll();
         $specialists = [];
         foreach ($persons as $person) {
-            $specialties = $person->getSpecialties();
+            $specialties = array_map(
+                fn (int $specialty) => Specialty::tryFrom($specialty),
+                $person->getSpecialties()
+            );
             foreach ($specialties as $specialtyItem) {
                 if ($specialtyItem::matchSpecialty($specialty)) {
                     $specialists[] = $person;
@@ -250,7 +254,7 @@ class PersonService
         ];
 
         return array_map(
-            fn(array $persons) => $this->personMapper->mapToEntityList($persons),
+            fn (array $persons) => $this->personMapper->mapToEntityList($persons),
             $specialists
         );
     }
@@ -280,7 +284,7 @@ class PersonService
             $currentPage = $personQueryDto->offset / $personQueryDto->limit + 1;
         }
         $items = array_map(
-            fn(Person $person) => $this->personMapper->mapToDetail($person, new PersonDetail(), $locale),
+            fn (Person $person) => $this->personMapper->mapToDetail($person, new PersonDetail(), $locale),
             $persons
         );
         foreach ($items as $item) {
