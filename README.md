@@ -5,9 +5,6 @@
 ```bash
     docker compose up --build -d
 ```
-2. Запуск make: 
-```bash
-    make init
 
 2. Скрипты для начала работы:
 
