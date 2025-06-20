@@ -7,45 +7,34 @@ use Doctrine\Persistence\ObjectManager;
 use App\Entity\Person;
 use App\Enum\Gender;
 use App\Enum\Specialty;
-use App\Repository\UserRepository;
+use Faker\Factory;
+use App\Entity\User;
+use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 
-class PersonFixtures extends Fixture
+class PersonFixtures extends Fixture implements DependentFixtureInterface
 {
-    public function __construct(
-        private UserRepository $userRepository
-    ){}
     public function load(ObjectManager $manager): void
     {
-        $admin = $this->userRepository->findOneBy(["username"=> "admin"]);
-        $firstnames = ['John', "Mary", "Mark", "Ben", "Sally"];
-        $lastnames = ['Doe', "Smith", "Green", "Brown", "White"];
-        $birthdays = ['1990-01-01', '1991-01-01', '1992-01-01', '1993-01-01', '1994-01-01'];
-        $genders = [Gender::MALE, Gender::FEMALE, Gender::MALE, Gender::MALE, Gender::FEMALE];
-        $specialtyIds = [1, 2, 3, 4, 5];
-        $bios = [
-            'John Doe is a talented software engineer with a passion for creating innovative solutions.',
-            'Mary Smith is a talented software engineer with a passion for creating innovative solutions.',
-            'Mark Green is a talented software engineer with a passion for creating innovative solutions.',
-            'Ben Brown is a talented software engineer with a passion for creating innovative solutions.',
-            'Sally White is a talented software engineer with a passion for creating innovative solutions.',
-        ];
-        foreach ($specialtyIds as $specialtyId) {
-            $specialties[] = Specialty::matchIdAndSpecialty($specialtyId);
-        }
+        $faker = Factory::create();
+        $adminUser = $this->getReference(UserFixtures::ADMIN_USER_REFERENCE, User::class);
 
-        for ($i = 0; $i < 5; $i++) {
-            $person = new Person();
-            $person->setFirstname($firstnames[$i]);
-            $person->setLastname($lastnames[$i]);
-            $person->setBirthday(new \DateTimeImmutable
-            ($birthdays[$i]));
-            $person->setGender($genders[$i]);
-            $person->setSpecialties($specialties);
-            $person->setBio($bios[$i]);
-            $person->setPublisher( $admin);
+        for ($i = 0; $i < 20; $i++) {
+            $person = (new Person())
+                ->setFirstName($faker->firstName())
+                ->setLastName($faker->lastName())
+                ->setAge($faker->numberBetween(18, 80))
+                ->setInternationalName($faker->name())
+                ->setGender(Gender::random())
+                ->setBio($faker->text(200))
+                ->setPublisher($adminUser);
+
+            foreach (Specialty::randomMany() as $specialty) {
+                $person->addSpecialty($specialty);
+            }
             $manager->persist($person);
         }
         $manager->flush();
+
     }
     public function getDependencies(): array
     {

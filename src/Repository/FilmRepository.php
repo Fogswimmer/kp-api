@@ -13,69 +13,69 @@ use Doctrine\Persistence\ManagerRegistry;
  */
 class FilmRepository extends ServiceEntityRepository
 {
-	use ActionTrait;
+    use ActionTrait;
 
-	public function __construct(ManagerRegistry $registry)
-	{
-		parent::__construct($registry, Film::class);
-	}
+    public function __construct(ManagerRegistry $registry)
+    {
+        parent::__construct($registry, Film::class);
+    }
 
-	public function filterByQueryParams(FilmQueryDto $filmQueryDto): array
-	{
-		$search = $filmQueryDto->search;
-		$offset = $filmQueryDto->offset;
-		$limit = $filmQueryDto->limit;
-		$sortBy = $filmQueryDto->sortBy;
-		$order = $filmQueryDto->order;
+    public function filterByQueryParams(FilmQueryDto $filmQueryDto): array
+    {
+        $search = $filmQueryDto->search;
+        $offset = $filmQueryDto->offset;
+        $limit = $filmQueryDto->limit;
+        $sortBy = $filmQueryDto->sortBy;
+        $order = $filmQueryDto->order;
 
-		$queryBuilder = $this->createQueryBuilder('f')->where('1 = 1');
-		;
+        $queryBuilder = $this->createQueryBuilder('f')->where('1 = 1');
+        ;
 
-		if (!empty($search)) {
-			$search = trim(strtolower($search));
-			$queryBuilder
-				->where($queryBuilder->expr()->like('LOWER(f.name)', ':search'))
-				->orWhere($queryBuilder->expr()->like('LOWER(f.internationalName)', ':search'))
-				->setParameter('search', "%{$search}%");
-		}
-		$queryBuilder
-			->orderBy("f.{$sortBy}", $order);
-		if ($limit !== 0) {
-			$queryBuilder
-				->setMaxResults($limit)
-				->setFirstResult($offset);
-		}
+        if (!empty($search)) {
+            $search = trim(strtolower($search));
+            $queryBuilder
+                ->where($queryBuilder->expr()->like('LOWER(f.name)', ':search'))
+                ->orWhere($queryBuilder->expr()->like('LOWER(f.internationalName)', ':search'))
+                ->setParameter('search', "%{$search}%");
+        }
+        $queryBuilder
+            ->orderBy("f.{$sortBy}", $order);
+        if ($limit !== 0) {
+            $queryBuilder
+                ->setMaxResults($limit)
+                ->setFirstResult($offset);
+        }
 
-		return $queryBuilder->getQuery()->getResult();
-	}
+        return $queryBuilder->getQuery()->getResult();
+    }
 
-	public function total(): int
-	{
-		return $this
-			->createQueryBuilder('f')
-			->select('COUNT(f.id)')
-			->getQuery()
-			->getSingleScalarResult();
-	}
+    public function total(): int
+    {
+        return $this
+            ->createQueryBuilder('f')
+            ->select('COUNT(f.id)')
+            ->getQuery()
+            ->getSingleScalarResult();
+    }
 
-	public function findLatest(int $count): array
-	{
-		return $this
-			->createQueryBuilder('f')
-			->orderBy('f.releaseYear', 'DESC')
-			->setMaxResults($count)
-			->getQuery()
-			->getResult();
-	}
+    public function findLatest(int $count): array
+    {
+        return $this
+            ->createQueryBuilder('f')
+            ->orderBy('f.releaseYear', 'DESC')
+            ->setMaxResults($count)
+            ->getQuery()
+            ->getResult();
+    }
 
-	public function findTop(int $count): array
-	{
-		return $this
-			->createQueryBuilder('f')
-			->orderBy('f.rating', 'DESC')
-			->where('f.rating IS NOT NULL AND f.rating >= 4')
-			->setMaxResults($count)
-			->getQuery()
-			->getResult();
-	}
+    public function findTop(int $count): array
+    {
+        return $this
+            ->createQueryBuilder('f')
+            ->orderBy('f.rating', 'DESC')
+            ->where('f.rating IS NOT NULL AND f.rating >= 4')
+            ->setMaxResults($count)
+            ->getQuery()
+            ->getResult();
+    }
 }

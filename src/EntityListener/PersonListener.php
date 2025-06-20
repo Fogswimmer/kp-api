@@ -33,8 +33,7 @@ class PersonListener
             if ($person->getSlug() === $slug) {
                 $slug = $this->slugger->slug($person->getInternationalName())->lower() . '-' . $uniqueId;
             }
-        }
-        else {
+        } else {
             $slug = $this->slugger->slug($person->getFullName())->lower() . '-' . $uniqueId;
         }
 

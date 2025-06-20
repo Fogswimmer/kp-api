@@ -1,128 +1,128 @@
 <?php
+
 namespace App\Model\Response\Entity\Person;
 
 use OpenApi\Attributes as OA;
 
 class PersonListItem
 {
+    public function __construct(
+        ?int $id = null,
+        ?string $fullName = null,
+        ?string $avatar = null,
+        ?string $slug = null,
+        ?string $internationalName = null,
+        ?array $specialtyNames = [],
+        ?string $bio = null,
+    ) {
+        $this->id = $id;
+        $this->name = $fullName;
+        $this->avatar = $avatar;
+        $this->slug = $slug;
+        $this->internationalName = $internationalName;
+        $this->specialtyNames = $specialtyNames;
+        $this->bio = $bio;
+    }
 
-  public function __construct(
-    ?int $id = null,
-    ?string $fullName = null,
-    ?string $avatar = null,
-    ?string $slug = null,
-    ?string $internationalName = null,
-    ?array $specialtyNames = [],
-    ?string $bio = null,
-  ) {
-    $this->id = $id;
-    $this->name = $fullName;
-    $this->avatar = $avatar;
-    $this->slug = $slug;
-    $this->internationalName = $internationalName;
-    $this->specialtyNames = $specialtyNames;
-    $this->bio = $bio;
-  }
+    #[OA\Property(example: 1)]
+    public ?int $id;
+    #[OA\Property(example: 'John Doe')]
+    public ?string $name;
 
-  #[OA\Property(example: 1)]
-  public ?int $id;
-  #[OA\Property(example: 'John Doe')]
-  public ?string $name;
+    #[OA\Property(example: 'https://example.com/avatar.jpg')]
+    public ?string $avatar;
 
-  #[OA\Property(example: 'https://example.com/avatar.jpg')]
-  public ?string $avatar;
+    public ?string $slug;
 
-  public ?string $slug;
+    public ?string $internationalName = null;
 
-  public ?string $internationalName = null;
+    public ?array $specialtyNames = [];
 
-  public ?array $specialtyNames = [];
-
-  public ?string $bio = null;
-
+    public ?string $bio = null;
 
 
-  public function getId(): int
-  {
-    return $this->id;
-  }
 
-  public function setId(int $id): static
-  {
-    $this->id = $id;
+    public function getId(): int
+    {
+        return $this->id;
+    }
 
-    return $this;
-  }
-  public function getName(): string
-  {
-    return $this->name;
-  }
+    public function setId(int $id): static
+    {
+        $this->id = $id;
 
-  public function setName(string $name): static
-  {
-    $this->name = $name;
+        return $this;
+    }
+    public function getName(): string
+    {
+        return $this->name;
+    }
 
-    return $this;
-  }
+    public function setName(string $name): static
+    {
+        $this->name = $name;
 
-  public function getAvatar(): ?string
-  {
-    return $this->avatar;
-  }
+        return $this;
+    }
 
-  public function setAvatar(?string $avatar): static
-  {
-    $this->avatar = $avatar;
+    public function getAvatar(): ?string
+    {
+        return $this->avatar;
+    }
 
-    return $this;
-  }
+    public function setAvatar(?string $avatar): static
+    {
+        $this->avatar = $avatar;
 
-  public function getSlug(): ?string
-  {
-    return $this->slug;
-  }
+        return $this;
+    }
 
-  public function setSlug(?string $slug): static
-  {
-    $this->slug = $slug;
+    public function getSlug(): ?string
+    {
+        return $this->slug;
+    }
 
-    return $this;
-  }
+    public function setSlug(?string $slug): static
+    {
+        $this->slug = $slug;
 
-  public function getInternationalName(): ?string
-  {
-    return $this->internationalName;
-  }
+        return $this;
+    }
 
-  public function setInternationalName(?string $internationalName): static
-  {
-    $this->internationalName = $internationalName;
+    public function getInternationalName(): ?string
+    {
+        return $this->internationalName;
+    }
 
-    return $this;
-  }
+    public function setInternationalName(?string $internationalName): static
+    {
+        $this->internationalName = $internationalName;
 
-  public function getSpecialtyNames(): array
-  {
-    return $this->specialtyNames;
-  }
+        return $this;
+    }
 
-  public function setSpecialtyNames(array $specialtyNames): static
-  {
-    $this->specialtyNames = $specialtyNames;
+    public function getSpecialtyNames(): array
+    {
+        return $this->specialtyNames;
+    }
 
-    return $this;
-  }
+    public function setSpecialtyNames(array $specialtyNames): static
+    {
+        $this->specialtyNames = $specialtyNames;
 
-  public function getBio(): string
-  {
-    return $this->bio;
-  }
+        return $this;
+    }
 
-  public function setBio(string $bio): static
-  {
-    $this->bio = $bio;
+    public function getBio(): string
+    {
+        return $this->bio;
+    }
 
-    return $this;
-  }
+    public function setBio(string $bio): static
+    {
+        $this->bio = $bio;
+
+        return $this;
+    }
 
 }

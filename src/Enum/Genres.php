@@ -72,4 +72,18 @@ enum Genres: int implements TranslatableInterface
             return self::matchIdAndGenre($id)->trans($translator, $locale);
         }, $ids);
     }
+
+    public static function random(): self
+    {
+        $cases = self::cases();
+        return $cases[array_rand($cases)];
+    }
+
+    public static function randomMany(int $min = 1, int $max = 3): array
+    {
+        $cases = self::cases();
+        shuffle($cases);
+        return array_slice($cases, 0, rand($min, min($max, count($cases))));
+    }
+
 }
