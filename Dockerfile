@@ -7,9 +7,18 @@ RUN apt-get update && apt-get install -y \
     libpng-dev \
     libzip-dev \
     libpq-dev \
+    libonig-dev \
+    libxml2-dev \
+    libssh-dev \
+    librabbitmq-dev \
+    curl \
     && rm -rf /var/lib/apt/lists/*
 
-RUN docker-php-ext-install pdo pdo_pgsql zip gd
+RUN docker-php-ext-install pdo pdo_pgsql zip \
+    && pecl install amqp \
+    && docker-php-ext-enable amqp
+
+RUN pecl install redis && docker-php-ext-enable redis
 
 RUN a2enmod rewrite
 

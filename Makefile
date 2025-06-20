@@ -1,4 +1,4 @@
-.PHONY: init init-perms fix-perms uploads jwt composer
+.PHONY: init init-perms fix-perms uploads jwt composer test clear-cache fixtures
 
 CONTAINER_NAME=symfony
 
@@ -23,3 +23,9 @@ fix-perms:
 	sudo chown -R $(USER_ID):$(GROUP_ID) .
 	sudo chmod -R ug+rwX var public/uploads
 
+test:
+	docker-compose -f compose.test.yaml up --build --abort-on-container-exit
+clear-cache:
+	docker exec symfony php bin/console cache:clear --no-warmup
+fixtures:
+	docker exec $(CONTAINER_NAME) php bin/console doctrine:fixtures:load --purge-with-truncate --no-interaction

@@ -18,7 +18,7 @@ enum Specialty: int implements TranslatableInterface
     public function trans(TranslatorInterface $translator, ?string $locale = null, $gender = Gender::MALE): string
     {
         return match ($this) {
-            self::ACTOR => $translator->trans( $gender === Gender::MALE ? 'actor' : 'actress', locale: $locale, domain: 'specialty'),
+            self::ACTOR => $translator->trans($gender === Gender::MALE ? 'actor' : 'actress', locale: $locale, domain: 'specialty'),
             self::DIRECTOR => $translator->trans('director', locale: $locale, domain: 'specialty'),
             self::PRODUCER => $translator->trans('producer', locale: $locale, domain: 'specialty'),
             self::WRITER => $translator->trans('writer', locale: $locale, domain: 'specialty'),
@@ -69,6 +69,17 @@ enum Specialty: int implements TranslatableInterface
         }, self::cases());
     }
 
+    public static function random(): self
+    {
+        $cases = self::cases();
+        return $cases[array_rand($cases)];
+    }
 
+    public static function randomMany(int $min = 1, int $max = 3): array
+    {
+        $cases = self::cases();
+        shuffle($cases);
+        return array_slice($cases, 0, rand($min, min($max, count($cases))));
+    }
 
 }

@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Service\Entity;
 
 use App\Dto\Entity\User\UserDto;
@@ -12,121 +13,121 @@ use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 class UserService
 {
-  public function __construct(
-    private readonly UserRepository $userRepository,
-    private readonly UserPasswordHasherInterface $passwordHasher,
-    private FileSystemService $fileSystemService,
-    private readonly UserMapper $userMapper
-  ) {
-  }
-
-  public function login(int $id): User
-  {
-    $user = $this->userRepository->find($id);
-    $user->setLastLogin(new \DateTime());
-    $this->userRepository->store($user);
-    return $user;
-  }
-
-  public function register(UserDto $userDto): void
-  {
-    $user = new User();
-    $user
-      ->setUsername($userDto->username)
-      ->setRoles(['ROLE_USER'])
-      ->setPassword($this
-        ->passwordHasher
-        ->hashPassword($user, $userDto->password));
-
-    if (null !== $userDto->email) {
-      $user->setEmail($userDto->email);
-    }
-    if (null !== $userDto->about) {
-      $user->setAbout($userDto->about);
-    }
-    if (null !== $userDto->age) {
-      $user->setAge($userDto->age);
-    }
-    if (null !== $userDto->displayName) {
-      $user->setDisplayName($userDto->displayName);
+    public function __construct(
+        private readonly UserRepository $userRepository,
+        private readonly UserPasswordHasherInterface $passwordHasher,
+        private FileSystemService $fileSystemService,
+        private readonly UserMapper $userMapper
+    ) {
     }
 
-    $this->userRepository->store($user);
-  }
-
-  public function uploadAvatar(User $user, $file): UserDetail
-  {
-    $dirname = $this->specifyUserAvatarsPath($user->getId());
-    $currentFile = $this->fileSystemService->searchFiles($dirname, 'avatar-*')[0] ?? null;
-    if (null !== $currentFile) {
-      $this->fileSystemService->removeFile($currentFile);
+    public function login(int $id): User
+    {
+        $user = $this->userRepository->find($id);
+        $user->setLastLogin(new \DateTime());
+        $this->userRepository->store($user);
+        return $user;
     }
 
-    $this->fileSystemService->upload($file, $dirname, 'avatar-' . uniqid());
+    public function register(UserDto $userDto): void
+    {
+        $user = new User();
+        $user
+            ->setUsername($userDto->username)
+            ->setRoles(['ROLE_USER'])
+            ->setPassword($this
+                ->passwordHasher
+            ->hashPassword($user, $userDto->password));
 
-    $fullPath = $this->fileSystemService->searchFiles($dirname, 'avatar-*')[0] ?? '';
-    $shortPath = $this->fileSystemService->getShortPath($fullPath);
+        if (null !== $userDto->email) {
+            $user->setEmail($userDto->email);
+        }
+        if (null !== $userDto->about) {
+            $user->setAbout($userDto->about);
+        }
+        if (null !== $userDto->age) {
+            $user->setAge($userDto->age);
+        }
+        if (null !== $userDto->displayName) {
+            $user->setDisplayName($userDto->displayName);
+        }
 
-    if (file_exists($fullPath)) {
-      $user->setAvatar($shortPath);
-      $this->userRepository->store($user);
+        $this->userRepository->store($user);
     }
 
-    return $this->userMapper->mapToDetail($user, new UserDetail());
-  }
+    public function uploadAvatar(User $user, $file): UserDetail
+    {
+        $dirname = $this->specifyUserAvatarsPath($user->getId());
+        $currentFile = $this->fileSystemService->searchFiles($dirname, 'avatar-*')[0] ?? null;
+        if (null !== $currentFile) {
+            $this->fileSystemService->removeFile($currentFile);
+        }
 
-  public function get(int $id): User
-  {
-    return $this->findForm($id);
-  }
+        $this->fileSystemService->upload($file, $dirname, 'avatar-' . uniqid());
 
-  public function edit(User $user, UserDto $dto): UserDetail
-  {
-    $user
-      ->setAbout($dto->about)
-      ->setAge($dto->age)
-      ->setEmail($dto->email)
-      ->setDisplayName($dto->displayName);
+        $fullPath = $this->fileSystemService->searchFiles($dirname, 'avatar-*')[0] ?? '';
+        $shortPath = $this->fileSystemService->getShortPath($fullPath);
 
-    $this->userRepository->store($user);
+        if (file_exists($fullPath)) {
+            $user->setAvatar($shortPath);
+            $this->userRepository->store($user);
+        }
 
-    return $this->userMapper->mapToDetail($user, new UserDetail());
-  }
-
-  private function find(int $id): User
-  {
-    $user = $this->userRepository->find($id);
-    if (null === $user) {
-      throw new UserNotFoundException();
+        return $this->userMapper->mapToDetail($user, new UserDetail());
     }
-    return $user;
-  }
 
-  public function findForm(int $id): User
-  {
-    $user = $this->userRepository->find($id);
+    public function get(int $id): User
+    {
+        return $this->findForm($id);
+    }
 
-    return $user;
-  }
+    public function edit(User $user, UserDto $dto): UserDetail
+    {
+        $user
+            ->setAbout($dto->about)
+            ->setAge($dto->age)
+            ->setEmail($dto->email)
+            ->setDisplayName($dto->displayName);
 
-  private function specifyUserAvatarsPath(int $id): string
-  {
-    $subDirByIdPath = $this->createUploadsDir($id);
+        $this->userRepository->store($user);
 
-    $avatarDirPath = $subDirByIdPath . DIRECTORY_SEPARATOR;
-    $this->fileSystemService->createDir($avatarDirPath);
+        return $this->userMapper->mapToDetail($user, new UserDetail());
+    }
 
-    return $avatarDirPath;
-  }
-  private function createUploadsDir(int $id): string
-  {
-    $userMainUploadsDir = $this->fileSystemService->getUploadsDirname('user');
+    private function find(int $id): User
+    {
+        $user = $this->userRepository->find($id);
+        if (null === $user) {
+            throw new UserNotFoundException();
+        }
+        return $user;
+    }
 
-    $stringId = strval($id);
-    $subDirByIdPath = $userMainUploadsDir . DIRECTORY_SEPARATOR . $stringId . DIRECTORY_SEPARATOR . 'avatar';
+    public function findForm(int $id): User
+    {
+        $user = $this->userRepository->find($id);
 
-    $this->fileSystemService->createDir($subDirByIdPath);
+        return $user;
+    }
 
-    return $subDirByIdPath;
-  }
+    private function specifyUserAvatarsPath(int $id): string
+    {
+        $subDirByIdPath = $this->createUploadsDir($id);
+
+        $avatarDirPath = $subDirByIdPath . DIRECTORY_SEPARATOR;
+        $this->fileSystemService->createDir($avatarDirPath);
+
+        return $avatarDirPath;
+    }
+    private function createUploadsDir(int $id): string
+    {
+        $userMainUploadsDir = $this->fileSystemService->getUploadsDirname('user');
+
+        $stringId = strval($id);
+        $subDirByIdPath = $userMainUploadsDir . DIRECTORY_SEPARATOR . $stringId . DIRECTORY_SEPARATOR . 'avatar';
+
+        $this->fileSystemService->createDir($subDirByIdPath);
+
+        return $subDirByIdPath;
+    }
 }

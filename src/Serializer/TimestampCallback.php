@@ -6,16 +6,16 @@ use DateTimeInterface;
 
 class TimestampCallback
 {
-  public function __invoke(null|string|DateTimeInterface $innerObject): DateTimeInterface|string|null
-  {
-    if ($innerObject === null) {
-      return null;
-    }
+    public function __invoke(null|string|DateTimeInterface $innerObject): DateTimeInterface|string|null
+    {
+        if ($innerObject === null) {
+            return null;
+        }
 
-    if (!($innerObject instanceof DateTimeInterface)) {
-      return $innerObject;
-    }
+        if (!($innerObject instanceof DateTimeInterface)) {
+            return $innerObject;
+        }
 
-    return $innerObject->format('Y-m-d');
-  }
+        return $innerObject->format('Y-m-d');
+    }
 }
