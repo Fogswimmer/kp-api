@@ -1,39 +1,63 @@
 #!/bin/bash
-set -e
+set -euo pipefail
 
-echo "Initializing..."
+echo "Initializing entrypoint script..."
 
-echo "Setting permissions..."
+# --- Проверка .env файла ---
+if [ ! -f ".env" ]; then
+  echo "No .env file found. Aborting."
+  exit 1
+fi
+
+echo "Setting permissions for var и public/uploads..."
 chown -R www-data:www-data var public/uploads
 
 if [ ! -d "vendor" ]; then
-  echo "Installing dependencies..."
+  echo "Installing dependencies with composer"
   composer install --no-interaction --prefer-dist --no-scripts
 else
-  echo "Dependencies already installed"
+  echo "The dependencies have been already installed!"
 fi
 
-echo "Waiting for database to be ready..."
+echo "Wating for the database to be ready..."
+MAX_TRIES=30
+TRIES=0
 until php bin/console doctrine:query:sql "SELECT 1" > /dev/null 2>&1; do
-  sleep 1
+  sleep 2
+  TRIES=$((TRIES+1))
+  echo "Connection attempt #$TRIES..."
+  if [ "$TRIES" -ge "$MAX_TRIES" ]; then
+    echo "Failed to connect to the database after $MAX_TRIES attemtps. Aborting."
+    exit 1
+  fi
 done
+echo "Database is ready!"
 
-echo "Running migrations..."
-if [ -z "$(ls -A migrations 2>/dev/null)" ]; then
-    echo "Migration folder is empty — generating initial migration..."
-    php bin/console doctrine:migrations:diff --no-interaction
-else
-    echo "Migration folder not empty — skipping diff"
+echo "Handling migrations..."
+MIGRATION_FILES=$(find migrations -type f -name '*.php' 2>/dev/null || true)
+if [ -z "$MIGRATION_FILES" ]; then
+  echo "No migrations found. Creating a new one..."
+  php bin/console doctrine:migrations:diff --no-interaction
 fi
-php bin/console doctrine:migrations:migrate --no-interaction
 
-echo "Running Apache and Worker..."
+echo "Applying migrations ..."
+php bin/console doctrine:migrations:migrate --no-interaction || {
+  echo "Failed to apply migrations. Aborting."
+  exit 1
+}
+
+echo "Launching Messenger consumer and Apache..."
 
 php bin/console messenger:consume async --time-limit=3600 --memory-limit=128M &
 WORKER_PID=$!
 
-apache2-foreground & wait -n
+apache2-foreground & 
+APACHE_PID=$!
 
-kill -TERM "$WORKER_PID" 2>/dev/null
+wait -n
 
+echo "Finishing background processes..."
+kill -TERM "$WORKER_PID" 2>/dev/null || true
+kill -TERM "$APACHE_PID" 2>/dev/null || true
 
+echo "Finished"

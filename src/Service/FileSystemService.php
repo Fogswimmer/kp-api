@@ -39,7 +39,7 @@ class FileSystemService
     }
     public function getShortPath(string $path): string
     {
-        return $this->appDomain . '/' . str_replace($this->publicDir, '', $path);
+        return str_replace($this->publicDir, '', $path);
     }
 
     public function getPublicDir(): string
