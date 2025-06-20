@@ -14,7 +14,8 @@ class NotificationService
 
     public function sendEmail(string $emailAddress, string $subject, string $text)
     {
-        $from = 'noreply@' . parse_url($this->appDomain, PHP_URL_HOST);
+	$from = 'noreply@' . $this->appDomain;
+	
         $email = (new Email())
             ->from($from)
             ->to($emailAddress)
