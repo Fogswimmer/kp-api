@@ -293,7 +293,7 @@ class FilmService
         $genres = [];
 
         foreach ($genreIds as $genreId) {
-            $genres[] = Genres::matchIdAndGenre($genreId);
+            $genres[] = $genreId;
         }
 
         $film->setGenres($genres);
