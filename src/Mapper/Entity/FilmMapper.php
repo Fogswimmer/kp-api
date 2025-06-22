@@ -216,10 +216,10 @@ class FilmMapper
 
     private function mapGenresToNames(array $genres): array
     {
-        $genreEnums = $this->mapGenreIdsToEnums($genres);
+        // $genreEnums = $this->mapGenreIdsToEnums($genres);
         return array_map(
             fn (Genres $genre) => $genre->trans($this->translator),
-            $genreEnums
+            $genres
         );
     }
 
