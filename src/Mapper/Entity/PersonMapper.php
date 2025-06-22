@@ -50,7 +50,8 @@ class PersonMapper
             $person->getFullname(),
             $person->getAvatar(),
             $person->getSlug(),
-            $person->getInternationalName()
+            $person->getInternationalName(),
+            $person->getPublisher() ? $this->mapPublisherData($person->getPublisher()) : [],
         );
     }
 
@@ -141,8 +142,9 @@ class PersonMapper
                 $filmWorks[$config['key']] = array_map(fn (Film $film) => [
                     'slug' => $film->getSlug(),
                     'name' => $film->getName(),
+                    'internationalName' => $film->getInternationalName(),
                     'releaseYear' => $film->getReleaseYear(),
-                    'cover' => $film->getCover() ?: '',
+                    'poster' => $film->getPoster() ?: '',
                 ], $films);
             }
         }

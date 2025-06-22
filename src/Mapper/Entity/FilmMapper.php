@@ -154,8 +154,8 @@ class FilmMapper
         $graph = array_count_values($ratings);
         $mappedGraph = array_map(function ($count, $rating) use ($ratings) {
             return [
-              'count' => $count,
-              'rating' => $rating,
+                'count' => $count,
+                'rating' => $rating,
             ];
         }, $graph, array_keys($graph));
 
@@ -169,8 +169,8 @@ class FilmMapper
     private function mapPublisherData(User $publisher): array
     {
         return [
-          'id' => $publisher->getId(),
-          'name' => $publisher->getDisplayName(),
+            'id' => $publisher->getId(),
+            'name' => $publisher->getDisplayName(),
         ];
     }
 
@@ -179,9 +179,9 @@ class FilmMapper
         return array_map(
             function (Person $actor) {
                 return [
-                  'slug' => $actor->getSlug(),
-                  'name' => $actor->getFullname(),
-                  'avatar' => $actor->getAvatar(),
+                    'slug' => $actor->getSlug(),
+                    'name' => $actor->getFullname(),
+                    'avatar' => $actor->getAvatar(),
                 ];
             },
             $actors
@@ -192,17 +192,17 @@ class FilmMapper
     {
         $mapPerson = function (?Person $person) {
             return $person ? [
-              'slug' => $person->getSlug() ?? null,
-              'name' => $person->getFullName() ?? null,
-              'avatar' => $person->getAvatar() ?? null,
+                'slug' => $person->getSlug() ?? null,
+                'name' => $person->getFullName() ?? null,
+                'avatar' => $person->getAvatar() ?? null,
             ] : [];
         };
 
         return [
-          $mapPerson($film->getDirectedBy()),
-          $mapPerson($film->getWriter()),
-          $mapPerson($film->getProducer()),
-          $mapPerson($film->getComposer())
+            $mapPerson($film->getDirectedBy()),
+            $mapPerson($film->getWriter()),
+            $mapPerson($film->getProducer()),
+            $mapPerson($film->getComposer())
         ];
     }
 
