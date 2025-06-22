@@ -1,4 +1,4 @@
-.PHONY: init init-perms fix-perms uploads jwt composer test clear-cache fixtures
+c.PHONY: init init-perms jwt composer test clear-cache fixtures
 
 CONTAINER_NAME=symfony
 
@@ -14,15 +14,6 @@ uploads:
 
 jwt:
 	docker exec $(CONTAINER_NAME) php bin/console lexik:jwt:generate-keypair --overwrite
-
-composer:
-	docker exec $(CONTAINER_NAME) composer install --no-interaction --prefer-dist
-
-fix-perms:
-	docker exec $(CONTAINER_NAME) chown -R www-data:www-data var public/uploads
-	sudo chown -R $(USER_ID):$(GROUP_ID) .
-	sudo chmod -R ug+rwX var public/uploads
-
 test:
 	docker-compose -f compose.test.yaml up --build --abort-on-container-exit
 clear-cache:

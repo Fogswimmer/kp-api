@@ -3,21 +3,21 @@ set -euo pipefail
 
 echo "Initializing entrypoint script..."
 
-# --- Проверка .env файла ---
 if [ ! -f ".env" ]; then
   echo "No .env file found. Aborting."
   exit 1
 fi
 
 echo "Setting permissions for var и public/uploads..."
-chown -R www-data:www-data var public/uploads
 
-if [ ! -d "vendor" ]; then
-  echo "Installing dependencies with composer"
-  composer install --no-interaction --prefer-dist --no-scripts
+if [ "$(id -u)" = "0" ]; then
+  echo "Running as root. Setting ownership and permissions..."
+  chown -R www-data:www-data var public/uploads
+  chmod -R 775 var public/uploads
 else
-  echo "The dependencies have been already installed!"
+  echo "Not running as root. Skipping chown/chmod."
 fi
+
 
 echo "Wating for the database to be ready..."
 MAX_TRIES=30

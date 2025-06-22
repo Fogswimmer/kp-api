@@ -126,13 +126,13 @@ class FilmMapper
         $assessmentsArr = array_map(
             function (Assessment $assessment) {
                 return [
-                  'id' => $assessment->getId(),
-                  'authorId' => $assessment->getAuthor()->getId(),
-                  'authorName' => $assessment->getAuthor()->getDisplayName(),
-                  'authorAvatar' => $assessment->getAuthor()->getAvatar(),
-                  'comment' => $assessment->getComment(),
-                  'rating' => $assessment->getRating(),
-                  'createdAt' => $assessment->getCreatedAt(),
+                    'id' => $assessment->getId(),
+                    'authorId' => $assessment->getAuthor()->getId(),
+                    'authorName' => $assessment->getAuthor()->getDisplayName(),
+                    'authorAvatar' => $assessment->getAuthor()->getAvatar(),
+                    'comment' => $assessment->getComment(),
+                    'rating' => $assessment->getRating(),
+                    'createdAt' => $assessment->getCreatedAt(),
                 ];
             },
             $assessments
