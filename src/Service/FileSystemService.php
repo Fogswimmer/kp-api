@@ -42,7 +42,6 @@ class FileSystemService
     public function getShortPath(string $path): string
     {
         $path = $this->appUrl.str_replace($this->publicDir, '', $path);
-        dd($path);
 
         return $path;
     }
