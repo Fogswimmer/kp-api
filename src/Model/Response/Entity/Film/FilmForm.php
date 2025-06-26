@@ -51,80 +51,103 @@ class FilmForm
 
     public ?string $internationalName = null;
 
+    private ?string $country = null;
+
+    private ?string $budget = null;
+
+    private ?string $fees = null;
+
+    private ?string $countryCode = null;
+
     public function getId(): int
     {
         return $this->id;
     }
+
     public function setId(int $id): static
     {
         $this->id = $id;
 
         return $this;
     }
+
     public function getName(): string
     {
         return $this->name;
     }
+
     public function setName(string $name): static
     {
         $this->name = $name;
 
         return $this;
     }
+
     public function getGenres(): array
     {
         return $this->genres;
     }
+
     public function setGenres(array $genres): static
     {
         $this->genres = $genres;
 
         return $this;
     }
+
     public function getReleaseYear(): int
     {
         return $this->releaseYear;
     }
+
     public function setReleaseYear(int $releaseYear): static
     {
         $this->releaseYear = $releaseYear;
 
         return $this;
     }
+
     public function getActorIds(): array
     {
         return $this->actorIds;
     }
+
     public function setActorIds(array $actorIds): static
     {
         $this->actorIds = $actorIds;
 
         return $this;
     }
+
     public function getDirectorId(): int
     {
         return $this->directorId;
     }
+
     public function setDirectorId(?int $directorId): static
     {
         $this->directorId = $directorId;
 
         return $this;
     }
+
     public function getGallery(): array
     {
         return $this->gallery;
     }
+
     public function setGallery(array $gallery): static
     {
         $this->gallery = $gallery;
 
         return $this;
     }
+
     public function getProducerId(): ?int
     {
         return $this->producerId;
     }
+
     public function setProducerId(?int $producerId): static
     {
         $this->producerId = $producerId;
@@ -263,6 +286,7 @@ class FilmForm
 
         return $this;
     }
+
     public function getInternationalName(): ?string
     {
         return $this->internationalName;
@@ -275,4 +299,51 @@ class FilmForm
         return $this;
     }
 
+    public function getCountry(): ?string
+    {
+        return $this->country;
+    }
+
+    public function setCountry(?string $country): static
+    {
+        $this->country = $country;
+
+        return $this;
+    }
+
+    public function getBudget(): ?string
+    {
+        return $this->budget;
+    }
+
+    public function setBudget(?string $budget): static
+    {
+        $this->budget = $budget;
+
+        return $this;
+    }
+
+    public function getFees(): ?string
+    {
+        return $this->fees;
+    }
+
+    public function setFees(?string $fees): static
+    {
+        $this->fees = $fees;
+
+        return $this;
+    }
+
+    public function getCountryCode(): ?string
+    {
+        return $this->countryCode;
+    }
+
+    public function setCountryCode(?string $countryCode): self
+    {
+        $this->countryCode = $countryCode;
+
+        return $this;
+    }
 }

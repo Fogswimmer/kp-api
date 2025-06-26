@@ -4,6 +4,7 @@ parameters:
     user_uploads: "%kernel.project_dir%/public/uploads/user"
     uploads_dir: "%kernel.project_dir%/public/uploads"
     public_dir: "%kernel.project_dir%/public"
+    app_url: "%env(APP_URL)%"
     app_domain: "%env(APP_DOMAIN)%"
     password_reset_url: "%env(PASSWORD_RESET_URL)%"
 services:

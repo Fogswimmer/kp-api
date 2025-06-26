@@ -66,30 +66,41 @@ class FilmDetail
 
     public ?array $assessmentsGraph = [];
 
+    private ?string $country = null;
+
+    private ?string $budget = null;
+
+    private ?string $fees = null;
+
     public function getId(): int
     {
         return $this->id;
     }
+
     public function setId(int $id): static
     {
         $this->id = $id;
 
         return $this;
     }
+
     public function getName(): string
     {
         return $this->name;
     }
+
     public function setName(string $name): static
     {
         $this->name = $name;
 
         return $this;
     }
+
     public function getGenreIds(): array
     {
         return $this->genreIds;
     }
+
     public function setGenreIds(array $genres): static
     {
         $this->genreIds = $genres;
@@ -101,6 +112,7 @@ class FilmDetail
     {
         return $this->genreNames;
     }
+
     public function setGenreNames(array $genres): static
     {
         $this->genreNames = $genres;
@@ -112,6 +124,7 @@ class FilmDetail
     {
         return $this->releaseYear;
     }
+
     public function setReleaseYear(?int $releaseYear): static
     {
         $this->releaseYear = $releaseYear;
@@ -123,36 +136,43 @@ class FilmDetail
     {
         return $this->preview;
     }
+
     public function setPreview(?string $preview): static
     {
         $this->preview = $preview;
 
         return $this;
     }
+
     public function getGallery(): array
     {
         return $this->gallery;
     }
+
     public function setGallery(array $gallery): static
     {
         $this->gallery = $gallery;
 
         return $this;
     }
+
     public function getDescription(): ?string
     {
         return $this->description;
     }
+
     public function setDescription(?string $description): static
     {
         $this->description = $description;
 
         return $this;
     }
+
     public function getRating(): ?float
     {
         return $this->rating;
     }
+
     public function setRating(float $rating): static
     {
         $this->rating = $rating;
@@ -164,6 +184,7 @@ class FilmDetail
     {
         return $this->age;
     }
+
     public function setAge(int $age): static
     {
         $this->age = $age;
@@ -175,6 +196,7 @@ class FilmDetail
     {
         return $this->duration;
     }
+
     public function setDuration(?string $duration): static
     {
         $this->duration = $duration;
@@ -198,6 +220,7 @@ class FilmDetail
     {
         return $this->cover;
     }
+
     public function setCover(?string $cover): static
     {
         $this->cover = $cover;
@@ -209,6 +232,7 @@ class FilmDetail
     {
         return $this->createdAt;
     }
+
     public function setCreatedAt(string $createdAt): static
     {
         $this->createdAt = $createdAt;
@@ -220,6 +244,7 @@ class FilmDetail
     {
         return $this->updatedAt;
     }
+
     public function setUpdatedAt(string $updatedAt): static
     {
         $this->updatedAt = $updatedAt;
@@ -231,6 +256,7 @@ class FilmDetail
     {
         return $this->assessments;
     }
+
     public function setAssessments(array $assessments): static
     {
         $this->assessments = $assessments;
@@ -242,6 +268,7 @@ class FilmDetail
     {
         return $this->publisherData;
     }
+
     public function setPublisherData(array $publisherData): static
     {
         $this->publisherData = $publisherData;
@@ -253,6 +280,7 @@ class FilmDetail
     {
         return $this->actorsData;
     }
+
     public function setActorsData(array $actorsData): static
     {
         $this->actorsData = $actorsData;
@@ -328,6 +356,42 @@ class FilmDetail
     public function setAssessmentsGraph(array $assessmentsGraph): static
     {
         $this->assessmentsGraph = $assessmentsGraph;
+
+        return $this;
+    }
+
+    public function getCountry(): ?string
+    {
+        return $this->country;
+    }
+
+    public function setCountry(?string $country): static
+    {
+        $this->country = $country;
+
+        return $this;
+    }
+
+    public function getBudget(): ?string
+    {
+        return $this->budget;
+    }
+
+    public function setBudget(?string $budget): static
+    {
+        $this->budget = $budget;
+
+        return $this;
+    }
+
+    public function getFees(): ?string
+    {
+        return $this->fees;
+    }
+
+    public function setFees(?string $fees): static
+    {
+        $this->fees = $fees;
 
         return $this;
     }

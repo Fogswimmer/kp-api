@@ -1,6 +1,6 @@
 services:
   symfony:
-    build: ./symfony
+    build: .
     container_name: symfony
     ports:
       - "8080:80"
@@ -9,47 +9,13 @@ services:
     environment:
       DATABASE_URL: "postgresql://symfony:secret@db:5432/symfony?sslmode=disable&serverVersion=15&charset=utf8"
     depends_on:
-      db:
+      postgres:
         condition: service_healthy
     networks:
       - app-network
-  caddy:
-    image: caddy:latest
-    restart: unless-stopped
-    container_name: caddy
-    ports:
-      - 80:80
-      - 443:443
-    volumes:
-      - ./caddy/Caddyfile:/etc/caddy/Caddyfile
-      - ./caddy/data:/data
-      - ./caddy_config:/config
-      - ./caddy/fallback:/var/www
-      - ./symfony/public:/srv/app/public
-    depends_on:
-      - nuxt
-      - symfony
-    networks:
-      - app-network
-  nuxt:
-    build: ./nuxt
-    working_dir: /app
-    volumes:
-      - ~/kp-lite/nuxt/.output:/app/.output
-    container_name: nuxt
-    ports:
-      - "3000:3000"
-    environment:
-      BASE_URL: "https://nebelschwimmer.site"
-      API_BASE_URL: "https://nebelschwimmer.site"
-      APP_NAME: "KP-Lite"
-      NITRO_SECRET: "my_super_secret_key"
-    command: ["node", "/app/.output/server/index.mjs"]
-    networks:
-      - app-network
-  db:
+  postgres:
     image: postgres:16
-    container_name: db
+    container_name: postgres
     environment:
       POSTGRES_DB: symfony
       POSTGRES_USER: symfony

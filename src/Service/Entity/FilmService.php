@@ -2,14 +2,16 @@
 
 namespace App\Service\Entity;
 
-use App\Dto\Entity\Film\FilmQueryDto;
 use App\Dto\Entity\Assessment\AssessmentDto;
 use App\Dto\Entity\Film\FilmDto;
+use App\Dto\Entity\Film\FilmQueryDto;
 use App\Entity\ActorRole;
 use App\Entity\Assessment;
 use App\Entity\Film;
 use App\Entity\User;
-use App\Enum\Genres;
+use App\EntityListener\FilmListener;
+use App\Exception\Denied\AccessDeniedException;
+use App\Exception\NotFound\AssessmentNotFoundException;
 use App\Exception\NotFound\FilmNotFoundException;
 use App\Exception\NotFound\PersonNotFoundException;
 use App\Mapper\Entity\FilmMapper;
@@ -25,9 +27,6 @@ use App\Repository\PersonRepository;
 use App\Repository\UserRepository;
 use App\Service\FileSystemService;
 use Symfony\Component\Security\Http\Attribute\CurrentUser;
-use App\Exception\Denied\AccessDeniedException;
-use App\Exception\NotFound\AssessmentNotFoundException;
-use App\EntityListener\FilmListener;
 
 class FilmService
 {
@@ -91,6 +90,7 @@ class FilmService
             }
             $this->repository->store($film);
         }
+
         return $this->repository->findAll() !== [];
     }
 
@@ -254,7 +254,10 @@ class FilmService
             ->setSlogan($dto->slogan)
             ->setTrailer($dto->trailer)
             ->setRating(0)
-            ->setPublisher($user);
+            ->setPublisher($user)
+            ->setBudget($dto->budget)
+            ->setFees($dto->fees)
+            ->setCountry($dto->countryCode);
 
         $this->repository->store($film);
         $this->userRepository->store($user);
@@ -334,7 +337,10 @@ class FilmService
             ->setAge($dto->age)
             ->setSlogan($dto->slogan)
             ->setPoster($dto->poster)
-        ;
+            ->setBudget($dto->budget)
+            ->setFees($dto->fees)
+            ->setCountry($dto->countryCode);
+
         if ($dto->trailer !== null) {
             $film->setTrailer($dto->trailer);
         }
@@ -373,8 +379,8 @@ class FilmService
         $maxIndex = !empty($currentFileIndexes) ? max($currentFileIndexes) : 0;
 
         foreach ($files as $file) {
-            $maxIndex++;
-            $indexedFileName = 'picture-' . $maxIndex;
+            ++$maxIndex;
+            $indexedFileName = 'picture-'.$maxIndex;
             $this->fileSystemService->upload($file, $dirName, $indexedFileName);
         }
 
@@ -450,7 +456,7 @@ class FilmService
     {
         $subDirByIdPath = $this->createUploadsDir($id);
 
-        $galleryDirPath = $subDirByIdPath . DIRECTORY_SEPARATOR . 'gallery';
+        $galleryDirPath = $subDirByIdPath.DIRECTORY_SEPARATOR.'gallery';
         $this->fileSystemService->createDir($galleryDirPath);
 
         return $galleryDirPath;
@@ -461,7 +467,7 @@ class FilmService
         $filmBaseUploadsDir = $this->fileSystemService->getUploadsDirname('film');
 
         $stringId = strval($id);
-        $subDirByIdPath = $filmBaseUploadsDir . DIRECTORY_SEPARATOR . $stringId;
+        $subDirByIdPath = $filmBaseUploadsDir.DIRECTORY_SEPARATOR.$stringId;
 
         $this->fileSystemService->createDir($subDirByIdPath);
 

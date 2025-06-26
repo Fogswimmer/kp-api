@@ -2,16 +2,17 @@
 
 namespace App\Mapper\Entity;
 
+use App\Entity\Assessment;
 use App\Entity\Film;
+use App\Entity\Person;
+use App\Entity\User;
 use App\Enum\Genres;
 use App\Model\Response\Entity\Film\FilmDetail;
 use App\Model\Response\Entity\Film\FilmForm;
 use App\Model\Response\Entity\Film\FilmList;
 use App\Model\Response\Entity\Film\FilmListItem;
+use Symfony\Component\Intl\Countries;
 use Symfony\Contracts\Translation\TranslatorInterface;
-use App\Entity\Assessment;
-use App\Entity\User;
-use App\Entity\Person;
 
 class FilmMapper
 {
@@ -41,6 +42,7 @@ class FilmMapper
             ->setInternationalName($film->getInternationalName())
         ;
     }
+
     public function mapToDetail(Film $film, FilmDetail $model, string $locale = 'ru'): FilmDetail
     {
         return $model
@@ -67,7 +69,9 @@ class FilmMapper
             ->setSlug($film->getSlug())
             ->setInternationalName($film->getInternationalName())
             ->setAssessmentsGraph($this->createAssessmentsGraph($film->getAssessments()->toArray()))
-        ;
+            ->setBudget($film->getBudget())
+            ->setFees($film->getFees())
+            ->setCountry($film->getCountry() ? $this->convertAlpa2CodeToCountryName($film->getCountry()) : null);
     }
 
     public function mapToForm(Film $film, FilmForm $model): FilmForm
@@ -91,7 +95,9 @@ class FilmMapper
             ->setPoster($film->getPoster())
             ->setSlug($film->getSlug())
             ->setInternationalName($film->getInternationalName())
-        ;
+            ->setBudget($film->getBudget())
+            ->setFees($film->getFees())
+            ->setCountryCode($film->getCountry());
     }
 
     public function mapToListItem(Film $film): FilmListItem
@@ -152,7 +158,7 @@ class FilmMapper
         }, $assessments);
 
         $graph = array_count_values($ratings);
-        $mappedGraph = array_map(function ($count, $rating) use ($ratings) {
+        $mappedGraph = array_map(function ($count, $rating) {
             return [
                 'count' => $count,
                 'rating' => $rating,
@@ -202,7 +208,7 @@ class FilmMapper
             $mapPerson($film->getDirectedBy()),
             $mapPerson($film->getWriter()),
             $mapPerson($film->getProducer()),
-            $mapPerson($film->getComposer())
+            $mapPerson($film->getComposer()),
         ];
     }
 
@@ -217,10 +223,17 @@ class FilmMapper
     private function mapGenresToNames(array $genres): array
     {
         $genreEnums = $this->mapGenreIdsToEnums($genres);
+
         return array_map(
             fn (Genres $genre) => $genre->trans($this->translator),
             $genreEnums
         );
     }
 
+    private function convertAlpa2CodeToCountryName(string $countryCode): string
+    {
+        $countryName = Countries::getName($countryCode);
+
+        return $countryName;
+    }
 }

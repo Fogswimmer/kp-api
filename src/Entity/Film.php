@@ -98,6 +98,15 @@ class Film
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $internationalName = null;
 
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $country = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $budget = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $fees = null;
+
     public function __construct()
     {
         $this->actors = new ArrayCollection();
@@ -461,6 +470,42 @@ class Film
     public function setInternationalName(?string $internationalName): static
     {
         $this->internationalName = $internationalName;
+
+        return $this;
+    }
+
+    public function getCountry(): ?string
+    {
+        return $this->country;
+    }
+
+    public function setCountry(?string $country): static
+    {
+        $this->country = $country;
+
+        return $this;
+    }
+
+    public function getBudget(): ?string
+    {
+        return $this->budget;
+    }
+
+    public function setBudget(?string $budget): static
+    {
+        $this->budget = $budget;
+
+        return $this;
+    }
+
+    public function getFees(): ?string
+    {
+        return $this->fees;
+    }
+
+    public function setFees(?string $fees): static
+    {
+        $this->fees = $fees;
 
         return $this;
     }

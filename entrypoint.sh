@@ -8,7 +8,7 @@ if [ ! -f ".env" ]; then
   exit 1
 fi
 
-echo "Setting permissions for var и public/uploads..."
+echo "Setting permissions for var and public/uploads..."
 
 if [ "$(id -u)" = "0" ]; then
   echo "Running as root. Setting ownership and permissions..."
