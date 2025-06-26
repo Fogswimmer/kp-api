@@ -4,7 +4,6 @@ RUN apt-get update && apt-get install -y \
     git \
     zip \
     unzip \
-    php-intl \
     libpng-dev \
     libzip-dev \
     libpq-dev \
@@ -15,7 +14,7 @@ RUN apt-get update && apt-get install -y \
     curl \
     && rm -rf /var/lib/apt/lists/*
 
-RUN docker-php-ext-install pdo pdo_pgsql zip \
+RUN docker-php-ext-install pdo pdo_pgsql zip intl \
     && pecl install amqp \
     && docker-php-ext-enable amqp
 
