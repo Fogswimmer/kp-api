@@ -84,7 +84,7 @@ class PersonService
         $specialties = [];
 
         foreach ($specialtyIds as $specialtyId) {
-            $specialties[] = Specialty::matchIdAndSpecialty($specialtyId);
+            $specialties[] = $specialtyId;
         }
 
         $person->setSpecialties($specialties);
@@ -113,7 +113,7 @@ class PersonService
         $specialtyIds = $dto->specialtyIds;
 
         foreach ($specialtyIds as $specialtyId) {
-            $specialties[] = Specialty::matchIdAndSpecialty($specialtyId);
+            $specialties[] =  $specialtyId;
         }
 
         $person->setSpecialties($specialties);
