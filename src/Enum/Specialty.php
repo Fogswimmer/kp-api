@@ -54,10 +54,10 @@ enum Specialty: int implements TranslatableInterface
         return self::matchIdAndSpecialty($id)->trans($translator, $locale);
     }
 
-    public static function matchSpecialty(self $specialty): bool
-    {
-        return in_array($specialty, self::cases(), true);
-    }
+    // public static function matchSpecialty(self $specialty): bool
+    // {
+    //     return in_array($specialty, self::cases(), true);
+    // }
 
     public static function list(?TranslatorInterface $translator = null, ?string $locale = null): array
     {

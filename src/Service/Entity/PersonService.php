@@ -231,7 +231,8 @@ class PersonService
         foreach ($persons as $person) {
             foreach ($person->getSpecialties() as $specialtyId) {
                 $personSpecialty = Specialty::tryFrom($specialtyId);
-                if ($personSpecialty && $personSpecialty->matchSpecialty($specialty)) {
+
+                if ($personSpecialty === $specialty) {
                     $specialists[] = $person;
                     break;
                 }
