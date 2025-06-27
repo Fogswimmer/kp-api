@@ -191,7 +191,7 @@ class PersonService
             $this->fileSystemService->removeFile($currentFile);
         }
 
-        $this->fileSystemService->upload($file, $dirName, 'cover');
+        $this->fileSystemService->upload($file, $dirName, 'cover_'. uniqId());
 
         $fullPath = $this->fileSystemService->searchFiles($dirName, 'cover')[0] ?? '';
         $shortPath = $this->fileSystemService->getShortPath($fullPath);

@@ -74,7 +74,7 @@ class FileSystemService
 
     public function searchFiles(string $dirName, ?string $fileName = '*'): array
     {
-        $files = glob($dirName.DIRECTORY_SEPARATOR."$fileName.*");
+        $files = glob($dirName.DIRECTORY_SEPARATOR."$fileName*.*");
 
         return $files;
     }
