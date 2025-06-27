@@ -229,9 +229,9 @@ class PersonService
         $specialists = [];
 
         foreach ($persons as $person) {
-            $specialties = $person->getSpecialties();
-            foreach ($specialties as $specialtyItem) {
-                if ($specialtyItem->matchSpecialty($specialty)) {
+            foreach ($person->getSpecialties() as $specialtyId) {
+                $personSpecialty = Specialty::tryFrom($specialtyId);
+                if ($personSpecialty && $personSpecialty->matchSpecialty($specialty)) {
                     $specialists[] = $person;
                     break;
                 }
@@ -258,6 +258,7 @@ class PersonService
 
         return $result;
     }
+
 
     public function listPopularActors(string $locale): PersonList
     {
