@@ -45,7 +45,7 @@ enum Specialty: int implements TranslatableInterface
             4 => self::WRITER,
             5 => self::COMPOSER,
             6 => self::EDITOR,
-            default => null,
+            default => throw new \InvalidArgumentException("Unknown specialty ID: $id"),
         };
     }
 

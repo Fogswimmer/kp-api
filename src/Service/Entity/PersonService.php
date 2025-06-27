@@ -31,8 +31,7 @@ class PersonService
         private TranslatorInterface $translator,
         private UserRepository $userRepository,
         private PersonListener $personListener
-    ) {
-    }
+    ) {}
 
     public function get(string $slug, ?string $locale = null): PersonDetail
     {
@@ -191,7 +190,7 @@ class PersonService
             $this->fileSystemService->removeFile($currentFile);
         }
 
-        $this->fileSystemService->upload($file, $dirName, 'cover_'. uniqId());
+        $this->fileSystemService->upload($file, $dirName, 'cover_' . uniqId());
 
         $fullPath = $this->fileSystemService->searchFiles($dirName, 'cover')[0] ?? '';
         $shortPath = $this->fileSystemService->getShortPath($fullPath);
@@ -223,17 +222,16 @@ class PersonService
 
         return $this->findForm($person->getSlug());
     }
+
     public function listSpecialistsBySpecialty(Specialty $specialty): array
     {
         $persons = $this->repository->findAll();
         $specialists = [];
+
         foreach ($persons as $person) {
-            $specialties = array_map(
-                fn (int $specialty) => Specialty::tryFrom($specialty),
-                $person->getSpecialties()
-            );
+            $specialties = $person->getSpecialties();
             foreach ($specialties as $specialtyItem) {
-                if ($specialtyItem::matchSpecialty($specialty)) {
+                if ($specialtyItem->matchSpecialty($specialty)) {
                     $specialists[] = $person;
                     break;
                 }
@@ -250,13 +248,15 @@ class PersonService
             'directors' => $this->listSpecialistsBySpecialty(Specialty::DIRECTOR),
             'producers' => $this->listSpecialistsBySpecialty(Specialty::PRODUCER),
             'writers' => $this->listSpecialistsBySpecialty(Specialty::WRITER),
-            'composers' => $this->listSpecialistsBySpecialty(specialty: Specialty::COMPOSER)
+            'composers' => $this->listSpecialistsBySpecialty(Specialty::COMPOSER),
         ];
 
-        return array_map(
-            fn (array $persons) => $this->personMapper->mapToEntityList($persons),
-            $specialists
-        );
+        $result = [];
+        foreach ($specialists as $key => $persons) {
+            $result[$key] = $this->personMapper->mapToEntityList($persons);
+        }
+
+        return $result;
     }
 
     public function listPopularActors(string $locale): PersonList
@@ -284,7 +284,7 @@ class PersonService
             $currentPage = $personQueryDto->offset / $personQueryDto->limit + 1;
         }
         $items = array_map(
-            fn (Person $person) => $this->personMapper->mapToDetail($person, new PersonDetail(), $locale),
+            fn(Person $person) => $this->personMapper->mapToDetail($person, new PersonDetail(), $locale),
             $persons
         );
         foreach ($items as $item) {
