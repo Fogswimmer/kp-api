@@ -122,11 +122,11 @@ class PersonMapper
     private function mapToFilmWorks(Person $person): array
     {
         $filmTypes = [
-            Specialty::ACTOR->value => ['method' => 'getFilms', 'key' => 'actedInFilms'],
-            Specialty::DIRECTOR->value => ['method' => 'getDirectedFilms', 'key' => 'directedFilms'],
-            Specialty::PRODUCER->value => ['method' => 'getProducedFilms', 'key' => 'producedFilms'],
-            Specialty::COMPOSER->value => ['method' => 'getComposedFilms', 'key' => 'composedFilms'],
-            Specialty::WRITER->value => ['method' => 'getWrittenFilms', 'key' => 'writtenFilms'],
+            Specialty::ACTOR => ['method' => 'getFilms', 'key' => 'actedInFilms'],
+            Specialty::DIRECTOR => ['method' => 'getDirectedFilms', 'key' => 'directedFilms'],
+            Specialty::PRODUCER => ['method' => 'getProducedFilms', 'key' => 'producedFilms'],
+            Specialty::COMPOSER => ['method' => 'getComposedFilms', 'key' => 'composedFilms'],
+            Specialty::WRITER => ['method' => 'getWrittenFilms', 'key' => 'writtenFilms'],
         ];
 
         $filmWorks = [];
