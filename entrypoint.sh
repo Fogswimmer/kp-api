@@ -33,19 +33,19 @@ php bin/console cache:clear
 php bin/console cache:warmup
 
 if [ -z "$(find migrations -type f -name '*.php' 2>/dev/null)" ]; then
-  echo "📜 No migrations found. Generating initial migration..."
+  echo "No migrations found. Generating initial migration..."
   php bin/console doctrine:migrations:diff --no-interaction || true
 fi
 
 echo "Running migrations..."
 php bin/console doctrine:migrations:migrate --no-interaction || {
-  echo "💥 Failed to apply migrations."
+  echo "Failed to apply migrations."
   exit 1
 }
 
-echo "Launching Messenger consumer..."
-php bin/console messenger:consume async --time-limit=3600 --memory-limit=128M &
-WORKER_PID=$!
+# echo "Launching Messenger consumer..."
+# php bin/console messenger:consume async --time-limit=3600 --memory-limit=128M &
+# WORKER_PID=$!
 
 echo "Starting Apache..."
 apache2-foreground &
@@ -53,8 +53,8 @@ APACHE_PID=$!
 
 wait -n
 
-echo "Stopping background processes..."
-kill -TERM "$WORKER_PID" 2>/dev/null || true
-kill -TERM "$APACHE_PID" 2>/dev/null || true
+# echo "Stopping background processes..."
+# kill -TERM "$WORKER_PID" 2>/dev/null || true
+# kill -TERM "$APACHE_PID" 2>/dev/null || true
 
 echo "Entrypoint finished."
