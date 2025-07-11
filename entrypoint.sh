@@ -9,19 +9,19 @@ echo "Setting permissions..."
 chown -R www-data:www-data var public/uploads
 chmod -R 775 var public/uploads
 
-echo "Waiting for the database to be ready..."
-MAX_TRIES=30
-TRIES=0
-until php -r "new PDO(getenv('DATABASE_URL'));" > /dev/null 2>&1; do
-  sleep 2
-  TRIES=$((TRIES+1))
-  echo "Connection attempt #$TRIES..."
-  if [ "$TRIES" -ge "$MAX_TRIES" ]; then
-    echo "Failed to connect to the database after $MAX_TRIES attempts. Aborting."
-    exit 1
-  fi
-done
-echo "Database is ready!"
+# echo "Waiting for the database to be ready..."
+# MAX_TRIES=30
+# TRIES=0
+# until php -r "new PDO(getenv('DATABASE_URL'));" > /dev/null 2>&1; do
+#   sleep 2
+#   TRIES=$((TRIES+1))
+#   echo "Connection attempt #$TRIES..."
+#   if [ "$TRIES" -ge "$MAX_TRIES" ]; then
+#     echo "Failed to connect to the database after $MAX_TRIES attempts. Aborting."
+#     exit 1
+#   fi
+# done
+# echo "Database is ready!"
 
 if [ ! -f "vendor/autoload.php" ]; then
   echo "Installing Composer dependencies..."
