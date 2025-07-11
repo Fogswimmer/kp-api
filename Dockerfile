@@ -30,7 +30,7 @@ ENV APP_ENV=dev XDEBUG_MODE=off
 
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
-RUN COMPOSER_ALLOW_SUPERUSER=1 composer install --no-cache --prefer-dist --no-dev --no-autoloader --no-scripts --no-progress
+# RUN COMPOSER_ALLOW_SUPERUSER=1 composer install --no-cache --prefer-dist --no-dev --no-autoloader --no-scripts --no-progress
 
 RUN chown -R www-data:www-data /var/www/html
 
