@@ -28,20 +28,20 @@ if [ ! -f "vendor/autoload.php" ]; then
   composer install --prefer-dist --no-interaction
 fi
 
-echo "Clearing and warming up Symfony cache..."
-php bin/console cache:clear
-php bin/console cache:warmup
+# echo "Clearing and warming up Symfony cache..."
+# php bin/console cache:clear
+# php bin/console cache:warmup
 
-if [ -z "$(find migrations -type f -name '*.php' 2>/dev/null)" ]; then
-  echo "No migrations found. Generating initial migration..."
-  php bin/console doctrine:migrations:diff --no-interaction || true
-fi
+# if [ -z "$(find migrations -type f -name '*.php' 2>/dev/null)" ]; then
+#   echo "No migrations found. Generating initial migration..."
+#   php bin/console doctrine:migrations:diff --no-interaction || true
+# fi
 
-echo "Running migrations..."
-php bin/console doctrine:migrations:migrate --no-interaction || {
-  echo "Failed to apply migrations."
-  exit 1
-}
+# echo "Running migrations..."
+# php bin/console doctrine:migrations:migrate --no-interaction || {
+#   echo "Failed to apply migrations."
+#   exit 1
+# }
 
 # echo "Launching Messenger consumer..."
 # php bin/console messenger:consume async --time-limit=3600 --memory-limit=128M &
