@@ -16,10 +16,8 @@ jobs:
           host: ${{secrets.SSH_HOST}}
           user: ${{secrets.SSH_USER}}
           private_key: ${{secrets.SSH_PRIVATE_KEY}}
-        run: |
-          ssh fogswimmer@nebelschwimmer.site <<'EOF'
-            cd ~/kp-lite/symfony
-            git pull origin main
-            docker compose down --remove-orphans
-            docker compose up -d --build
-          EOF
+        command: |
+          cd ${{secrets.PROJECT_FOLDER}};
+          git pull origin main;
+          docker compose down --remove-orphans;
+          docker compose up -d --build;
