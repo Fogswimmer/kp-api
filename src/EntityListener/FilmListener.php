@@ -31,12 +31,11 @@ class FilmListener
         if ($film->getInternationalName() !== null) {
             $slug = $this->slugger->slug($film->getInternationalName())->lower();
             if ($film->getSlug() === $slug) {
-                $slug = $this->slugger->slug($film->getInternationalName())->lower() . '-' . $uniqueId;
+                $slug = $this->slugger->slug($film->getInternationalName())->lower().'-'.$uniqueId;
             }
         } else {
-            $slug = $this->slugger->slug($film->getName())->lower() . '-' . $uniqueId;
+            $slug = $this->slugger->slug($film->getName())->lower().'-'.$uniqueId;
         }
-
 
         return $slug;
     }

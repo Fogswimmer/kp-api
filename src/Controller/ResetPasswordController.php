@@ -2,23 +2,23 @@
 
 namespace App\Controller;
 
+use App\Dto\Common\LocaleDto;
 use App\Dto\Common\RequestPasswordDto;
 use App\Entity\User;
 use App\Message\PasswordChangedMessage;
 use App\Service\NotificationService;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Attribute\MapQueryString;
+use Symfony\Component\HttpKernel\Attribute\MapRequestPayload;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Attribute\Route;
-use SymfonyCasts\Bundle\ResetPassword\ResetPasswordHelperInterface;
-use SymfonyCasts\Bundle\ResetPassword\Exception\ResetPasswordExceptionInterface;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpKernel\Attribute\MapRequestPayload;
 use Symfony\Contracts\Translation\TranslatorInterface;
-use Symfony\Component\HttpKernel\Attribute\MapQueryString;
-use App\Dto\Common\LocaleDto;
+use SymfonyCasts\Bundle\ResetPassword\Exception\ResetPasswordExceptionInterface;
+use SymfonyCasts\Bundle\ResetPassword\ResetPasswordHelperInterface;
 
 #[Route('/api/reset-password')]
 class ResetPasswordController extends AbstractController
@@ -46,14 +46,14 @@ class ResetPasswordController extends AbstractController
 
         $user = $this->entityManager->getRepository(User::class)->findOneBy(['email' => $email]);
         $uname = $user->getDisplayName() ?: $user->getUsername();
-        
+
         if (!$user) {
             return $this->json(['error' => 'User not found'], 400);
         }
 
         try {
             $resetToken = $this->resetPasswordHelper->generateResetToken($user);
-            $resetUrl = $this->passwordResetUrl . '/' . $resetToken->getToken();
+            $resetUrl = $this->passwordResetUrl.'/'.$resetToken->getToken();
 
             $to = $user->getEmail();
             $subject = $this->translator->trans('subject', [], 'reset-password', $localeDto->locale);
@@ -63,9 +63,9 @@ class ResetPasswordController extends AbstractController
                 'reset-password',
                 $localeDto->locale
             );
-            $this->notificationService->sendEmail( $to, $subject, $text);
+            $this->notificationService->sendEmail($to, $subject, $text);
         } catch (ResetPasswordExceptionInterface $e) {
-            return $this->json(['error' => 'Could not process reset request, because ' . $e->getReason()], 400);
+            return $this->json(['error' => 'Could not process reset request, because '.$e->getReason()], 400);
         }
 
         return $this->json(['message' => 'Reset link sent successfully.']);
@@ -75,12 +75,12 @@ class ResetPasswordController extends AbstractController
     public function verifyToken(
         string $token
     ): Response {
-
         try {
             $user = $this->resetPasswordHelper->validateTokenAndFetchUser($token);
         } catch (ResetPasswordExceptionInterface $e) {
             return $this->json(['error' => 'Invalid or expired token'], 400);
         }
+
         return $user ?
             $this->json(['message' => 'Token validated successfully.']) :
             $this->json(['error' => 'User not found'], 400);

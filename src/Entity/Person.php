@@ -2,13 +2,13 @@
 
 namespace App\Entity;
 
+use App\Enum\Gender;
+use App\Enum\Specialty;
 use App\Repository\PersonRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
-use App\Enum\Gender;
-use App\Enum\Specialty;
 use Gedmo\Timestampable\Traits\TimestampableEntity;
 
 #[ORM\Entity(repositoryClass: PersonRepository::class)]
@@ -43,7 +43,6 @@ class Person
      */
     #[ORM\ManyToMany(targetEntity: Film::class, mappedBy: 'actors', cascade: ['persist'])]
     private Collection $actedInFilms;
-
 
     #[ORM\Column(type: Types::JSON)]
     private array $specialties = [];
@@ -129,8 +128,9 @@ class Person
 
     public function getFullName(): string
     {
-        return $this->firstname . ' ' . $this->lastname;
+        return $this->firstname.' '.$this->lastname;
     }
+
     public function getGender(): ?Gender
     {
         return $this->gender;
@@ -167,11 +167,11 @@ class Person
     {
         if (!$this->actedInFilms->contains($film)) {
             $this->actedInFilms->add($film);
-
         }
 
         return $this;
     }
+
     public function removeFilm(Film $film): static
     {
         if ($this->actedInFilms->contains($film)) {
@@ -316,12 +316,14 @@ class Person
     public function getAge(): ?int
     {
         $currentYear = date('Y');
+
         return $currentYear - $this->birthday->format('Y');
     }
 
     public function setAge(int $age): static
     {
         $this->birthday = new \DateTimeImmutable(date('Y') - $age);
+
         return $this;
     }
 
@@ -449,5 +451,4 @@ class Person
 
         return $this;
     }
-
 }

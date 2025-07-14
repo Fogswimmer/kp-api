@@ -1,0 +1,26 @@
+name: Symfony CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  symfony-ci:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Debug start
+        run: echo "Workflow started"
+      - name: Deploy via SSH
+        uses: D3rHase/ssh-command-action@v0.2.2
+        with:
+          host: ${{secrets.SSH_HOST}}
+          user: ${{secrets.SSH_USER}}
+          private_key: ${{secrets.SSH_PRIVATE_KEY}}
+          command: |
+            set -e
+            cd ${{secrets.PROJECT_FOLDER}};
+            git pull;
+            docker compose down --remove-orphans;
+            docker compose up -d --build;

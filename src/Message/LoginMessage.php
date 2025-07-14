@@ -2,11 +2,13 @@
 
 namespace App\Message;
 
-class LoginMessage {
+class LoginMessage
+{
     private string $username;
     private string $ip;
     private string $email;
     private string $locale;
+
     public function __construct(
         $username,
         $ip,
@@ -19,19 +21,23 @@ class LoginMessage {
         $this->email = $email;
     }
 
-    public function getUserName(): string {
+    public function getUserName(): string
+    {
         return $this->username;
     }
 
-    public function getIp(): string {
+    public function getIp(): string
+    {
         return $this->ip;
     }
 
-    public function getLocale(): string {
+    public function getLocale(): string
+    {
         return $this->locale;
     }
 
-    public function getEmail(): string {
+    public function getEmail(): string
+    {
         return $this->email;
     }
 }

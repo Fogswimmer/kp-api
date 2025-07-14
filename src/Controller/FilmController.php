@@ -4,9 +4,9 @@ namespace App\Controller;
 
 use App\Dto\Common\FileNameSearchDto;
 use App\Dto\Common\LocaleDto;
-use App\Dto\Entity\Film\FilmQueryDto;
 use App\Dto\Entity\Assessment\AssessmentDto;
 use App\Dto\Entity\Film\FilmDto;
+use App\Dto\Entity\Film\FilmQueryDto;
 use App\Entity\User;
 use App\Exception\NotFound\FilmNotFoundException;
 use App\Model\Response\Entity\Film\FilmDetail;
@@ -15,10 +15,10 @@ use App\Model\Response\Entity\Film\FilmList;
 use App\Model\Response\Entity\Film\FilmPaginateList;
 use App\Service\Entity\FilmService;
 use Nelmio\ApiDocBundle\Attribute\Model;
+use OpenApi\Attributes as OA;
 use OpenApi\Attributes\MediaType;
 use OpenApi\Attributes\RequestBody;
 use OpenApi\Attributes\Schema;
-use OpenApi\Attributes as OA;
 use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -38,7 +38,7 @@ class FilmController extends AbstractController
     }
 
     /**
-     * Check films presence in the DB
+     * Check films presence in the DB.
      */
     #[Route(
         path: 'api/films/check',
@@ -57,7 +57,7 @@ class FilmController extends AbstractController
     }
 
     /**
-     * Find a film by slug
+     * Find a film by slug.
      */
     #[
         Route(
@@ -88,7 +88,7 @@ class FilmController extends AbstractController
     }
 
     /**
-     * Find a film form by slug
+     * Find a film form by slug.
      */
     #[
         Route(
@@ -119,7 +119,7 @@ class FilmController extends AbstractController
     }
 
     /**
-     * Find 6 latest films
+     * Find 6 latest films.
      */
     #[Route(
         path: '/api/films-latest',
@@ -142,11 +142,12 @@ class FilmController extends AbstractController
             $status = Response::HTTP_NOT_FOUND;
             $this->logger->error($e);
         }
+
         return $this->json($data, $status);
     }
 
     /**
-     * Find 6 top films
+     * Find 6 top films.
      */
     #[Route(
         path: '/api/films-top',
@@ -169,11 +170,12 @@ class FilmController extends AbstractController
             $status = Response::HTTP_NOT_FOUND;
             $this->logger->error($e);
         }
+
         return $this->json($data, $status);
     }
 
     /**
-     * Filter films by query params
+     * Filter films by query params.
      */
     #[Route(
         path: 'api/films/filter',
@@ -191,7 +193,7 @@ class FilmController extends AbstractController
     }
 
     /**
-     * Create a new film
+     * Create a new film.
      */
     #[Route(
         path: 'api/films',
@@ -223,7 +225,7 @@ class FilmController extends AbstractController
     }
 
     /**
-     * Update a film by id
+     * Update a film by id.
      */
     #[Route(
         path: 'api/films/{id}',
@@ -256,7 +258,7 @@ class FilmController extends AbstractController
     }
 
     /**
-     * Delete a film by id
+     * Delete a film by id.
      */
     #[Route(
         path: 'api/films/{id}',
@@ -286,7 +288,7 @@ class FilmController extends AbstractController
     }
 
     /**
-     * Upload a gallery for a film
+     * Upload a gallery for a film.
      */
     #[Route(
         path: 'api/films/{id}/gallery',
@@ -295,16 +297,16 @@ class FilmController extends AbstractController
     )]
     #[RequestBody(
         content: [
-        new MediaType(
-            mediaType: 'multipart/form-data',
-            schema: new Schema(properties: [
-            new OA\Property(
-                property: 'gallery',
-                type: 'file',
+            new MediaType(
+                mediaType: 'multipart/form-data',
+                schema: new Schema(properties: [
+                    new OA\Property(
+                        property: 'gallery',
+                        type: 'file',
+                    ),
+                ])
             ),
-        ])
-        ),
-    ]
+        ]
     )]
     #[OA\Response(response: 500, description: 'An error occurred while uploading the gallery')]
     public function uploadGallery(
@@ -319,6 +321,7 @@ class FilmController extends AbstractController
             if (null === $files) {
                 $status = Response::HTTP_BAD_REQUEST;
                 $data = 'No files found in request. Did you forget to specify the formdata key "gallery"?';
+
                 return $this->json($data, $status);
             }
             $data = $this->filmService->uploadGallery($id, $files);
@@ -332,7 +335,7 @@ class FilmController extends AbstractController
     }
 
     /**
-     * Delete a picture or pictures from the film gallery by file name(s)
+     * Delete a picture or pictures from the film gallery by file name(s).
      */
     #[Route(
         path: 'api/films/{id}/gallery',
@@ -355,6 +358,7 @@ class FilmController extends AbstractController
             if (empty($dto->fileNames)) {
                 $status = Response::HTTP_BAD_REQUEST;
                 $data = 'The request is empty. No file names found.';
+
                 return $this->json($data, $status);
             }
             $data = $this->filmService->deleteFromGallery($id, $dto->fileNames);
@@ -387,6 +391,7 @@ class FilmController extends AbstractController
             $data = $e->getMessage();
             $status = Response::HTTP_INTERNAL_SERVER_ERROR;
         }
+
         return $this->json($data, $status);
     }
 
@@ -409,6 +414,7 @@ class FilmController extends AbstractController
             $data = $e->getMessage();
             $status = Response::HTTP_INTERNAL_SERVER_ERROR;
         }
+
         return $this->json($data, $status);
     }
 }
