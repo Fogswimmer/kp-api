@@ -9,7 +9,6 @@ use App\Mapper\Entity\UserMapper;
 use App\Message\LoginMessage;
 use App\Model\Response\Entity\User\UserDetail;
 use App\Service\Entity\UserService;
-use App\Service\NotificationService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -29,7 +28,7 @@ class UserController extends AbstractController
     }
 
     #[Route('/api/current-user', name: 'api_current_user', methods: ['POST', 'GET'])]
-    public function index(Request $request,  #[MapQueryString]LocaleDto $localeDto): Response
+    public function index(Request $request, #[MapQueryString] LocaleDto $localeDto): Response
     {
         $token = $request->headers->get('Authorization');
 
@@ -46,9 +45,9 @@ class UserController extends AbstractController
 
         $uname = $user->getDisplayName() ?: $user->getUsername();
         $ip = $request->getClientIp();
-        
+
         $message = new LoginMessage($uname, $ip, $localeDto->locale, $user->getEmail());
-        
+
         $this->bus->dispatch($message);
 
         return $this->json($mappedUser ?? null);

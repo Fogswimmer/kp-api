@@ -13,6 +13,7 @@ class VisitController extends AbstractController
     public function __construct(private VisitorCounterService $counter)
     {
     }
+
     #[Route('/api/visit', name: 'app_visit')]
     public function visit(Request $request): Response
     {
