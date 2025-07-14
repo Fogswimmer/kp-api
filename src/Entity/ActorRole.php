@@ -21,6 +21,7 @@ class ActorRole
 
     #[ORM\ManyToOne(inversedBy: 'actorRoles')]
     private ?Film $film = null;
+
     public function getId(): ?int
     {
         return $this->id;
