@@ -19,6 +19,6 @@ jobs:
           command: |
             set -e
             cd ${{secrets.PROJECT_FOLDER}};
-            git pull origin main;
+            git pull;
             docker compose down --remove-orphans;
             docker compose up -d --build;
