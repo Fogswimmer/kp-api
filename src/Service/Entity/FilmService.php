@@ -401,7 +401,7 @@ class FilmService
             foreach ($fileNames as $fileName) {
                 if (strpos($poster, $fileName) !== false) {
                     $film->setPoster(null);
-                    $this->repository->store($poster);
+                    $this->repository->store($film);
                 }
             }
         }
