@@ -396,15 +396,19 @@ class FilmService
         foreach ($fileNames as $fileName) {
             $foundPictures[] = $this->fileSystemService->searchFiles($dirName, $fileName);
         }
-
+        $poster = $film->getPoster();
+        if (null !== $poster) {
+            foreach ($fileNames as $fileName) {
+                if (strpos($poster, $fileName) !== false) {
+                    $film->setPoster(null);
+                    $this->repository->store($poster);
+                }
+            }
+        }
         foreach ($foundPictures as $picture) {
             foreach ($picture as $file) {
                 $this->fileSystemService->removeFile($file);
             }
-        }
-        // TODO
-        if ($film->getPoster() !== null && in_array($film->getPoster(), $fileNames)) {
-            $film->setPoster(null);
         }
 
         return $this->findForm($film->getSlug());

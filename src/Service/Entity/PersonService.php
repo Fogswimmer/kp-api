@@ -2,10 +2,11 @@
 
 namespace App\Service\Entity;
 
-use App\Dto\Entity\Person\PersonQueryDto;
 use App\Dto\Entity\Person\PersonDto;
+use App\Dto\Entity\Person\PersonQueryDto;
 use App\Entity\Person;
 use App\Entity\User;
+use App\EntityListener\PersonListener;
 use App\Enum\Specialty;
 use App\Exception\NotFound\PersonNotFoundException;
 use App\Mapper\Entity\PersonMapper;
@@ -19,7 +20,6 @@ use App\Repository\UserRepository;
 use App\Service\FileSystemService;
 use Symfony\Component\Security\Http\Attribute\CurrentUser;
 use Symfony\Contracts\Translation\TranslatorInterface;
-use App\EntityListener\PersonListener;
 
 class PersonService
 {
@@ -31,7 +31,8 @@ class PersonService
         private TranslatorInterface $translator,
         private UserRepository $userRepository,
         private PersonListener $personListener
-    ) {}
+    ) {
+    }
 
     public function get(string $slug, ?string $locale = null): PersonDetail
     {
@@ -45,6 +46,7 @@ class PersonService
         if (!$personDetail->getCover()) {
             $personDetail->setCover($this->specifyCoverPath($id));
         }
+
         return $personDetail;
     }
 
@@ -112,7 +114,7 @@ class PersonService
         $specialtyIds = $dto->specialtyIds;
 
         foreach ($specialtyIds as $specialtyId) {
-            $specialties[] =  $specialtyId;
+            $specialties[] = $specialtyId;
         }
 
         $person->setSpecialties($specialties);
@@ -172,8 +174,8 @@ class PersonService
         $maxIndex = !empty($currentFileIndexes) ? max($currentFileIndexes) : 0;
 
         foreach ($files as $file) {
-            $maxIndex++;
-            $indexedFileName = 'photo-' . $maxIndex;
+            ++$maxIndex;
+            $indexedFileName = 'photo-'.$maxIndex;
             $this->fileSystemService->upload($file, $dirName, $indexedFileName);
         }
 
@@ -190,7 +192,7 @@ class PersonService
             $this->fileSystemService->removeFile($currentFile);
         }
 
-        $this->fileSystemService->upload($file, $dirName, 'cover_' . uniqId());
+        $this->fileSystemService->upload($file, $dirName, 'cover_'.uniqid());
 
         $fullPath = $this->fileSystemService->searchFiles($dirName, 'cover')[0] ?? '';
         $shortPath = $this->fileSystemService->getShortPath($fullPath);
@@ -203,7 +205,6 @@ class PersonService
         return $this->findForm($person->getSlug());
     }
 
-
     public function deletePhotos(int $id, array $fileNames): PersonForm
     {
         $person = $this->repository->find($id);
@@ -212,6 +213,15 @@ class PersonService
 
         foreach ($fileNames as $fileName) {
             $foundPictures[] = $this->fileSystemService->searchFiles($dirName, $fileName);
+        }
+        $avatar = $person->getAvatar();
+        if (null !== $avatar) {
+            foreach ($fileNames as $fileName) {
+                if (strpos($avatar, $fileName) !== false) {
+                    $person->setAvatar(null);
+                    $this->repository->store($person);
+                }
+            }
         }
 
         foreach ($foundPictures as $picture) {
@@ -260,7 +270,6 @@ class PersonService
         return $result;
     }
 
-
     public function listPopularActors(string $locale): PersonList
     {
         $actors = $this->listSpecialistsBySpecialty(Specialty::ACTOR);
@@ -286,7 +295,7 @@ class PersonService
             $currentPage = $personQueryDto->offset / $personQueryDto->limit + 1;
         }
         $items = array_map(
-            fn(Person $person) => $this->personMapper->mapToDetail($person, new PersonDetail(), $locale),
+            fn (Person $person) => $this->personMapper->mapToDetail($person, new PersonDetail(), $locale),
             $persons
         );
         foreach ($items as $item) {
@@ -329,7 +338,7 @@ class PersonService
     {
         $subDirByIdPath = $this->createUploadsDir($id);
 
-        $photosDirPath = $subDirByIdPath . DIRECTORY_SEPARATOR . 'photos';
+        $photosDirPath = $subDirByIdPath.DIRECTORY_SEPARATOR.'photos';
         $this->fileSystemService->createDir($photosDirPath);
 
         return $photosDirPath;
@@ -350,7 +359,7 @@ class PersonService
         $personBaseUploadsDir = $this->fileSystemService->getUploadsDirname('person');
 
         $stringId = strval($id);
-        $subDirByIdPath = $personBaseUploadsDir . DIRECTORY_SEPARATOR . $stringId;
+        $subDirByIdPath = $personBaseUploadsDir.DIRECTORY_SEPARATOR.$stringId;
 
         $this->fileSystemService->createDir($subDirByIdPath);
 
