@@ -19,7 +19,6 @@ jobs:
           user: ${{secrets.SSH_USER}}
           private_key: ${{secrets.SSH_PRIVATE_KEY}}
           command: |
-            set -e
             cd ${{secrets.PROJECT_FOLDER}}
             git pull
             cd ..
