@@ -6,8 +6,9 @@ echo "Initializing entrypoint script..."
 mkdir -p var public/uploads migrations
 
 echo "Setting permissions..."
-chown -R www-data:www-data var public/uploads
-chmod -R 775 var public/uploads
+sudo chown -R www-data:www-data var public/uploads
+find var public/uploads -type d -exec chmod 775 {} \;
+find var public/uploads -type f -exec chmod 664 {} \;
 
 # echo "Waiting for the database to be ready..."
 # MAX_TRIES=30
