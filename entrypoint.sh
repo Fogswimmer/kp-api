@@ -47,14 +47,14 @@ php bin/console cache:warmup
 
 
 echo "Launching Messenger consumer..."
-php bin/console messenger:consume async --time-limit=3600 --memory-limit=128M &
+php bin/console messenger:consume async -vvv --time-limit=3600 --memory-limit=128M &
 WORKER_PID=$!
 
 echo "Starting Apache..."
 apache2-foreground &
 APACHE_PID=$!
 
-wait -n
+wait
 
 echo "Stopping background processes..."
 kill -TERM "$WORKER_PID" 2>/dev/null || true
