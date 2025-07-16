@@ -20,7 +20,8 @@ jobs:
           private_key: ${{secrets.SSH_PRIVATE_KEY}}
           command: |
             set -e
-            cd ${{secrets.PROJECT_FOLDER}};
-            git pull;
-            docker compose down --remove-orphans;
-            docker compose up -d --build;
+            cd ${{secrets.PROJECT_FOLDER}}
+            git pull
+            cd ..
+            docker compose down --remove-orphans
+            docker compose up -d --build
