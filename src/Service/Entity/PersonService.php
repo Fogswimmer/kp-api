@@ -270,7 +270,7 @@ class PersonService
         return $result;
     }
 
-    public function listPopularActors(string $locale): PersonList
+    public function listPopularActors(string $locale, int $count): PersonList
     {
         $actors = $this->listSpecialistsBySpecialty(Specialty::ACTOR);
         $popularActors = [];
@@ -279,6 +279,7 @@ class PersonService
                 $popularActors[] = $actor;
             }
         }
+        array_slice($popularActors, $count);
 
         return $this->personMapper->mapToEntityList($popularActors, $locale);
     }
