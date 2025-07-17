@@ -16,13 +16,13 @@ class PersonMapper
 {
     public function __construct(
         private TranslatorInterface $translator,
-    ) {}
+    ) {
+    }
 
     public function mapToEntityList(array $persons, $locale = null): PersonList
     {
         $items = array_map(
-            fn(Person $person) =>
-            $this->mapToEntityListItem($person, new PersonListItem(), $locale),
+            fn (Person $person) => $this->mapToEntityListItem($person, new PersonListItem(), $locale),
             $persons
         );
 
@@ -39,6 +39,7 @@ class PersonMapper
             ->setInternationalName($person->getInternationalName())
             ->setSpecialtyNames($this->mapSpecialtyNamesIncludingGender($person, $locale))
             ->setBio($person->getBio() ?: '')
+            ->setFilmWorks($this->mapToFilmWorks($person))
         ;
     }
 
@@ -100,9 +101,9 @@ class PersonMapper
     public function mapSpecialtyNamesIncludingGender(Person $person, ?string $locale): array
     {
         $specialtyEnums = $this->specialtyIdsToEnums($person->getSpecialties());
+
         return array_map(
-            fn(Specialty $specialty) =>
-            $specialty->trans(
+            fn (Specialty $specialty) => $specialty->trans(
                 $this->translator,
                 $locale,
                 $person->getGender(),
@@ -115,7 +116,7 @@ class PersonMapper
     {
         $films = $person->getFilms()->toArray();
 
-        return array_map(fn(Film $film) => $film->getId(), $films);
+        return array_map(fn (Film $film) => $film->getId(), $films);
     }
 
     private function mapToFilmWorks(Person $person): array
@@ -141,7 +142,7 @@ class PersonMapper
             $films = $person->{$config['method']}()->toArray();
 
             if (!empty($films)) {
-                $filmWorks[$config['key']] = array_map(fn(Film $film) => [
+                $filmWorks[$config['key']] = array_map(fn (Film $film) => [
                     'slug' => $film->getSlug(),
                     'name' => $film->getName(),
                     'internationalName' => $film->getInternationalName(),
@@ -154,7 +155,6 @@ class PersonMapper
         return $filmWorks;
     }
 
-
     private function mapPublisherData(User $publisher): array
     {
         return [
@@ -165,11 +165,11 @@ class PersonMapper
 
     private function mapSpecialtiesToIds(array $specialties)
     {
-        return array_map(fn(int $specialty) => $specialty, $specialties);
+        return array_map(fn (int $specialty) => $specialty, $specialties);
     }
 
     private function specialtyIdsToEnums(array $specialties)
     {
-        return array_map(fn(int $specialty) => Specialty::tryFrom($specialty), $specialties);
+        return array_map(fn (int $specialty) => Specialty::tryFrom($specialty), $specialties);
     }
 }

@@ -14,6 +14,7 @@ class PersonListItem
         ?string $internationalName = null,
         ?array $specialtyNames = [],
         ?string $bio = null,
+        ?array $filmWorks = [],
     ) {
         $this->id = $id;
         $this->name = $fullName;
@@ -22,6 +23,7 @@ class PersonListItem
         $this->internationalName = $internationalName;
         $this->specialtyNames = $specialtyNames;
         $this->bio = $bio;
+        $this->filmWorks = $filmWorks;
     }
 
     #[OA\Property(example: 1)]
@@ -40,7 +42,7 @@ class PersonListItem
 
     public ?string $bio = null;
 
-
+    public ?array $filmWorks = [];
 
     public function getId(): int
     {
@@ -53,6 +55,7 @@ class PersonListItem
 
         return $this;
     }
+
     public function getName(): string
     {
         return $this->name;
@@ -125,4 +128,15 @@ class PersonListItem
         return $this;
     }
 
+    public function setFilmWorks(array $filmWorks): static
+    {
+        $this->filmWorks = $filmWorks;
+
+        return $this;
+    }
+
+    public function getFilmWorks(): array
+    {
+        return $this->filmWorks;
+    }
 }
