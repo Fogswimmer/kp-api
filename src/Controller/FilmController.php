@@ -135,7 +135,7 @@ class FilmController extends AbstractController
     {
         $status = Response::HTTP_OK;
         $data = null;
-        $count = 6;
+        $count = 5;
         try {
             $data = $this->filmService->latest($count);
         } catch (FilmNotFoundException $e) {

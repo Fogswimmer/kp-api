@@ -405,7 +405,8 @@ class PersonController extends AbstractController
         $status = Response::HTTP_OK;
 
         try {
-            $data = $this->personService->listPopularActors($dto->locale);
+            $count = 5;
+            $data = $this->personService->listPopularActors($dto->locale, $count);
         } catch (\Throwable $e) {
             $this->logger->error($e);
             $data = $e->getMessage();
