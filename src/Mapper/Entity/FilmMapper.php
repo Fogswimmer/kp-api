@@ -187,6 +187,7 @@ class FilmMapper
                 return [
                     'slug' => $actor->getSlug(),
                     'name' => $actor->getFullname(),
+                    'internationalName' => $actor->getInternationalName() ?? null,
                     'avatar' => $actor->getAvatar(),
                 ];
             },
@@ -200,6 +201,7 @@ class FilmMapper
             return $person ? [
                 'slug' => $person->getSlug() ?? null,
                 'name' => $person->getFullName() ?? null,
+                'internationalName' => $person->getInternationalName() ?? null,
                 'avatar' => $person->getAvatar() ?? null,
             ] : [];
         };
@@ -232,7 +234,7 @@ class FilmMapper
 
     private function convertAlpa2CodeToCountryName(string $countryCode): string
     {
-        $countryName = Countries::getName($countryCode);
+        $countryName = Countries::getName($countryCode) ?? "";
 
         return $countryName;
     }
