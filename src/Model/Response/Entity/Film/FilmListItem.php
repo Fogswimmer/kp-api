@@ -9,13 +9,14 @@ class FilmListItem
     public function __construct(
         ?int $id,
         ?string $name = null,
-        int $releaseYear = null,
+        ?int $releaseYear = null,
         ?string $poster = null,
         ?string $description = null,
         ?string $rating = null,
         array $assessments = [],
         ?string $slug = null,
-        ?string $internationalName = null
+        ?string $internationalName = null,
+        ?array $genreNames = [],
     ) {
         $this->id = $id;
         $this->name = $name;
@@ -26,6 +27,7 @@ class FilmListItem
         $this->assessments = $assessments;
         $this->slug = $slug;
         $this->internationalName = $internationalName;
+        $this->genreNames = $genreNames;
     }
     #[OA\Property(example: 1)]
     public ?int $id;
@@ -50,6 +52,8 @@ class FilmListItem
     public ?string $slug = '';
 
     public ?string $internationalName = '';
+
+    public array $genreNames = [];
 
     public function getId(): int
     {
@@ -168,4 +172,15 @@ class FilmListItem
         return $this;
     }
 
+    public function getGenreNames(): array
+    {
+        return $this->genreNames;
+    }
+
+    public function setGenreNames(array $genres): static
+    {
+        $this->genreNames = $genres;
+
+        return $this;
+    }
 }

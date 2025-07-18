@@ -91,7 +91,7 @@ class FilmRepository extends ServiceEntityRepository
             FROM jsonb_array_elements_text(f.genres::jsonb) AS fg
             WHERE fg::int IN (
                 SELECT (jsonb_array_elements_text(tf.genres::jsonb))::int
-        )
+                )
             ) AS common_genres_count
                 FROM film f
                 CROSS JOIN (
