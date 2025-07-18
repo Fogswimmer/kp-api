@@ -24,10 +24,10 @@ class Film
     #[ORM\Column(length: 255)]
     private ?string $name = null;
 
-    #[ORM\Column(type: Types::SIMPLE_ARRAY)]
+    #[ORM\Column(type: Types::JSON)]
     private array $genres = [];
 
-    #[ORM\Column(type: Types::INTEGER)]
+    #[ORM\Column]
     private ?int $releaseYear = null;
 
     #[ORM\Column(type: Types::TEXT)]
@@ -35,6 +35,8 @@ class Film
 
     #[ORM\Column(type: Types::FLOAT)]
     private ?float $rating = null;
+
+    private string $preview = '';
 
     private array $gallery = [];
 
