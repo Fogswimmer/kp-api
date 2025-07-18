@@ -40,6 +40,7 @@ class FilmMapper
             ->setPoster($film->getPoster())
             ->setSlug($film->getSlug())
             ->setInternationalName($film->getInternationalName())
+            ->setGenreNames($this->mapGenresToNames($film->getGenres()))
         ;
     }
 
@@ -117,7 +118,6 @@ class FilmMapper
         );
     }
 
-    
 
     private function setFormattedDuration($duration): string
     {
