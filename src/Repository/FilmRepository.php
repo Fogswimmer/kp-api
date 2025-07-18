@@ -87,46 +87,31 @@ class FilmRepository extends ServiceEntityRepository
     {
         $connection = $this->getEntityManager()->getConnection();
         $query = 'SELECT
-        f.id,
-        f.genres,
-        f.directed_by_id,
-        f.producer_id,
-        f.writer_id,
-        f.composer_id,
-        f.publisher_id,
-        f.name,
-        f.international_name,
-        f.release_year,
-        f.rating,
-        f.duration,
-        f.description,
-        f.poster,
-        f.created_at,
-        f.updated_at,
-        f.age,
-        f.slug,
-        f.country,
-        f.budget,
-        f.fees,
-        (
-            SELECT COUNT(*)
-            FROM jsonb_array_elements_text(f.genres::jsonb) fg
-            WHERE fg IN (
-                SELECT jsonb_array_elements_text(tf.genres::jsonb)
-            )
+    f.*,
+    (
+        SELECT COUNT(*)
+        FROM jsonb_array_elements_text(f.genres) AS fg
+        WHERE fg::int IN (
+            SELECT (jsonb_array_elements_text(tf.genres))::int
+        )
         ) AS common_genres_count
         FROM film f
         CROSS JOIN (
-            SELECT id, name, genres
+            SELECT genres
             FROM film
             WHERE id = :filmId
         ) tf
-        WHERE f.id != tf.id
-        AND f.genres::jsonb ?| array(
-            SELECT jsonb_array_elements_text(tf.genres::jsonb)
+        WHERE f.id != :filmId
+        AND EXISTS (
+            SELECT 1
+            FROM jsonb_array_elements_text(f.genres) fg
+            WHERE fg::int IN (
+                SELECT (jsonb_array_elements_text(tf.genres))::int
+            )
         )
         ORDER BY common_genres_count DESC
-        LIMIT :count';
+        LIMIT :count
+        ;';
 
         $stmt = $connection->prepare($query);
         $stmt->bindValue('filmId', $filmId, \PDO::PARAM_INT);
