@@ -24,7 +24,7 @@ class Film
     #[ORM\Column(length: 255)]
     private ?string $name = null;
 
-    #[ORM\Column(type: 'integer[]')]
+    #[ORM\Column(type: Types::SIMPLE_ARRAY)]
     private array $genres = [];
 
     #[ORM\Column(type: Types::INTEGER)]
