@@ -32,10 +32,10 @@ class FilmService
 {
     public function __construct(
         private FilmRepository $repository,
+        private FilmMapper $filmMapper,
         private AssessmentRepository $assessmentRepository,
         private UserRepository $userRepository,
         private PersonRepository $personRepository,
-        private FilmMapper $filmMapper,
         private PersonMapper $personMapper,
         private FileSystemService $fileSystemService,
         private ActorRoleRepository $actorRoleRepository,
@@ -139,6 +139,27 @@ class FilmService
     public function top(int $count): FilmList
     {
         $films = $this->repository->findTop($count);
+
+        $items = array_map(
+            fn (Film $film) => $this->filmMapper->mapToListItem($film),
+            $films
+        );
+
+        foreach ($items as $item) {
+            $galleryPaths = $this->setGalleryPaths($item->getId());
+            $item->setGallery($galleryPaths);
+        }
+
+        return new FilmList($items);
+    }
+
+    public function similarGenres(string $slug, int $count): FilmList
+    {
+        $film = $this->repository->findBySlug($slug);
+        if (!$film) {
+            throw new FilmNotFoundException();
+        }
+        $films = $this->repository->findWithSimilarGenres($film->getId(), $count);
 
         $items = array_map(
             fn (Film $film) => $this->filmMapper->mapToListItem($film),

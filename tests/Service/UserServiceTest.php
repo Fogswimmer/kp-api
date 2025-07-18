@@ -40,5 +40,4 @@ class UserServiceTest extends KernelTestCase
         $this->assertSame($user, $result);
         $this->assertInstanceOf(\DateTimeInterface::class, $result->getLastLogin());
     }
-
 }
