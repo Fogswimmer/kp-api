@@ -147,7 +147,40 @@ class FilmController extends AbstractController
     }
 
     /**
+<<<<<<< HEAD
      * Find 6 top films.
+=======
+     * Find films with similar genres.
+     */
+    #[Route(
+        path: '/api/films/similar-genres/{slug}',
+        name: 'api_film_similar_genre',
+        requirements: ['slug' => '[a-z0-9-]+'],
+        methods: ['GET'],
+    )]
+    #[OA\Response(
+        response: 200,
+        description: 'Successful response',
+        content: new Model(type: FilmList::class)
+    )]
+    public function similarGenres(string $slug): Response
+    {
+        $status = Response::HTTP_OK;
+        $data = null;
+        $count = 5;
+        try {
+            $data = $this->filmService->similarGenres($slug, $count);
+        } catch (FilmNotFoundException $e) {
+            $status = Response::HTTP_NOT_FOUND;
+            $this->logger->error($e);
+        }
+
+        return $this->json($data, $status);
+    }
+
+    /**
+     * Find 5 top films.
+>>>>>>> 08f7e2a7de3940711af806c0d6ea16c2d3f2992b
      */
     #[Route(
         path: '/api/films-top',
@@ -163,7 +196,7 @@ class FilmController extends AbstractController
     {
         $status = Response::HTTP_OK;
         $data = null;
-        $count = 6;
+        $count = 5;
         try {
             $data = $this->filmService->top($count);
         } catch (FilmNotFoundException $e) {
