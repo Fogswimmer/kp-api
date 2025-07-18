@@ -117,6 +117,8 @@ class FilmMapper
         );
     }
 
+    
+
     private function setFormattedDuration($duration): string
     {
         return sprintf('%02d:%02d', $duration->format('H'), $duration->format('i'));
