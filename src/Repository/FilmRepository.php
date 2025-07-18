@@ -86,32 +86,30 @@ class FilmRepository extends ServiceEntityRepository
     public function findWithSimilarGenres(int $filmId, int $count): array
     {
         $connection = $this->getEntityManager()->getConnection();
-        $query = 'SELECT
-    f.*,
-    (
-        SELECT COUNT(*)
-        FROM jsonb_array_elements_text(f.genres) AS fg
-        WHERE fg::int IN (
-            SELECT (jsonb_array_elements_text(tf.genres))::int
+        $query = 'SELECT f.*, (
+            SELECT COUNT(*)
+            FROM jsonb_array_elements_text(f.genres::jsonb) AS fg
+            WHERE fg::int IN (
+                SELECT (jsonb_array_elements_text(tf.genres::jsonb))::int
         )
-        ) AS common_genres_count
-        FROM film f
-        CROSS JOIN (
-            SELECT genres
-            FROM film
-            WHERE id = :filmId
-        ) tf
+            ) AS common_genres_count
+                FROM film f
+                CROSS JOIN (
+                    SELECT genres
+                    FROM film
+                    WHERE id = :filmId
+                ) tf
         WHERE f.id != :filmId
         AND EXISTS (
             SELECT 1
-            FROM jsonb_array_elements_text(f.genres) fg
+            FROM jsonb_array_elements_text(f.genres::jsonb) fg
             WHERE fg::int IN (
-                SELECT (jsonb_array_elements_text(tf.genres))::int
+                SELECT (jsonb_array_elements_text(tf.genres::jsonb))::int
             )
         )
         ORDER BY common_genres_count DESC
-        LIMIT :count
-        ;';
+        LIMIT :count;
+        ';
 
         $stmt = $connection->prepare($query);
         $stmt->bindValue('filmId', $filmId, \PDO::PARAM_INT);
