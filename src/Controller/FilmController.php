@@ -150,7 +150,7 @@ class FilmController extends AbstractController
      * Find films with similar genres.
      */
     #[Route(
-        path: '/api/films/similar-genres/{slug}',
+        path: '/api/films/{slug}',
         name: 'api_film_similar_genre',
         requirements: ['slug' => '[a-z0-9-]+'],
         methods: ['GET'],

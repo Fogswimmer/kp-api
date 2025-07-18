@@ -88,7 +88,6 @@ class FilmRepository extends ServiceEntityRepository
         $connection = $this->getEntityManager()->getConnection();
         $query = 'SELECT
             f.id,
-            f.title,
             f.genres,
             f.directed_by_id,
             f.producer_id,
