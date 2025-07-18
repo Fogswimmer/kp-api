@@ -108,27 +108,13 @@ class FilmRepository extends ServiceEntityRepository
         f.country,
         f.budget,
         f.fees,
-        jsonb_array_length(
-            (SELECT jsonb_agg(elem) 
-                FROM jsonb_array_elements(f.genres::jsonb) elem
-                WHERE elem IN (SELECT jsonb_array_elements(tf.genres::jsonb)))
-        ) AS common_genres_count,
-        ROUND(
-            jsonb_array_length(
-                (SELECT jsonb_agg(elem) 
-                FROM jsonb_array_elements(f.genres::jsonb) elem
-                WHERE elem IN (SELECT jsonb_array_elements(tf.genres::jsonb)))
-            )::numeric /
-            jsonb_array_length(
-                (SELECT jsonb_agg(DISTINCT elem) 
-                    FROM (
-                        SELECT jsonb_array_elements(f.genres::jsonb) elem
-                        UNION
-                        SELECT jsonb_array_elements(tf.genres::jsonb) elem
-                    ) t)
-            )::numeric,
-            3
-        ) AS similarity_score
+        (
+            SELECT COUNT(*)
+            FROM jsonb_array_elements_text(f.genres::jsonb) fg
+            WHERE fg IN (
+                SELECT jsonb_array_elements_text(tf.genres::jsonb)
+            )
+        ) AS common_genres_count
         FROM film f
         CROSS JOIN (
             SELECT id, name, genres
@@ -136,15 +122,16 @@ class FilmRepository extends ServiceEntityRepository
             WHERE id = :filmId
         ) tf
         WHERE f.id != tf.id
-        AND f.genres::jsonb ?| array(SELECT jsonb_array_elements_text(tf.genres::jsonb))
-        ORDER BY common_genres_count DESC, similarity_score DESC
-        LIMIT $1;';
-        
+        AND f.genres::jsonb ?| array(
+            SELECT jsonb_array_elements_text(tf.genres::jsonb)
+        )
+        ORDER BY common_genres_count DESC
+        LIMIT :count';
+
         $stmt = $connection->prepare($query);
-        $stmt->bindValue('filmId', $filmId);
-        $stmt->bindValue(1, $count, \PDO::PARAM_INT);
+        $stmt->bindValue('filmId', $filmId, \PDO::PARAM_INT);
+        $stmt->bindValue('count', $count, \PDO::PARAM_INT);
         $result = $stmt->executeQuery();
-        
         return $result->fetchAllAssociative();
     }
 }
