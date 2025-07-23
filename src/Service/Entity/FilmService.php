@@ -39,7 +39,7 @@ class FilmService
         private PersonMapper $personMapper,
         private FileSystemService $fileSystemService,
         private ActorRoleRepository $actorRoleRepository,
-        private FilmListener $filmListener
+        private FilmListener $filmListener,
     ) {
     }
 
@@ -273,7 +273,6 @@ class FilmService
             ->setDescription($dto->description)
             ->setAge($dto->age)
             ->setSlogan($dto->slogan)
-            ->setTrailer($dto->trailer)
             ->setRating(0)
             ->setPublisher($user)
             ->setBudget($dto->budget)
@@ -282,6 +281,10 @@ class FilmService
 
         $this->repository->store($film);
         $this->userRepository->store($user);
+
+        if (null === $film->getSlug()) {
+            $film->setSlug($this->filmListener->generateSlug($film));
+        }
 
         return $this->findForm($film->getSlug());
     }
@@ -361,10 +364,6 @@ class FilmService
             ->setBudget($dto->budget)
             ->setFees($dto->fees)
             ->setCountry($dto->countryCode);
-
-        if ($dto->trailer !== null) {
-            $film->setTrailer($dto->trailer);
-        }
 
         $this->repository->store($film);
 
