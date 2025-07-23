@@ -33,14 +33,8 @@ class FilmDto
         public readonly ?string $description = null,
         #[OA\Property(example: '2:30:00')]
         public readonly ?\DateTimeImmutable $duration = null,
-        #[OA\Property(example: 'https://example.com/cover.jpg')]
-        public readonly ?string $cover = null,
         #[OA\Property(example: 'https://example.com/poster.jpg')]
         public readonly ?string $poster = null,
-        #[OA\Property(example: 'https://youtube.com/watch?v=dQw4w9WgXcQ')]
-        public readonly ?string $trailer = null,
-        #[OA\Property(example: ['John Doe', 'Jane Smith'])]
-        public readonly ?array $roleNames = [],
         #[OA\Property(example: 203123431.43)]
         public readonly ?string $budget = null,
         #[OA\Property(example: 103123431.23)]

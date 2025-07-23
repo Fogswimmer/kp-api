@@ -36,8 +36,6 @@ class Film
     #[ORM\Column(type: Types::FLOAT)]
     private ?float $rating = null;
 
-    private string $preview = '';
-
     private array $gallery = [];
 
     /**
@@ -74,9 +72,6 @@ class Film
     #[ORM\OneToMany(targetEntity: Assessment::class, mappedBy: 'film', cascade: ['persist', 'remove'])]
     private Collection $assessments;
 
-    #[ORM\Column(length: 255, nullable: true)]
-    private ?string $cover = null;
-
     /**
      * @var Collection<int, ActorRole>
      */
@@ -88,9 +83,6 @@ class Film
 
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $poster = null;
-
-    #[ORM\Column(length: 255, nullable: true)]
-    private ?string $trailer = null;
 
     #[ORM\Column(length: 255, nullable: true, unique: true)]
     private ?string $slug = null;
@@ -208,18 +200,6 @@ class Film
     public function updateActors(array $actors): static
     {
         $this->actors = new ArrayCollection($actors);
-
-        return $this;
-    }
-
-    public function getPreview(): string
-    {
-        return $this->preview;
-    }
-
-    public function setPreview(string $preview): static
-    {
-        $this->preview = $preview;
 
         return $this;
     }
@@ -379,18 +359,6 @@ class Film
         return $this;
     }
 
-    public function getCover(): ?string
-    {
-        return $this->cover;
-    }
-
-    public function setCover(?string $cover): static
-    {
-        $this->cover = $cover;
-
-        return $this;
-    }
-
     /**
      * @return Collection<int, ActorRole>
      */
@@ -441,18 +409,6 @@ class Film
     public function setPoster(?string $poster): static
     {
         $this->poster = $poster;
-
-        return $this;
-    }
-
-    public function getTrailer(): ?string
-    {
-        return $this->trailer;
-    }
-
-    public function setTrailer(?string $trailer): static
-    {
-        $this->trailer = $trailer;
 
         return $this;
     }

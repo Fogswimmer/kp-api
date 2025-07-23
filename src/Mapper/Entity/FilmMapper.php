@@ -57,7 +57,6 @@ class FilmMapper
             ->setRating($film->getRating() ?? 0.0)
             ->setAge($film->getAge())
             ->setDuration($this->setFormattedDuration($film->getDuration()))
-            ->setCover($film->getCover() ?: '')
             ->setAssessments($this->mapAssessments($film->getAssessments()->toArray()))
             ->setRating(number_format($film->getRating(), 1) ?? 0.0)
             ->setPublisherData($film->getPublisher() ? $this->mapPublisherData($film->getPublisher()) : [])
@@ -66,7 +65,6 @@ class FilmMapper
             ->setCreatedAt($film->getCreatedAt()->format('Y-m-d'))
             ->setUpdatedAt($film->getUpdatedAt()->format('Y-m-d'))
             ->setPoster($film->getPoster())
-            ->setTrailer($film->getTrailer())
             ->setSlug($film->getSlug())
             ->setInternationalName($film->getInternationalName())
             ->setAssessmentsGraph($this->createAssessmentsGraph($film->getAssessments()->toArray()))
@@ -88,11 +86,9 @@ class FilmMapper
             ->setWriterId($film->getWriter() ? $film->getWriter()->getId() : null)
             ->setProducerId($film->getProducer() ? $film->getProducer()->getId() : null)
             ->setComposerId($film->getComposer() ? $film->getComposer()->getId() : null)
-            ->setCover($film->getCover() ?: '')
             ->setDuration($this->setFormattedDuration($film->getDuration()))
             ->setDescription($film->getDescription())
             ->setAge($film->getAge())
-            ->setTrailer($film->getTrailer())
             ->setPoster($film->getPoster())
             ->setSlug($film->getSlug())
             ->setInternationalName($film->getInternationalName())
@@ -118,6 +114,28 @@ class FilmMapper
         );
     }
 
+    public function mapToDto(Film $film): FilmDto
+    {
+        return new FilmDto(
+            $film->getName(),
+            $film->getInternationalName(),
+            $film->getSlogan(),
+            array_map(fn (Genres $genre) => $genre->value, $film->getGenres()),
+            $film->getReleaseYear(),
+            array_map(fn (Person $actor) => $actor->getId(), $film->getActors()->toArray()),
+            $film->getDirectedBy()->getId(),
+            $film->getProducer()->getId(),
+            $film->getWriter()->getId(),
+            $film->getComposer()->getId(),
+            $film->getAge(),
+            $film->getDescription(),
+            $film->getDuration(),
+            $film->getPoster(),
+            $film->getBudget(),
+            $film->getFees(),
+            $film->getCountry()
+        );
+    }
 
     private function setFormattedDuration($duration): string
     {
@@ -236,7 +254,7 @@ class FilmMapper
 
     private function convertAlpa2CodeToCountryName(string $countryCode): string
     {
-        $countryName = Countries::getName($countryCode) ?? "";
+        $countryName = Countries::getName($countryCode) ?? '';
 
         return $countryName;
     }

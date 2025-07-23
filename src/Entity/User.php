@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Entity;
 
 use App\Repository\UserRepository;
@@ -30,7 +31,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column]
     private array $roles = [];
 
-
     /**
      * @var string The hashed password
      */
@@ -52,7 +52,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      */
     #[ORM\OneToMany(targetEntity: Assessment::class, mappedBy: 'author')]
     private Collection $assessments;
-
 
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $avatar = null;
