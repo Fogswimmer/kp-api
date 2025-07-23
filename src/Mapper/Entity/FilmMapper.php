@@ -2,7 +2,6 @@
 
 namespace App\Mapper\Entity;
 
-use App\Dto\Entity\Film\FilmDto;
 use App\Entity\Assessment;
 use App\Entity\Film;
 use App\Entity\Person;
@@ -41,6 +40,7 @@ class FilmMapper
             ->setPoster($film->getPoster())
             ->setSlug($film->getSlug())
             ->setInternationalName($film->getInternationalName())
+            ->setGenreNames($this->mapGenresToNames($film->getGenres()))
         ;
     }
 

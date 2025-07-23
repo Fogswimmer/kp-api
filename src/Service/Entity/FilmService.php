@@ -156,15 +156,21 @@ class FilmService
     public function similarGenres(string $slug, int $count): FilmList
     {
         $film = $this->repository->findBySlug($slug);
+        
         if (!$film) {
             throw new FilmNotFoundException();
         }
-        $films = $this->repository->findWithSimilarGenres($film->getId(), $count);
+
+        $filmsRaw = $this->repository->findWithSimilarGenres($film->getId(), $count);
+
+        $ids = array_column($filmsRaw, 'id');
+        $films = $this->repository->findBy(['id' => $ids]);
 
         $items = array_map(
             fn (Film $film) => $this->filmMapper->mapToListItem($film),
             $films
         );
+
 
         foreach ($items as $item) {
             $galleryPaths = $this->setGalleryPaths($item->getId());
