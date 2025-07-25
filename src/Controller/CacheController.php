@@ -21,8 +21,8 @@ class CacheController extends AbstractController
     }
 
     #[Route(
-        path: 'api/translations/{locale}/gendres',
-        name: 'api_translations_gendres',
+        path: 'api/translations/{locale}/genres',
+        name: 'api_translations_genres',
         methods: ['GET'])
     ]
     public function listGenres(string $locale): Response
