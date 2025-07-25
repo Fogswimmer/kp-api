@@ -131,12 +131,17 @@ class FilmMapper
             function (Assessment $assessment) {
                 return [
                     'id' => $assessment->getId(),
-                    'authorId' => $assessment->getAuthor()->getId(),
-                    'authorName' => $assessment->getAuthor()->getDisplayName(),
-                    'authorAvatar' => $assessment->getAuthor()->getAvatar(),
                     'comment' => $assessment->getComment(),
                     'rating' => $assessment->getRating(),
                     'createdAt' => $assessment->getCreatedAt(),
+                    'pulbisherData' => [
+                        'id' => $assessment->getAuthor()->getId(),
+                        'name' => $assessment->getAuthor()->getDisplayName(),
+                        'avatar' => $assessment->getAuthor()->getAvatar(),
+                        'about' => $assessment->getAuthor()->getAbout(),
+                        'publicationsCount' => count($assessment->getAuthor()->getPublishedPersons()),
+                        'assessmentsCount' => count($assessment->getAuthor()->getAssessments()),
+                    ],
                 ];
             },
             $assessments
