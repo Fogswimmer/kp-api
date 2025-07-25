@@ -137,6 +137,7 @@ class FilmMapper
                     'publisherData' => [
                         'id' => $assessment->getAuthor()->getId(),
                         'name' => $assessment->getAuthor()->getDisplayName(),
+                        'age' => $assessment->getAuthor()->getAge(),
                         'avatar' => $assessment->getAuthor()->getAvatar(),
                         'about' => $assessment->getAuthor()->getAbout(),
                         'publicationsCount' => count($assessment->getAuthor()->getPublishedPersons()),
