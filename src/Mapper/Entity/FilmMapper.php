@@ -2,6 +2,7 @@
 
 namespace App\Mapper\Entity;
 
+use App\Dto\Entity\Film\FilmDto;
 use App\Entity\Assessment;
 use App\Entity\Film;
 use App\Entity\Person;
