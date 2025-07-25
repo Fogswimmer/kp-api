@@ -134,7 +134,7 @@ class FilmMapper
                     'comment' => $assessment->getComment(),
                     'rating' => $assessment->getRating(),
                     'createdAt' => $assessment->getCreatedAt(),
-                    'pulbisherData' => [
+                    'publisherData' => [
                         'id' => $assessment->getAuthor()->getId(),
                         'name' => $assessment->getAuthor()->getDisplayName(),
                         'avatar' => $assessment->getAuthor()->getAvatar(),
