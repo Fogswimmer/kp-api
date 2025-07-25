@@ -63,13 +63,13 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      * @var Collection<int, Person>
      */
     #[ORM\OneToMany(targetEntity: Person::class, mappedBy: 'publisher')]
-    private Collection $people;
+    private Collection $publishedPersons;
 
     /**
      * @var Collection<int, Film>
      */
     #[ORM\OneToMany(targetEntity: Film::class, mappedBy: 'publisher')]
-    private Collection $publisher;
+    private Collection $publishedFilms;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
     private ?\DateTimeInterface $lastLogin = null;
@@ -77,7 +77,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function __construct()
     {
         $this->assessments = new ArrayCollection();
-        $this->people = new ArrayCollection();
+        $this->publishedPersons = new ArrayCollection();
         $this->publisher = new ArrayCollection();
     }
 
@@ -249,15 +249,15 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     /**
      * @return Collection<int, Person>
      */
-    public function getPeople(): Collection
+    public function getpublishedPersons(): Collection
     {
-        return $this->people;
+        return $this->publishedPersons;
     }
 
     public function addPerson(Person $person): static
     {
-        if (!$this->people->contains($person)) {
-            $this->people->add($person);
+        if (!$this->publishedPersons->contains($person)) {
+            $this->publishedPersons->add($person);
             $person->setPublisher($this);
         }
 
@@ -266,7 +266,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     public function removePerson(Person $person): static
     {
-        if ($this->people->removeElement($person)) {
+        if ($this->publishedPersons->removeElement($person)) {
             // set the owning side to null (unless already changed)
             if ($person->getPublisher() === $this) {
                 $person->setPublisher(null);
@@ -279,27 +279,27 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     /**
      * @return Collection<int, Film>
      */
-    public function getPublisher(): Collection
+    public function getPublishedFilms(): Collection
     {
-        return $this->publisher;
+        return $this->publishedFilms;
     }
 
-    public function addPublisher(Film $publisher): static
+    public function addPublisher(Film $film): static
     {
-        if (!$this->publisher->contains($publisher)) {
-            $this->publisher->add($publisher);
-            $publisher->setPublisher($this);
+        if (!$this->publishedFilms->contains($film)) {
+            $this->publishedFilms->add($film);
+            $film->setPublisher($this);
         }
 
         return $this;
     }
 
-    public function removePublisher(Film $publisher): static
+    public function removePublisher(Film $film): static
     {
-        if ($this->publisher->removeElement($publisher)) {
+        if ($this->publishedFilms->removeElement($film)) {
             // set the owning side to null (unless already changed)
-            if ($publisher->getPublisher() === $this) {
-                $publisher->setPublisher(null);
+            if ($film->getPublisher() === $this) {
+                $film->setPublisher(null);
             }
         }
 

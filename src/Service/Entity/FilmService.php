@@ -156,7 +156,7 @@ class FilmService
     public function similarGenres(string $slug, int $count): FilmList
     {
         $film = $this->repository->findBySlug($slug);
-        
+
         if (!$film) {
             throw new FilmNotFoundException();
         }
@@ -170,7 +170,6 @@ class FilmService
             fn (Film $film) => $this->filmMapper->mapToListItem($film),
             $films
         );
-
 
         foreach ($items as $item) {
             $galleryPaths = $this->setGalleryPaths($item->getId());

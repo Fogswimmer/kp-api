@@ -160,6 +160,10 @@ class PersonMapper
         return [
             'id' => $publisher->getId(),
             'name' => $publisher->getDisplayName(),
+            'avatar' => $publisher->getAvatar(),
+            'about' => $publisher->getAbout(),
+            'publicationsCount' => count($publisher->getPublishedPersons()),
+            'assessmentsCount' => count($publisher->getAssessments()),
         ];
     }
 

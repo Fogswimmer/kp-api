@@ -2,7 +2,6 @@
 
 namespace App\Mapper\Entity;
 
-use App\Dto\Entity\Film\FilmDto;
 use App\Entity\Assessment;
 use App\Entity\Film;
 use App\Entity\Person;
@@ -111,30 +110,8 @@ class FilmMapper
                 $film->getAssessments()->toArray()
             ),
             $film->getSlug(),
-            $film->getInternationalName()
-        );
-    }
-
-    public function mapToDto(Film $film): FilmDto
-    {
-        return new FilmDto(
-            $film->getName(),
             $film->getInternationalName(),
-            $film->getSlogan(),
-            array_map(fn (Genres $genre) => $genre->value, $film->getGenres()),
-            $film->getReleaseYear(),
-            array_map(fn (Person $actor) => $actor->getId(), $film->getActors()->toArray()),
-            $film->getDirectedBy()->getId(),
-            $film->getProducer()->getId(),
-            $film->getWriter()->getId(),
-            $film->getComposer()->getId(),
-            $film->getAge(),
-            $film->getDescription(),
-            $film->getDuration(),
-            $film->getPoster(),
-            $film->getBudget(),
-            $film->getFees(),
-            $film->getCountry()
+            $this->mapGenresToNames($film->getGenres())
         );
     }
 
@@ -198,6 +175,10 @@ class FilmMapper
         return [
             'id' => $publisher->getId(),
             'name' => $publisher->getDisplayName(),
+            'avatar' => $publisher->getAvatar(),
+            'about' => $publisher->getAbout(),
+            'publicationsCount' => count($publisher->getPublishedFilms()),
+            'assessmentsCount' => count($publisher->getAssessments()),
         ];
     }
 
