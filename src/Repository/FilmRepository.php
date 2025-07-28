@@ -22,30 +22,48 @@ class FilmRepository extends ServiceEntityRepository
 
     public function filterByQueryParams(FilmQueryDto $filmQueryDto): array
     {
-        $search = $filmQueryDto->search;
-        $offset = $filmQueryDto->offset;
-        $limit = $filmQueryDto->limit;
-        $sortBy = $filmQueryDto->sortBy;
-        $order = $filmQueryDto->order;
+        $search = $filmQueryDto->search ?: null;
+        $offset = $filmQueryDto->offset ?: null;
+        $limit = $filmQueryDto->limit ?: null;
+        $sortBy = $filmQueryDto->sortBy ?: null;
+        $order = $filmQueryDto->order ?: null;
+        $genres = $filmQueryDto->genres ?: null;
+        $countries = $filmQueryDto->countries ?: null;
+        $genresArr = array_map('intval', explode(',', $genres));
 
-        $queryBuilder = $this->createQueryBuilder('f')->where('1 = 1');
+        $countryCodes = explode(',', $countries);
+        $qb = $this->createQueryBuilder('f')->where('1 = 1');
 
-        if (!empty($search)) {
+        if ($search !== null) {
             $search = trim(strtolower($search));
-            $queryBuilder
-                ->where($queryBuilder->expr()->like('LOWER(f.name)', ':search'))
-                ->orWhere($queryBuilder->expr()->like('LOWER(f.internationalName)', ':search'))
+            $qb->andWhere($qb->expr()->like('LOWER(f.name)', ':search'))
+                ->orWhere($qb->expr()->like('LOWER(f.internationalName)', ':search'))
                 ->setParameter('search', "%{$search}%");
         }
-        $queryBuilder
-            ->orderBy("f.{$sortBy}", $order);
+        $qb->orderBy("f.{$sortBy}", $order);
         if ($limit !== 0) {
-            $queryBuilder
+            $qb
                 ->setMaxResults($limit)
                 ->setFirstResult($offset);
         }
+        if ($genres !== null) {
+            $genreFiltered = $this->filterByGenreIds($genresArr);
 
-        return $queryBuilder->getQuery()->getResult();
+            $genreIds = array_column($genreFiltered, 'id');
+            if (!empty($genreIds)) {
+                $qb->andWhere('f.id IN (:ids)')
+                    ->setParameter('ids', $genreIds);
+            } else {
+                return [];
+            }
+        }
+        if ($countries !== null) {
+            $qb
+                ->andWhere($qb->expr()->in('f.country', ':country'))
+                ->setParameter('country', $countryCodes);
+        }
+
+        return $qb->getQuery()->getResult();
     }
 
     public function total(): int
@@ -115,6 +133,36 @@ class FilmRepository extends ServiceEntityRepository
         $stmt->bindValue('filmId', $filmId, \PDO::PARAM_INT);
         $stmt->bindValue('count', $count, \PDO::PARAM_INT);
         $result = $stmt->executeQuery();
+
+        return $result->fetchAllAssociative();
+    }
+
+    private function filterByGenreIds(array $genres): array
+    {
+        if (empty($genres)) {
+            return [];
+        }
+
+        $conditions = [];
+        $params = [];
+
+        foreach ($genres as $index => $genreId) {
+            $paramName = "genre{$index}";
+            $conditions[] = "genres::jsonb @> :$paramName::jsonb";
+            $params[$paramName] = json_encode([(int) $genreId]);
+        }
+
+        $whereClause = implode(' OR ', $conditions);
+        $sql = <<<SQL
+        SELECT *
+        FROM film
+        WHERE $whereClause
+        SQL;
+
+        $connection = $this->getEntityManager()->getConnection();
+        $stmt = $connection->prepare($sql);
+        $result = $stmt->executeQuery($params);
+
         return $result->fetchAllAssociative();
     }
 }
