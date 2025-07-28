@@ -19,6 +19,10 @@ class FilmQueryDto
         public ?string $order = 'ASC',
         #[OA\Property(example: 'ru')]
         public ?string $locale = null,
+        #[OA\Property(example: '0,1,2')]
+        public ?string $genres = null,
+        #[OA\Property(example: 'US, RU')]
+        public ?string $countries = null,
     ) {
     }
 }
