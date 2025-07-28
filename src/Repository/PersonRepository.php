@@ -27,9 +27,10 @@ class PersonRepository extends ServiceEntityRepository
         $limit = $personQueryDto->limit;
         $sortBy = $personQueryDto->sortBy;
         $order = $personQueryDto->order;
-
+        $gender = $personQueryDto->gender ?? null;
+        $specialties = $personQueryDto->specialties ?: null;
+        $specialtiesArr = array_map('intval', explode(',', $specialties));
         $queryBuilder = $this->createQueryBuilder('p')->where('1 = 1');
-        ;
 
         if (!empty($search)) {
             $search = trim(strtolower($search));
@@ -42,6 +43,22 @@ class PersonRepository extends ServiceEntityRepository
         if ($sortBy === 'age') {
             $queryBuilder
                 ->andWhere('p.birthday IS NOT NULL');
+        }
+        if ($gender !== null) {
+            $queryBuilder
+                ->andWhere('p.gender = :gender')
+                ->setParameter('gender', $gender);
+        }
+        if ($specialties !== null) {
+            $specialtiesFiltered = $this->filterBySpecialtyIds($specialtiesArr);
+
+            $specilatyIds = array_column($specialtiesFiltered, 'id');
+            if (!empty($specilatyIds)) {
+                $queryBuilder->andWhere('p.id IN (:ids)')
+                    ->setParameter('ids', $specilatyIds);
+            } else {
+                return [];
+            }
         }
         $queryBuilder
             ->orderBy("p.{$sortBy}", $order);
@@ -61,5 +78,34 @@ class PersonRepository extends ServiceEntityRepository
             ->select('COUNT(p.id)')
             ->getQuery()
             ->getSingleScalarResult();
+    }
+
+    private function filterBySpecialtyIds(array $specialties): array
+    {
+        if (empty($specialties)) {
+            return [];
+        }
+
+        $conditions = [];
+        $params = [];
+
+        foreach ($specialties as $index => $specialtyId) {
+            $paramName = "specialty{$index}";
+            $conditions[] = "specialties::jsonb @> :$paramName::jsonb";
+            $params[$paramName] = json_encode([$specialtyId]);
+        }
+
+        $whereClause = implode(' OR ', $conditions);
+        $sql = <<<SQL
+        SELECT *
+        FROM person
+        WHERE $whereClause
+        SQL;
+
+        $connection = $this->getEntityManager()->getConnection();
+        $stmt = $connection->prepare($sql);
+        $result = $stmt->executeQuery($params);
+
+        return $result->fetchAllAssociative();
     }
 }
