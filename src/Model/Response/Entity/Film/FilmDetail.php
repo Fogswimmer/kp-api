@@ -68,6 +68,9 @@ class FilmDetail
 
     private ?string $country = null;
 
+    private ?string $countryCode = null;
+    
+
     private ?string $budget = null;
 
     private ?string $fees = null;
@@ -395,4 +398,18 @@ class FilmDetail
 
         return $this;
     }
+
+
+    public function getCountryCode(): ?string
+    {
+        return $this->countryCode;
+    }
+
+    public function setCountryCode(?string $countryCode): self
+    {
+        $this->countryCode = $countryCode;
+
+        return $this;
+    }
+
 }

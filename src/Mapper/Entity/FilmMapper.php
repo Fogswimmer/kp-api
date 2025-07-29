@@ -70,7 +70,8 @@ class FilmMapper
             ->setAssessmentsGraph($this->createAssessmentsGraph($film->getAssessments()->toArray()))
             ->setBudget($film->getBudget())
             ->setFees($film->getFees())
-            ->setCountry($film->getCountry() ? $this->convertAlpa2CodeToCountryName($film->getCountry()) : null);
+            ->setCountry($film->getCountry() ? $this->convertAlpa2CodeToCountryName($film->getCountry()) : null)
+            ->setCountryCode($film->getCountry());
     }
 
     public function mapToForm(Film $film, FilmForm $model): FilmForm
