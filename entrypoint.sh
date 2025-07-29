@@ -10,24 +10,12 @@ chown -R www-data:www-data var public/uploads
 find var public/uploads -type d -exec chmod 775 {} \;
 find var public/uploads -type f -exec chmod 664 {} \;
 
-# echo "Waiting for the database to be ready..."
-# MAX_TRIES=30
-# TRIES=0
-# until php bin/console doctrine:query:sql "SELECT 1" > /dev/null 2>&1; do
-#   sleep 2
-#   TRIES=$((TRIES+1))
-#   echo "Connection attempt #$TRIES..."
-#   if [ "$TRIES" -ge "$MAX_TRIES" ]; then
-#     echo "Failed to connect to the database after $MAX_TRIES attempts. Aborting."
-#     exit 1
-#   fi
-# done
-# echo "Database is ready!"
 
 if [ ! -f "vendor/autoload.php" ]; then
   echo "Installing Composer dependencies..."
-  composer install --prefer-dist --no-interaction
+  composer install --prefer-dist --no-interaction --optimize-autoloader
 fi
+
 
 echo "Clearing and warming up Symfony cache..."
 php bin/console cache:clear
