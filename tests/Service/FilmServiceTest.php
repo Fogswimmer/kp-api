@@ -15,6 +15,7 @@ use App\Repository\PersonRepository;
 use App\Repository\UserRepository;
 use App\Service\Entity\FilmService;
 use App\Service\FileSystemService;
+use App\Service\ImageProcessorService;
 use PHPUnit\Framework\MockObject\MockObject;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Zenstruck\Foundry\Test\Factories;
@@ -42,6 +43,8 @@ class FilmServiceTest extends KernelTestCase
 
     private FilmListener|MockObject $filmListenerMock;
 
+    private ImageProcessorService|MockObject $imageProcessorServiceMock;
+
     protected function setUp(): void
     {
         parent::setUp();
@@ -55,6 +58,7 @@ class FilmServiceTest extends KernelTestCase
         $this->fileSystemServiceMock = $this->createMock(FileSystemService::class);
         $this->actorRoleRepositoryMock = $this->createMock(ActorRoleRepository::class);
         $this->filmListenerMock = $this->createMock(FilmListener::class);
+        $this->imageProcessorServiceMock = $this->createMock(ImageProcessorService::class);
 
         $this->filmService = new FilmService(
             $this->repositoryMock,
@@ -66,6 +70,7 @@ class FilmServiceTest extends KernelTestCase
             $this->fileSystemServiceMock,
             $this->actorRoleRepositoryMock,
             $this->filmListenerMock,
+            $this->imageProcessorServiceMock
         );
     }
 

@@ -305,7 +305,7 @@ class PersonController extends AbstractController
         try {
             if (empty($dto->fileNames)) {
                 $status = Response::HTTP_BAD_REQUEST;
-                $data = 'The request is empty. No file names found.';
+                $data = 'The request is empty. No file names found. Did you forget to specify the formdata key - photos[]?';
 
                 return $this->json($data, $status);
             }
@@ -343,7 +343,7 @@ class PersonController extends AbstractController
             $cover = $request->files->get('file');
             if (null === $cover) {
                 $status = Response::HTTP_BAD_REQUEST;
-                $data = 'No file found in request. Did you forget to specify the formdata key "file"?';
+                $data = 'No file found in request. Did you forget to specify the formdata key - file?';
 
                 return $this->json($data, $status);
             }

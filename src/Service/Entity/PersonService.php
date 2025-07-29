@@ -18,6 +18,7 @@ use App\Repository\FilmRepository;
 use App\Repository\PersonRepository;
 use App\Repository\UserRepository;
 use App\Service\FileSystemService;
+use App\Service\ImageProcessorService;
 use Symfony\Component\Security\Http\Attribute\CurrentUser;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
@@ -30,7 +31,8 @@ class PersonService
         private FileSystemService $fileSystemService,
         private TranslatorInterface $translator,
         private UserRepository $userRepository,
-        private PersonListener $personListener
+        private PersonListener $personListener,
+        private ImageProcessorService $imageProcessorService
     ) {
     }
 
@@ -156,7 +158,7 @@ class PersonService
         $this->repository->remove($person);
     }
 
-    public function uploadPhotos(int $id, array $files): PersonForm
+    public function uploadPhotos(int $id, array $files): ?PersonForm
     {
         $person = $this->repository->find($id);
         $dirName = $this->specifyPersonPhotosPath($person->getId());
@@ -175,14 +177,19 @@ class PersonService
 
         foreach ($files as $file) {
             ++$maxIndex;
-            $indexedFileName = 'photo-'.$maxIndex;
-            $this->fileSystemService->upload($file, $dirName, $indexedFileName);
+            $indexedFileName = "photo-{$maxIndex}";
+            if (!$this->imageProcessorService->compressUploadedFile(
+                $file,
+                $indexedFileName,
+                $dirName, 50)) {
+                return null;
+            }
         }
 
         return $this->findForm($person->getSlug());
     }
 
-    public function uploadCover(int $id, $file): PersonForm
+    public function uploadCover(int $id, $file): ?PersonForm
     {
         $person = $this->repository->find($id);
         $dirName = $this->specifyPersonPhotosPath($person->getId());
@@ -192,7 +199,12 @@ class PersonService
             $this->fileSystemService->removeFile($currentFile);
         }
 
-        $this->fileSystemService->upload($file, $dirName, 'cover_'.uniqid());
+        if (!$this->imageProcessorService->compressUploadedFile(
+            $file,
+            'cover_'.uniqid(),
+            $dirName, 80)) {
+            return null;
+        }
 
         $fullPath = $this->fileSystemService->searchFiles($dirName, 'cover')[0] ?? '';
         $shortPath = $this->fileSystemService->getShortPath($fullPath);
