@@ -349,7 +349,7 @@ class FilmController extends AbstractController
             $files = $request->files->get('gallery');
             if (null === $files) {
                 $status = Response::HTTP_BAD_REQUEST;
-                $data = 'No files found in request. Did you forget to specify the formdata key "gallery"?';
+                $data = 'No files found in request. Did you forget to specify the formdata key - gallery[]?';
 
                 return $this->json($data, $status);
             }

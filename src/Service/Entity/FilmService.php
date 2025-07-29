@@ -26,6 +26,7 @@ use App\Repository\FilmRepository;
 use App\Repository\PersonRepository;
 use App\Repository\UserRepository;
 use App\Service\FileSystemService;
+use App\Service\ImageProcessorService;
 use Symfony\Component\Security\Http\Attribute\CurrentUser;
 
 class FilmService
@@ -40,6 +41,7 @@ class FilmService
         private FileSystemService $fileSystemService,
         private ActorRoleRepository $actorRoleRepository,
         private FilmListener $filmListener,
+        private ImageProcessorService $imageProcessorService
     ) {
     }
 
@@ -387,7 +389,7 @@ class FilmService
         $this->repository->remove($film);
     }
 
-    public function uploadGallery(int $id, array $files): FilmForm
+    public function uploadGallery(int $id, array $files): ?FilmForm
     {
         $film = $this->repository->find($id);
         $dirName = $this->specifyFilmGalleryPath($film->getId());
@@ -406,7 +408,12 @@ class FilmService
         foreach ($files as $file) {
             ++$maxIndex;
             $indexedFileName = 'picture-'.$maxIndex;
-            $this->fileSystemService->upload($file, $dirName, $indexedFileName);
+            if (!$this->imageProcessorService->compressUploadedFile(
+                $file,
+                $indexedFileName,
+                $dirName)) {
+                return null;
+            }
         }
 
         return $this->findForm($film->getSlug());
