@@ -9,6 +9,7 @@ use App\Mapper\Entity\UserMapper;
 use App\Model\Response\Entity\User\UserDetail;
 use App\Repository\UserRepository;
 use App\Service\FileSystemService;
+use App\Service\ImageProcessorService;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 class UserService
@@ -17,7 +18,8 @@ class UserService
         private readonly UserRepository $userRepository,
         private readonly UserPasswordHasherInterface $passwordHasher,
         private FileSystemService $fileSystemService,
-        private readonly UserMapper $userMapper
+        private readonly UserMapper $userMapper,
+        private ImageProcessorService $imageProcessorService
     ) {
     }
 
@@ -25,7 +27,9 @@ class UserService
     {
         $user = $this->userRepository->find($id);
         $user->setLastLogin(new \DateTime());
+
         $this->userRepository->store($user);
+
         return $user;
     }
 
@@ -55,16 +59,21 @@ class UserService
         $this->userRepository->store($user);
     }
 
-    public function uploadAvatar(User $user, $file): UserDetail
+    public function uploadAvatar(User $user, $file): ?UserDetail
     {
         $dirname = $this->specifyUserAvatarsPath($user->getId());
         $currentFile = $this->fileSystemService->searchFiles($dirname, 'avatar-*')[0] ?? null;
+
         if (null !== $currentFile) {
             $this->fileSystemService->removeFile($currentFile);
         }
 
-        $this->fileSystemService->upload($file, $dirname, 'avatar-' . uniqid());
-
+        if (!$this->imageProcessorService->compressUploadedFile(
+            $file,
+            'avatar-'.uniqid(),
+            $dirname)) {
+            return null;
+        }
         $fullPath = $this->fileSystemService->searchFiles($dirname, 'avatar-*')[0] ?? '';
         $shortPath = $this->fileSystemService->getShortPath($fullPath);
 
@@ -100,6 +109,7 @@ class UserService
         if (null === $user) {
             throw new UserNotFoundException();
         }
+
         return $user;
     }
 
@@ -114,17 +124,18 @@ class UserService
     {
         $subDirByIdPath = $this->createUploadsDir($id);
 
-        $avatarDirPath = $subDirByIdPath . DIRECTORY_SEPARATOR;
+        $avatarDirPath = $subDirByIdPath.DIRECTORY_SEPARATOR;
         $this->fileSystemService->createDir($avatarDirPath);
 
         return $avatarDirPath;
     }
+
     private function createUploadsDir(int $id): string
     {
         $userMainUploadsDir = $this->fileSystemService->getUploadsDirname('user');
 
         $stringId = strval($id);
-        $subDirByIdPath = $userMainUploadsDir . DIRECTORY_SEPARATOR . $stringId . DIRECTORY_SEPARATOR . 'avatar';
+        $subDirByIdPath = $userMainUploadsDir.DIRECTORY_SEPARATOR.$stringId.DIRECTORY_SEPARATOR.'avatar';
 
         $this->fileSystemService->createDir($subDirByIdPath);
 
