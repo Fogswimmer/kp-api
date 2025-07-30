@@ -2,6 +2,9 @@
 
 namespace App\Message;
 
+use Symfony\Component\Messenger\Attribute\AsMessage;
+
+#[AsMessage('async')]
 class LoginMessage
 {
     private string $username;

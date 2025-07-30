@@ -2,7 +2,11 @@
 
 namespace App\Message;
 
-class PasswordChangedMessage {
+use Symfony\Component\Messenger\Attribute\AsMessage;
+
+#[AsMessage('async')]
+class PasswordChangedMessage
+{
     private string $username;
     private string $email;
     private string $locale;
@@ -17,14 +21,18 @@ class PasswordChangedMessage {
         $this->locale = $locale;
     }
 
-    public function getUserName(): string {
+    public function getUserName(): string
+    {
         return $this->username;
     }
 
-    public function getEmail(): string {
+    public function getEmail(): string
+    {
         return $this->email;
     }
-    public function getLocale(): string {
+
+    public function getLocale(): string
+    {
         return $this->locale;
     }
 }

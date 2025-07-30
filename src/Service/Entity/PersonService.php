@@ -181,7 +181,7 @@ class PersonService
             if (!$this->imageProcessorService->compressUploadedFile(
                 $file,
                 $indexedFileName,
-                $dirName, 50)) {
+                $dirName, 70)) {
                 return null;
             }
         }
@@ -202,7 +202,7 @@ class PersonService
         if (!$this->imageProcessorService->compressUploadedFile(
             $file,
             'cover_'.uniqid(),
-            $dirName, 80)) {
+            $dirName, 95)) {
             return null;
         }
 
