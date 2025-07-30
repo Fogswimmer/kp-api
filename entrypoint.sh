@@ -29,7 +29,7 @@ if [ "${SKIP_DB_CHECK:-false}" != "true" ] && [ "${CONTAINER_TYPE:-app}" != "wor
     ((counter++))
   done
 
-  if [ $counter -eq $timeout ]; then
+if [ $counter -eq $timeout ]; then
     echo "Database connection timeout. Continuing without DB checks..."
   else
     echo "Database connection established"
