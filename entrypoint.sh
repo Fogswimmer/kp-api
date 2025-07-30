@@ -13,10 +13,10 @@ find var public/uploads -type f -exec chmod 664 {} \;
 
 
 if [ ! -f "vendor/autoload.php" ]; then
-  echo "Installing Composer dependencies..."
-  composer install --prefer-dist --no-interaction --optimize-autoloader --no-dev
+    echo "Installing Composer dependencies..."
+    composer install --prefer-dist --no-interaction --optimize-autoloader --no-dev
 else
-  echo "Composer dependencies already installed"
+    echo "Composer dependencies already installed"
 fi
 
 if [ "${SKIP_DB_CHECK:-false}" != "true" ] && [ "${CONTAINER_TYPE:-app}" != "worker" ]; then
@@ -39,66 +39,65 @@ else
 fi
 
 if [ "${SKIP_CACHE_WARMUP:-false}" != "true" ] && [ "${CONTAINER_TYPE:-app}" != "worker" ]; then
-  echo "Clearing and warming up Symfony cache..."
-  php bin/console cache:clear --env=prod --no-debug
-  php bin/console cache:warmup --env=prod --no-debug
+    echo "Clearing and warming up Symfony cache..."
+    php bin/console cache:clear --env=prod --no-debug
+    php bin/console cache:warmup --env=prod --no-debug
 else
-  echo "⏭Skipping cache operations (worker mode or explicitly disabled)"
+    echo "⏭Skipping cache operations (worker mode or explicitly disabled)"
 fi
 
 echo "Checking migrations..."
 if [ -z "$(ls -A migrations/*.php 2>/dev/null)" ]; then
-  echo "No migrations found. Generating initial migration..."
-  php bin/console doctrine:migrations:diff --no-interaction || true
+    echo "No migrations found. Generating initial migration..."
+    php bin/console doctrine:migrations:diff --no-interaction || true
 fi
 
-PENDING_MIGRATIONS=$(php bin/console doctrine:migrations:status --show-versions | grep "not migrated" | wc -l || echo "0")
-if [ "$PENDING_MIGRATIONS" -gt 0 ]; then
-  echo "Running $PENDING_MIGRATIONS pending migrations..."
-  php bin/console doctrine:migrations:migrate --no-interaction
+if php bin/console doctrine:migrations:status 2>/dev/null | grep -q "not migrated"; then
+    echo "Running pending migrations..."
+    php bin/console doctrine:migrations:migrate --no-interaction
 else
-  echo "All migrations are up to date"
+    echo "All migrations are up to date"
 fi
 
 cleanup() {
-  echo "Stopping background processes..."
-  if [ ! -z "${WORKER_PID:-}" ]; then
-    kill -TERM "$WORKER_PID" 2>/dev/null || true
-    wait "$WORKER_PID" 2>/dev/null || true
-  fi
-  if [ ! -z "${APACHE_PID:-}" ]; then
-    kill -TERM "$APACHE_PID" 2>/dev/null || true
-    wait "$APACHE_PID" 2>/dev/null || true
-  fi
-  echo "Cleanup completed"
-  exit 0
+    echo "Stopping background processes..."
+    if [ ! -z "${WORKER_PID:-}" ]; then
+        kill -TERM "$WORKER_PID" 2>/dev/null || true
+        wait "$WORKER_PID" 2>/dev/null || true
+    fi
+    if [ ! -z "${APACHE_PID:-}" ]; then
+        kill -TERM "$APACHE_PID" 2>/dev/null || true
+        wait "$APACHE_PID" 2>/dev/null || true
+    fi
+    echo "Cleanup completed"
+    exit 0
 }
 
 trap cleanup SIGTERM SIGINT
 
 if [ "${START_WORKER:-false}" = "true" ]; then
-  echo "Launching Messenger consumer..."
-  php bin/console messenger:consume async -vvv \
-    --time-limit=3600 \
-    --memory-limit=128M \
-    --failure-limit=3 \
-    --quiet &
-  WORKER_PID=$!
-  echo "Worker started with PID $WORKER_PID"
+    echo "Launching Messenger consumer..."
+    php bin/console messenger:consume async -vvv \
+        --time-limit=3600 \
+        --memory-limit=128M \
+        --failure-limit=3 \
+        --quiet &
+    WORKER_PID=$!
+    echo "Worker started with PID $WORKER_PID"
 else
-  echo "Skipping worker start (handled by separate container)"
+    echo "Skipping worker start (handled by separate container)"
 fi
 
 if [ "${CONTAINER_TYPE:-app}" != "worker" ]; then
-  echo "Starting Apache..."
-  apache2-foreground &
-  APACHE_PID=$!
-  echo "Apache PID: $APACHE_PID"
+    echo "Starting Apache..."
+    apache2-foreground &
+    APACHE_PID=$!
+    echo "Apache PID: $APACHE_PID"
 else
-  echo "Skipping Apache (worker mode)"
+    echo "Skipping Apache (worker mode)"
 fi
 if [ ! -z "${WORKER_PID:-}" ]; then
-  echo "Worker PID: $WORKER_PID"
+    echo "Worker PID: $WORKER_PID"
 fi
 
 wait
