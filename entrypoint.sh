@@ -76,28 +76,49 @@ cleanup() {
 trap cleanup SIGTERM SIGINT
 
 if [ "${START_WORKER:-false}" = "true" ]; then
-    echo "Launching Messenger consumer..."
-    php bin/console messenger:consume async -vvv \
-        --time-limit=3600 \
-        --memory-limit=128M \
-        --failure-limit=3 \
-        --quiet &
-    WORKER_PID=$!
-    echo "Worker started with PID $WORKER_PID"
+  echo "Launching Messenger consumer..."
+  php bin/console messenger:consume async -vvv \
+    --time-limit=3600 \
+    --memory-limit=128M \
+    --failure-limit=3 \
+    --quiet &
+  WORKER_PID=$!
+  echo "Worker started with PID $WORKER_PID"
 else
-    echo "Skipping worker start (handled by separate container)"
+  echo "Skipping worker start (handled by separate container)"
 fi
 
 if [ "${CONTAINER_TYPE:-app}" != "worker" ]; then
-    echo "Starting Apache..."
-    apache2-foreground &
-    APACHE_PID=$!
-    echo "Apache PID: $APACHE_PID"
+  echo "Starting Apache..."
+  apache2-foreground &
+  APACHE_PID=$!
+  echo "Apache PID: $APACHE_PID"
 else
-    echo "Skipping Apache (worker mode)"
+  echo "Starting Messenger Worker..."
+  timeout=60
+  counter=0
+  until php bin/console messenger:setup-transports 2>/dev/null || [ $counter -eq $timeout ]; do
+    echo "Waiting for RabbitMQ... ($counter/$timeout)"
+    sleep 2
+    ((counter++))
+  done
+
+  if [ $counter -eq $timeout ]; then
+    echo "RabbitMQ connection timeout"
+    exit 1
+  fi
+
+  echo "RabbitMQ connection established"
+  echo "Starting Messenger consumer..."
+
+  exec php bin/console messenger:consume async -vvv \
+    --time-limit=3600 \
+    --memory-limit=128M \
+    --failure-limit=3 \
+    --env=prod
 fi
 if [ ! -z "${WORKER_PID:-}" ]; then
-    echo "Worker PID: $WORKER_PID"
+  echo "Worker PID: $WORKER_PID"
 fi
 
 wait
