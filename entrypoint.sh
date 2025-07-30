@@ -3,7 +3,8 @@ set -euo pipefail
 
 echo "Initializing entrypoint script..."
 
-mkdir -p var public/uploads migrations
+echo "Creating directories..."
+mkdir -p var/cache var/log var/sessions public/uploads migrations
 
 echo "Setting permissions..."
 chown -R www-data:www-data var public/uploads
@@ -18,26 +19,32 @@ else
   echo "Composer dependencies already installed"
 fi
 
-echo "Checking database connection..."
-timeout=30
-counter=0
-until php bin/console doctrine:query:sql "SELECT 1" > /dev/null 2>&1 || [ $counter -eq $timeout ]; do
-  echo "Waiting for database connection... ($counter/$timeout)"
-  sleep 1
-  ((counter++))
-done
+if [ "${SKIP_DB_CHECK:-false}" != "true" ] && [ "${CONTAINER_TYPE:-app}" != "worker" ]; then
+  echo "Checking database connection..."
+  timeout=30
+  counter=0
+  until php bin/console doctrine:query:sql "SELECT 1" > /dev/null 2>&1 || [ $counter -eq $timeout ]; do
+    echo "Waiting for database connection... ($counter/$timeout)"
+    sleep 1
+    ((counter++))
+  done
 
-if [ $counter -eq $timeout ]; then
-  echo "Database connection timeout. Continuing without DB checks..."
+  if [ $counter -eq $timeout ]; then
+    echo "Database connection timeout. Continuing without DB checks..."
+  else
+    echo "Database connection established"
+  fi
 else
-  echo "Database connection established"
+  echo "Skipping database check (worker mode or explicitly disabled)"
 fi
 
-
-echo "Clearing and warming up Symfony cache..."
-php bin/console cache:clear
-php bin/console cache:warmup
-
+if [ "${SKIP_CACHE_WARMUP:-false}" != "true" ] && [ "${CONTAINER_TYPE:-app}" != "worker" ]; then
+  echo "Clearing and warming up Symfony cache..."
+  php bin/console cache:clear --env=prod --no-debug
+  php bin/console cache:warmup --env=prod --no-debug
+else
+  echo "⏭Skipping cache operations (worker mode or explicitly disabled)"
+fi
 
 echo "Checking migrations..."
 if [ -z "$(ls -A migrations/*.php 2>/dev/null)" ]; then
@@ -53,9 +60,12 @@ else
   echo "All migrations are up to date"
 fi
 
-
 cleanup() {
   echo "Stopping background processes..."
+  if [ ! -z "${WORKER_PID:-}" ]; then
+    kill -TERM "$WORKER_PID" 2>/dev/null || true
+    wait "$WORKER_PID" 2>/dev/null || true
+  fi
   if [ ! -z "${APACHE_PID:-}" ]; then
     kill -TERM "$APACHE_PID" 2>/dev/null || true
     wait "$APACHE_PID" 2>/dev/null || true
@@ -66,12 +76,30 @@ cleanup() {
 
 trap cleanup SIGTERM SIGINT
 
-echo "Starting Apache..."
-apache2-foreground &
-APACHE_PID=$!
+if [ "${START_WORKER:-false}" = "true" ]; then
+  echo "Launching Messenger consumer..."
+  php bin/console messenger:consume async -vvv \
+    --time-limit=3600 \
+    --memory-limit=128M \
+    --failure-limit=3 \
+    --quiet &
+  WORKER_PID=$!
+  echo "Worker started with PID $WORKER_PID"
+else
+  echo "Skipping worker start (handled by separate container)"
+fi
 
-echo "Application started successfully!"
-echo "Apache PID: $APACHE_PID"
+if [ "${CONTAINER_TYPE:-app}" != "worker" ]; then
+  echo "Starting Apache..."
+  apache2-foreground &
+  APACHE_PID=$!
+  echo "Apache PID: $APACHE_PID"
+else
+  echo "Skipping Apache (worker mode)"
+fi
+if [ ! -z "${WORKER_PID:-}" ]; then
+  echo "Worker PID: $WORKER_PID"
+fi
 
 wait
 
