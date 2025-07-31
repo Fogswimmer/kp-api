@@ -233,7 +233,7 @@ class FilmService
             throw new PersonNotFoundException();
         }
 
-        $film->setdirector($director);
+        $film->setDirectedBy($director);
 
         $producerId = $dto->producerId;
         $producer = $this->personRepository->find($producerId);
@@ -322,7 +322,7 @@ class FilmService
             throw new PersonNotFoundException();
         }
 
-        $film->setdirector($director);
+        $film->setDirectedBy($director);
         $genreIds = $dto->genreIds;
         $genres = [];
 

@@ -46,7 +46,7 @@ class Film
     private Collection $actors;
 
     #[ORM\ManyToOne(inversedBy: 'directedFilms')]
-    private ?Person $director = null;
+    private ?Person $directedBy = null;
 
     #[ORM\Column(type: Types::TIME_IMMUTABLE)]
     private ?\DateTimeImmutable $duration = null;
@@ -245,14 +245,14 @@ class Film
         return $this->name;
     }
 
-    public function getDirector(): ?Person
+    public function getDirectedBy(): ?Person
     {
-        return $this->director;
+        return $this->directedBy;
     }
 
-    public function setDirector(?Person $director): static
+    public function setDirectedBy(?Person $directedBy): static
     {
-        $this->director = $director;
+        $this->directedBy = $directedBy;
 
         return $this;
     }
