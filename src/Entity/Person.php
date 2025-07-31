@@ -213,7 +213,7 @@ class Person
     {
         if (!$this->directedFilms->contains($directedFilm)) {
             $this->directedFilms->add($directedFilm);
-            $directedFilm->setDirector($this);
+            $directedFilm->setDirectedBy($this);
         }
 
         return $this;
@@ -223,8 +223,8 @@ class Person
     {
         if ($this->directedFilms->removeElement($directedFilm)) {
             // set the owning side to null (unless already changed)
-            if ($directedFilm->getDirector() === $this) {
-                $directedFilm->setDirector(null);
+            if ($directedFilm->getDirectedBy() === $this) {
+                $directedFilm->setDirectedBy(null);
             }
         }
 
