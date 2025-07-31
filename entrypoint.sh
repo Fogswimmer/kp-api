@@ -19,24 +19,24 @@ else
     echo "Composer dependencies already installed"
 fi
 
-if [ "${SKIP_DB_CHECK:-false}" != "true" ] && [ "${CONTAINER_TYPE:-app}" != "worker" ]; then
-  echo "Checking database connection..."
-  timeout=30
-  counter=0
-  until php bin/console doctrine:query:sql "SELECT 1" > /dev/null 2>&1 || [ $counter -eq $timeout ]; do
-    echo "Waiting for database connection... ($counter/$timeout)"
-    sleep 1
-    ((counter++))
-  done
+# if [ "${SKIP_DB_CHECK:-false}" != "true" ] && [ "${CONTAINER_TYPE:-app}" != "worker" ]; then
+#   echo "Checking database connection..."
+#   timeout=30
+#   counter=0
+#   until php bin/console doctrine:query:sql "SELECT 1" > /dev/null 2>&1 || [ $counter -eq $timeout ]; do
+#     echo "Waiting for database connection... ($counter/$timeout)"
+#     sleep 1
+#     ((counter++))
+#   done
 
-if [ $counter -eq $timeout ]; then
-    echo "Database connection timeout. Continuing without DB checks..."
-  else
-    echo "Database connection established"
-  fi
-else
-  echo "Skipping database check (worker mode or explicitly disabled)"
-fi
+# if [ $counter -eq $timeout ]; then
+#     echo "Database connection timeout. Continuing without DB checks..."
+#   else
+#     echo "Database connection established"
+#   fi
+# else
+#   echo "Skipping database check (worker mode or explicitly disabled)"
+# fi
 
 if [ "${SKIP_CACHE_WARMUP:-false}" != "true" ] && [ "${CONTAINER_TYPE:-app}" != "worker" ]; then
     echo "Clearing and warming up Symfony cache..."
