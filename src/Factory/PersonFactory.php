@@ -4,6 +4,7 @@ namespace App\Factory;
 
 use App\Entity\Person;
 use App\Enum\Gender;
+use App\Enum\Specialty;
 use Zenstruck\Foundry\Persistence\PersistentProxyObjectFactory;
 
 /**
@@ -38,7 +39,7 @@ final class PersonFactory extends PersistentProxyObjectFactory
             'firstname' => self::faker()->firstName(),
             'gender' => self::faker()->randomElement(Gender::cases()),
             'lastname' => self::faker()->lastName(),
-            'specialties' => [],
+            'specialties' => Specialty::randomMany(),
             'updatedAt' => self::faker()->dateTime(),
         ];
     }
