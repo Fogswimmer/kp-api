@@ -50,7 +50,7 @@ class Person
     /**
      * @var Collection<int, Film>
      */
-    #[ORM\OneToMany(targetEntity: Film::class, mappedBy: 'director')]
+    #[ORM\OneToMany(targetEntity: Film::class, mappedBy: 'directedBy')]
     private Collection $directedFilms;
 
     /**

@@ -44,7 +44,7 @@ final class FilmFactory extends PersistentProxyObjectFactory
             'rating' => self::faker()->randomFloat(),
             'releaseYear' => self::faker()->randomNumber(),
             'updatedAt' => self::faker()->dateTime(),
-            'director' => PersonFactory::new(),
+            'directedBy' => PersonFactory::new(),
             'producer' => PersonFactory::new(),
             'writer' => PersonFactory::new(),
             'composer' => PersonFactory::new(),
