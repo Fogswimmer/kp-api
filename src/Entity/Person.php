@@ -50,7 +50,7 @@ class Person
     /**
      * @var Collection<int, Film>
      */
-    #[ORM\OneToMany(targetEntity: Film::class, mappedBy: 'directedBy')]
+    #[ORM\OneToMany(targetEntity: Film::class, mappedBy: 'director')]
     private Collection $directedFilms;
 
     /**
@@ -80,7 +80,7 @@ class Person
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $avatar = null;
 
-    #[ORM\ManyToOne(inversedBy: 'people')]
+    #[ORM\ManyToOne(inversedBy: 'publishedPersons')]
     private ?User $publisher = null;
 
     #[ORM\Column(length: 255, nullable: true)]
@@ -95,6 +95,7 @@ class Person
         $this->directedFilms = new ArrayCollection();
         $this->producedFilms = new ArrayCollection();
         $this->writtenFilms = new ArrayCollection();
+        $this->composedFilms = new ArrayCollection();
     }
 
     public function getId(): ?int
