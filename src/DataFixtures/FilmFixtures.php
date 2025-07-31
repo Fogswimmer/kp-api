@@ -66,7 +66,7 @@ class FilmFixtures extends Fixture implements DependentFixtureInterface
                 ->setReleaseYear($faker->year())
                 ->setDuration($duration)
                 ->setSlogan($faker->sentence(5))
-                ->setDirectedBy(!empty($directors) ? $faker->randomElement($directors) : null)
+                ->setDirector(!empty($directors) ? $faker->randomElement($directors) : null)
                 ->setProducer(!empty($producers) ? $faker->randomElement($producers) : null)
                 ->setWriter(!empty($writers) ? $faker->randomElement($writers) : null)
                 ->setComposer(!empty($composers) ? $faker->randomElement($composers) : null)

@@ -2,6 +2,7 @@
 
 namespace App\Mapper\Entity;
 
+use App\Dto\Entity\Film\FilmDto;
 use App\Entity\Assessment;
 use App\Entity\Film;
 use App\Entity\Person;
@@ -82,8 +83,8 @@ class FilmMapper
             ->setName($film->getName())
             ->setGenreIds($film->getGenres())
             ->setReleaseYear($film->getReleaseYear())
-            ->setActorIds($this->getActorsIds($film))
-            ->setDirectorId($film->getDirectedBy() ? $film->getDirectedBy()->getId() : null)
+            ->setActorIds($this->mapActorsToIds($film))
+            ->setDirectorId($film->getDirector() ? $film->getDirector()->getId() : null)
             ->setWriterId($film->getWriter() ? $film->getWriter()->getId() : null)
             ->setProducerId($film->getProducer() ? $film->getProducer()->getId() : null)
             ->setComposerId($film->getComposer() ? $film->getComposer()->getId() : null)
@@ -116,12 +117,35 @@ class FilmMapper
         );
     }
 
+    public function mapToDto(Film $film): FilmDto
+    {
+        return new FilmDto(
+            $film->getName(),
+            $film->getInternationalName(),
+            $film->getSlogan(),
+            $film->getGenres(),
+            $film->getReleaseYear(),
+            $this->mapActorsToIds($film),
+            $film->getDirector()?->$film->getDirector()->getId(),
+            $film->getWriter()?->$film->getWriter()->getId(),
+            $film->getProducer()?->$film->getProducer()->getId(),
+            $film->getComposer()?->$film->getComposer()->getId(),
+            $film->getAge(),
+            $film->getDescription(),
+            $film->getDuration(),
+            $film->getPoster(),
+            $film->getBudget(),
+            $film->getFees(),
+            $film->getCountry()
+        );
+    }
+
     private function setFormattedDuration($duration): string
     {
         return sprintf('%02d:%02d', $duration->format('H'), $duration->format('i'));
     }
 
-    private function getActorsIds(Film $film): array
+    private function mapActorsToIds(Film $film): array
     {
         return array_map(fn (Person $actor) => $actor->getId(), $film->getActors()->toArray());
     }
@@ -217,7 +241,7 @@ class FilmMapper
         };
 
         return [
-            $mapPerson($film->getDirectedBy()),
+            $mapPerson($film->getDirector()),
             $mapPerson($film->getWriter()),
             $mapPerson($film->getProducer()),
             $mapPerson($film->getComposer()),

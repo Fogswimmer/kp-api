@@ -166,6 +166,7 @@ class FilmService
         $filmsRaw = $this->repository->findWithSimilarGenres($film->getId(), $count);
 
         $ids = array_column($filmsRaw, 'id');
+
         $films = $this->repository->findBy(['id' => $ids]);
 
         $items = array_map(
@@ -214,7 +215,6 @@ class FilmService
             $genres[] = $genreId;
         }
         $film->setGenres($genres);
-
         $actorIds = $dto->actorIds;
 
         foreach ($actorIds as $actorId) {
@@ -233,7 +233,7 @@ class FilmService
             throw new PersonNotFoundException();
         }
 
-        $film->setDirectedBy($director);
+        $film->setdirector($director);
 
         $producerId = $dto->producerId;
         $producer = $this->personRepository->find($producerId);
@@ -322,7 +322,7 @@ class FilmService
             throw new PersonNotFoundException();
         }
 
-        $film->setDirectedBy($director);
+        $film->setdirector($director);
         $genreIds = $dto->genreIds;
         $genres = [];
 

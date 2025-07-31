@@ -46,7 +46,7 @@ class Film
     private Collection $actors;
 
     #[ORM\ManyToOne(inversedBy: 'directedFilms')]
-    private ?Person $directedBy = null;
+    private ?Person $director = null;
 
     #[ORM\Column(type: Types::TIME_IMMUTABLE)]
     private ?\DateTimeImmutable $duration = null;
@@ -78,7 +78,7 @@ class Film
     #[ORM\OneToMany(targetEntity: ActorRole::class, mappedBy: 'film')]
     private Collection $actorRoles;
 
-    #[ORM\ManyToOne(inversedBy: 'publisher')]
+    #[ORM\ManyToOne(inversedBy: 'publishedFilms')]
     private ?User $publisher = null;
 
     #[ORM\Column(length: 255, nullable: true)]
@@ -245,14 +245,14 @@ class Film
         return $this->name;
     }
 
-    public function getDirectedBy(): ?Person
+    public function getDirector(): ?Person
     {
-        return $this->directedBy;
+        return $this->director;
     }
 
-    public function setDirectedBy(?Person $directedBy): static
+    public function setDirector(?Person $director): static
     {
-        $this->directedBy = $directedBy;
+        $this->director = $director;
 
         return $this;
     }
@@ -471,5 +471,21 @@ class Film
         $this->fees = $fees;
 
         return $this;
+    }
+
+    public function toArray(): array
+    {
+        return [
+            'id' => $this->getId(),
+            'name' => $this->getName(),
+            'internationalName' => $this->getInternationalName(),
+            'slug' => $this->getSlug(),
+            'poster' => $this->getPoster(),
+            'releaseYear' => $this->getReleaseYear(),
+            'country' => $this->getCountry(),
+            'budget' => $this->getBudget(),
+            'fees' => $this->getFees(),
+            'rating' => $this->getRating(),
+        ];
     }
 }

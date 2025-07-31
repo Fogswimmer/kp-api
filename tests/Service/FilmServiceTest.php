@@ -2,11 +2,14 @@
 
 namespace App\Tests\Service;
 
+use App\Dto\Entity\Film\FilmDto;
 use App\Entity\Film;
 use App\EntityListener\FilmListener;
 use App\Factory\FilmFactory;
+use App\Factory\UserFactory;
 use App\Mapper\Entity\FilmMapper;
 use App\Mapper\Entity\PersonMapper;
+use App\Model\Response\Entity\Film\FilmForm;
 use App\Model\Response\Entity\Film\FilmList;
 use App\Repository\ActorRoleRepository;
 use App\Repository\AssessmentRepository;
@@ -82,6 +85,11 @@ class FilmServiceTest extends KernelTestCase
 
         $films = FilmFactory::createMany(3);
 
+        $rawFilms = array_map(
+            fn (Film $film) => $film->toArray(),
+            $films
+        );
+
         $filmListItems = array_map(
             fn (Film $film) => $this->mapperMock->mapToListItem($film),
             $films
@@ -97,11 +105,16 @@ class FilmServiceTest extends KernelTestCase
         $this->repositoryMock
             ->expects($this->once())
             ->method('findWithSimilarGenres')
-            ->with(1, $count)
+            ->with($targetFilm->getId(), $count)
+            ->willReturn($rawFilms);
+
+        $this->repositoryMock
+            ->method('findBy')
+            ->with(['id' => array_column($rawFilms, 'id')])
             ->willReturn($films);
 
         $this->mapperMock
-            ->expects($this->exactly(3))
+            ->expects($this->exactly($count))
             ->method('mapToListItem')
             ->willReturnOnConsecutiveCalls(
                 $filmListItems[0],
@@ -120,4 +133,73 @@ class FilmServiceTest extends KernelTestCase
         $this->assertEquals($filmListItems[1], $items[1]);
         $this->assertEquals($filmListItems[2], $items[2]);
     }
+
+    // public function testFilmCreation(): void
+    // {
+    //     $film = FilmFactory::createOne();
+    //     $user = UserFactory::createOne();
+
+    //     $dto = new FilmDto(
+    //         $film->getName(),
+    //         $film->getInternationalName(),
+    //         $film->getSlogan(),
+    //         $film->getGenres(),
+    //         $film->getReleaseYear(),
+    //         array_map(fn ($actor) => $actor->getId(),
+    //             $film->getActors()->toArray()),
+    //         $film->getDirector()->getId(),
+    //         $film->getWriter()->getId(),
+    //         $film->getProducer()->getId(),
+    //         $film->getComposer()->getId(),
+    //         $film->getAge(),
+    //         $film->getDescription(),
+    //         $film->getDuration(),
+    //         $film->getPoster(),
+    //         $film->getBudget(),
+    //         $film->getFees(),
+    //         $film->getCountry()
+    //     );
+
+    //     $map = [];
+    //     $persons = [];
+
+    //     foreach ($film->getActors() as $actor) {
+    //         $map[] = [$actor->getId(), $actor];
+    //         $persons[] = $actor;
+    //     }
+
+    //     $persons[] = $film->getDirector();
+    //     $persons[] = $film->getWriter();
+    //     $persons[] = $film->getProducer();
+    //     $persons[] = $film->getComposer();
+
+    //     $this->personRepositoryMock
+    //         ->method('find')
+    //         ->willReturnMap($map);
+
+    //     $this->personRepositoryMock
+    //         ->method('store')
+    //         ->willReturnOnConsecutiveCalls($persons)
+    //     ;
+
+    //     $this->mapperMock
+    //         ->method('mapToDto')
+    //         ->with($film)
+    //         ->willReturn($dto);
+
+    //     $this->repositoryMock
+    //         ->expects($this->once())
+    //         ->method('store')
+    //         ->with($film);
+
+    //     $this->userRepositoryMock
+    //         ->expects($this->once())
+    //         ->method('store')
+    //         ->with($user);
+
+    //     $result = $this->filmService->create($dto, $user);
+    //     $this->assertInstanceOf(FilmForm::class, $result);
+
+    //     $this->assertEquals($film->getSlug(), $result->getSlug());
+    // }
 }

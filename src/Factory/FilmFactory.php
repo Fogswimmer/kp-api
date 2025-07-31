@@ -32,18 +32,23 @@ final class FilmFactory extends PersistentProxyObjectFactory
      */
     protected function defaults(): array|callable
     {
-        $genresCount = Genres::cases();
-
         return [
+            'name' => self::faker()->sentence(2),
+            'internationalName' => self::faker()->sentence(2),
             'age' => self::faker()->randomNumber(),
             'createdAt' => self::faker()->dateTime(),
             'description' => self::faker()->text(),
             'duration' => \DateTimeImmutable::createFromMutable(self::faker()->datetime()),
-            'genres' => self::faker()->randomElements($genresCount, rand(1, count($genresCount))),
-            'name' => self::faker()->sentence(3),
+            'genres' => self::faker()->randomElements(Genres::cases(),
+                rand(1, count(Genres::cases()))),
             'rating' => self::faker()->randomFloat(),
             'releaseYear' => self::faker()->randomNumber(),
             'updatedAt' => self::faker()->dateTime(),
+            'director' => PersonFactory::new(),
+            'producer' => PersonFactory::new(),
+            'writer' => PersonFactory::new(),
+            'composer' => PersonFactory::new(),
+            'actors' => PersonFactory::new()->many(3),
         ];
     }
 

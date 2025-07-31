@@ -4,7 +4,6 @@ namespace App\Enum;
 
 use Symfony\Contracts\Translation\TranslatableInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
-use App\Enum\Gender;
 
 enum Specialty: int implements TranslatableInterface
 {
@@ -26,6 +25,7 @@ enum Specialty: int implements TranslatableInterface
             self::EDITOR => $translator->trans('editor', locale: $locale, domain: 'specialty'),
         };
     }
+
     public static function getValues(): array
     {
         return array_column(self::cases(), 'value');
@@ -54,11 +54,6 @@ enum Specialty: int implements TranslatableInterface
         return self::matchIdAndSpecialty($id)->trans($translator, $locale);
     }
 
-    // public static function matchSpecialty(self $specialty): bool
-    // {
-    //     return in_array($specialty, self::cases(), true);
-    // }
-
     public static function list(?TranslatorInterface $translator = null, ?string $locale = null): array
     {
         return array_map(function (Specialty $case) use ($translator, $locale) {
@@ -72,6 +67,7 @@ enum Specialty: int implements TranslatableInterface
     public static function random(): self
     {
         $cases = self::cases();
+
         return $cases[array_rand($cases)];
     }
 
@@ -79,7 +75,7 @@ enum Specialty: int implements TranslatableInterface
     {
         $cases = self::cases();
         shuffle($cases);
+
         return array_slice($cases, 0, rand($min, min($max, count($cases))));
     }
-
 }

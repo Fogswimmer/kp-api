@@ -98,7 +98,9 @@ class FilmRepository extends ServiceEntityRepository
 
     public function findBySlug(string $slug): ?Film
     {
-        return $this->findOneBy(['slug' => $slug]);
+        $film = $this->findOneBy(['slug' => $slug]);
+
+        return $film;
     }
 
     public function findWithSimilarGenres(int $filmId, int $count): array

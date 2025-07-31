@@ -43,7 +43,7 @@ if [ "${SKIP_CACHE_WARMUP:-false}" != "true" ] && [ "${CONTAINER_TYPE:-app}" != 
     php bin/console cache:clear --env=prod --no-debug
     php bin/console cache:warmup --env=prod --no-debug
 else
-    echo "⏭Skipping cache operations (worker mode or explicitly disabled)"
+    echo "Skipping cache operations (worker mode or explicitly disabled)"
 fi
 
 echo "Checking migrations..."

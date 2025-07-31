@@ -50,7 +50,7 @@ class Person
     /**
      * @var Collection<int, Film>
      */
-    #[ORM\OneToMany(targetEntity: Film::class, mappedBy: 'directedBy')]
+    #[ORM\OneToMany(targetEntity: Film::class, mappedBy: 'director')]
     private Collection $directedFilms;
 
     /**
@@ -80,7 +80,7 @@ class Person
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $avatar = null;
 
-    #[ORM\ManyToOne(inversedBy: 'people')]
+    #[ORM\ManyToOne(inversedBy: 'publishedPersons')]
     private ?User $publisher = null;
 
     #[ORM\Column(length: 255, nullable: true)]
@@ -95,6 +95,7 @@ class Person
         $this->directedFilms = new ArrayCollection();
         $this->producedFilms = new ArrayCollection();
         $this->writtenFilms = new ArrayCollection();
+        $this->composedFilms = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -212,7 +213,7 @@ class Person
     {
         if (!$this->directedFilms->contains($directedFilm)) {
             $this->directedFilms->add($directedFilm);
-            $directedFilm->setDirectedBy($this);
+            $directedFilm->setDirector($this);
         }
 
         return $this;
@@ -222,8 +223,8 @@ class Person
     {
         if ($this->directedFilms->removeElement($directedFilm)) {
             // set the owning side to null (unless already changed)
-            if ($directedFilm->getDirectedBy() === $this) {
-                $directedFilm->setDirectedBy(null);
+            if ($directedFilm->getDirector() === $this) {
+                $directedFilm->setDirector(null);
             }
         }
 
