@@ -36,6 +36,7 @@ jobs:
       - name: Set test environment
         run: |
           echo "APP_ENV=test" >> $GITHUB_ENV
+          echo "DATABASE_URL=postgresql://test_user:test_pass@127.0.0.1:5432/test_db?serverVersion=15&charset=utf8" > .env
 
       - name: Check Postgres connection
         run: |
