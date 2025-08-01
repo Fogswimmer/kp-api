@@ -30,17 +30,18 @@ jobs:
       KERNEL_CLASS: App\Kernel
     steps:
       - uses: actions/checkout@v4
-
-      # - name: Setup environment
-      #   run: |
-      #     echo "DATABASE_URL=postgresql://test_user:test_pass@127.0.0.1:5432/test_db?serverVersion=15&charset=utf8" >> $GITHUB_ENV
-      #     echo "APP_ENV=test" >> $GITHUB_ENV
-
       - uses: php-actions/composer@v6
         with:
           php_version: 8.2
           php_extensions: pdo pdo_pgsql pgsql
           args: --ignore-platform-reqs --no-scripts
+      - name: Cache Composer dependencies
+        uses: actions/cache@v3
+        with:
+          path: vendor
+          key: ${{ runner.os }}-php-${{ hashFiles('**/composer.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-php-
 
       - uses: php-actions/phpunit@v4
         with:
