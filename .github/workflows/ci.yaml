@@ -52,12 +52,13 @@ jobs:
           key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
           restore-keys: ${{ runner.os }}-composer-
 
-      - name: Create .env.test file
+      - name: Create .env and .env.test file
         run: |
           cat > .env.test << EOF
           APP_ENV=test
           DATABASE_URL=postgresql://test_user:test_pass@127.0.0.1:5432/test_db?serverVersion=15&charset=utf8
           EOF
+          echo "DATABASE_URL="postgresql://test_user:test_pass@127.0.0.1:5432/test_db?serverVersion=15&charset=utf8" >> .env
 
       - name: Install dependencies
         run: composer install --no-progress --prefer-dist --optimize-autoloader
