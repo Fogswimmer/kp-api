@@ -20,7 +20,6 @@ use App\Repository\UserRepository;
 use App\Service\FileSystemService;
 use App\Service\ImageProcessorService;
 use Symfony\Component\Security\Http\Attribute\CurrentUser;
-use Symfony\Contracts\Translation\TranslatorInterface;
 
 class PersonService
 {
@@ -29,7 +28,6 @@ class PersonService
         private FilmRepository $filmRepository,
         private PersonMapper $personMapper,
         private FileSystemService $fileSystemService,
-        private TranslatorInterface $translator,
         private UserRepository $userRepository,
         private PersonListener $personListener,
         private ImageProcessorService $imageProcessorService

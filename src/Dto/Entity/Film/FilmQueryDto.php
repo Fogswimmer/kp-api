@@ -11,12 +11,12 @@ class FilmQueryDto
         public readonly ?int $limit = 5,
         #[OA\Property(example: 0)]
         public readonly ?int $offset = 0,
-        #[OA\Property(example: 'star')]
+        #[OA\Property(example: '')]
         public ?string $search = null,
         #[OA\Property(example: 'name')]
         public ?string $sortBy = 'name',
         #[OA\Property(example: 'asc')]
-        public ?string $order = 'ASC',
+        public ?string $order = 'asc',
         #[OA\Property(example: 'ru')]
         public ?string $locale = null,
         #[OA\Property(example: '0,1,2')]

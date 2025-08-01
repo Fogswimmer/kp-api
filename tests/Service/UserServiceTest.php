@@ -14,6 +14,7 @@ class UserServiceTest extends KernelTestCase
     public function testLoginUpdatesLastLoginAndPersistsUser(): void
     {
         self::bootKernel();
+
         assert(self::getContainer()->has('doctrine'));
     }
 }

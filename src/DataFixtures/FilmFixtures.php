@@ -2,17 +2,16 @@
 
 namespace App\DataFixtures;
 
-use App\Enum\Specialty;
-use DateTimeImmutable;
-use Doctrine\Bundle\FixturesBundle\Fixture;
-use Doctrine\Persistence\ObjectManager;
-use App\Entity\Film;
-use App\Repository\UserRepository;
-use App\Repository\PersonRepository;
-use Faker\Factory;
-use App\Enum\Genres;
 use App\Entity\Assessment;
+use App\Entity\Film;
+use App\Enum\Genres;
+use App\Enum\Specialty;
+use App\Repository\PersonRepository;
+use App\Repository\UserRepository;
+use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
+use Doctrine\Persistence\ObjectManager;
+use Faker\Factory;
 
 class FilmFixtures extends Fixture implements DependentFixtureInterface
 {
@@ -21,6 +20,7 @@ class FilmFixtures extends Fixture implements DependentFixtureInterface
         private PersonRepository $personRepository
     ) {
     }
+
     public function load(ObjectManager $manager): void
     {
         $faker = Factory::create();
@@ -55,8 +55,8 @@ class FilmFixtures extends Fixture implements DependentFixtureInterface
             }
         }
 
-        for ($i = 0; $i < 20; $i++) {
-            $duration = new DateTimeImmutable($faker->dateTimeBetween('-1 year', 'now')->format('H:i:s'));
+        for ($i = 0; $i < 20; ++$i) {
+            $duration = new \DateTimeImmutable($faker->dateTimeBetween('-1 year', 'now')->format('H:i:s'));
 
             $ageRestrictions = [0, 6, 12, 18];
 
@@ -66,7 +66,7 @@ class FilmFixtures extends Fixture implements DependentFixtureInterface
                 ->setReleaseYear($faker->year())
                 ->setDuration($duration)
                 ->setSlogan($faker->sentence(5))
-                ->setDirector(!empty($directors) ? $faker->randomElement($directors) : null)
+                ->setDirectedBy(!empty($directors) ? $faker->randomElement($directors) : null)
                 ->setProducer(!empty($producers) ? $faker->randomElement($producers) : null)
                 ->setWriter(!empty($writers) ? $faker->randomElement($writers) : null)
                 ->setComposer(!empty($composers) ? $faker->randomElement($composers) : null)
@@ -83,7 +83,7 @@ class FilmFixtures extends Fixture implements DependentFixtureInterface
             }
 
             $randAssessmentsCount = $faker->numberBetween(0, 5);
-            for ($j = 0; $j < $randAssessmentsCount; $j++) {
+            for ($j = 0; $j < $randAssessmentsCount; ++$j) {
                 $author = !empty($users) ? $faker->randomElement($users) : null;
                 if ($author) {
                     $assessment = (new Assessment())
@@ -111,7 +111,6 @@ class FilmFixtures extends Fixture implements DependentFixtureInterface
 
         $manager->flush();
     }
-
 
     public function getDependencies(): array
     {

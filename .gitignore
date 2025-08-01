@@ -27,3 +27,4 @@
 .phpunit.result.cache
 .phpunit.cache
 ###< phpunit/phpunit ###
+*.local.*

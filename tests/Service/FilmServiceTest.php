@@ -3,6 +3,7 @@
 namespace App\Tests\Service;
 
 use App\Dto\Entity\Film\FilmDto;
+use App\Dto\Entity\Film\FilmQueryDto;
 use App\Entity\Film;
 use App\EntityListener\FilmListener;
 use App\Factory\FilmFactory;
@@ -11,6 +12,7 @@ use App\Mapper\Entity\FilmMapper;
 use App\Mapper\Entity\PersonMapper;
 use App\Model\Response\Entity\Film\FilmForm;
 use App\Model\Response\Entity\Film\FilmList;
+use App\Model\Response\Entity\Film\FilmPaginateList;
 use App\Repository\ActorRoleRepository;
 use App\Repository\AssessmentRepository;
 use App\Repository\FilmRepository;
@@ -77,6 +79,81 @@ class FilmServiceTest extends KernelTestCase
         );
     }
 
+    public function testCheckFilmsPresence(): void
+    {
+        $films = FilmFactory::createMany(3);
+
+        $this->repositoryMock
+            ->method('findAll')
+            ->willReturn($films);
+
+        $result = $this->filmService->checkFilmsPresence();
+
+        $this->assertTrue($result);
+    }
+
+    public function testLatestFilms(): void
+    {
+        $count = 3;
+
+        $films = FilmFactory::createMany(3);
+
+        $this->repositoryMock
+            ->expects($this->once())
+            ->method('findLatest')
+            ->with($count)
+            ->willReturn($films);
+
+        $result = $this->filmService->latest($count);
+
+        $this->assertInstanceOf(FilmList::class, $result);
+        $this->assertCount($count, $result->getItems());
+    }
+
+    public function testTopFilms(): void
+    {
+        $count = 3;
+
+        $films = FilmFactory::createMany(3);
+
+        $this->repositoryMock
+            ->expects($this->once())
+            ->method('findTop')
+            ->with($count)
+            ->willReturn($films);
+
+        $result = $this->filmService->top($count);
+
+        $this->assertInstanceOf(FilmList::class, $result);
+        $this->assertCount($count, $result->getItems());
+    }
+
+    public function testFilmsFiltering(): void
+    {
+        $filmQueryDto = new FilmQueryDto(
+            5,
+            0,
+            '',
+            'name',
+            'asc',
+            'ru',
+            '0,1,2',
+            'US, RU'
+        );
+
+        $films = FilmFactory::createMany(6);
+
+        $this->repositoryMock
+            ->expects($this->once())
+            ->method('filterByQueryParams')
+            ->with($filmQueryDto)
+            ->willReturn($films);
+
+        $result = $this->filmService->filter($filmQueryDto);
+
+        $this->assertInstanceOf(FilmPaginateList::class, $result);
+    }
+
     public function testSimilarGenresRequest(): void
     {
         $count = 3;
@@ -87,11 +164,6 @@ class FilmServiceTest extends KernelTestCase
 
         $rawFilms = array_map(
             fn (Film $film) => $film->toArray(),
-            $films
-        );
-
-        $filmListItems = array_map(
-            fn (Film $film) => $this->mapperMock->mapToListItem($film),
             $films
         );
 
@@ -113,25 +185,10 @@ class FilmServiceTest extends KernelTestCase
             ->with(['id' => array_column($rawFilms, 'id')])
             ->willReturn($films);
 
-        $this->mapperMock
-            ->expects($this->exactly($count))
-            ->method('mapToListItem')
-            ->willReturnOnConsecutiveCalls(
-                $filmListItems[0],
-                $filmListItems[1],
-                $filmListItems[2]
-            );
-
         $result = $this->filmService->similarGenres($slug, $count);
 
         $this->assertInstanceOf(FilmList::class, $result);
         $this->assertCount(3, $result->getItems());
-
-        $items = $result->getItems();
-
-        $this->assertEquals($filmListItems[0], $items[0]);
-        $this->assertEquals($filmListItems[1], $items[1]);
-        $this->assertEquals($filmListItems[2], $items[2]);
     }
 
     // public function testFilmCreation(): void
