@@ -23,13 +23,18 @@ jobs:
           --health-interval 10s
           --health-timeout 5s
           --health-retries 5
+
+    env:
+      DATABASE_URL: postgresql://test_user:test_pass@127.0.0.1:5432/test_db?serverVersion=15&charset=utf8
+      APP_ENV: test
+      KERNEL_CLASS: App\Kernel
     steps:
       - uses: actions/checkout@v4
 
-      - name: Setup environment
-        run: |
-          echo "DATABASE_URL=postgresql://test_user:test_pass@127.0.0.1:5432/test_db?serverVersion=15&charset=utf8" >> $GITHUB_ENV
-          echo "APP_ENV=test" >> $GITHUB_ENV
+      # - name: Setup environment
+      #   run: |
+      #     echo "DATABASE_URL=postgresql://test_user:test_pass@127.0.0.1:5432/test_db?serverVersion=15&charset=utf8" >> $GITHUB_ENV
+      #     echo "APP_ENV=test" >> $GITHUB_ENV
 
       - uses: php-actions/composer@v6
         with:
