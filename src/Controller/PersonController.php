@@ -399,7 +399,7 @@ class PersonController extends AbstractController
         description: 'Get popular actors',
     )]
     #[OA\Response(response: 500, description: 'An error occurred ')]
-    public function popluar(#[MapQueryString] LocaleDto $dto): Response
+    public function popular(#[MapQueryString] LocaleDto $dto): Response
     {
         $data = null;
         $status = Response::HTTP_OK;
