@@ -36,12 +36,12 @@ jobs:
       - name: Set test environment
         run: |
           echo "APP_ENV=test" >> $GITHUB_ENV
-          echo "DATABASE_URL=postgresql://test_user:test_pass@127.0.0.1:5432/test_db?serverVersion=15&charset=utf8" > .env
+           echo "DATABASE_URL=postgresql://test_user:test_pass@postgres:5432/test_db?serverVersion=15&charset=utf8" > .env
 
       - name: Check Postgres connection
         run: |
           apt-get update && apt-get install -y postgresql-client
-          pg_isready -h 127.0.0.1 -p 5432 -U test_user
+          pg_isready -h postgres -p 5432 -U test_user
 
       - name: Install dependencies
         run: composer install --prefer-dist --no-progress --no-scripts
