@@ -41,7 +41,7 @@ jobs:
         with:
           php_version: 8.2
           php_extensions: pdo pdo_pgsql pgsql
-          configuration: phpunit.xml
+          configuration: phpunit.xml.dist
           bootstrap: vendor/autoload.php
 
   symfony-ci:
