@@ -27,7 +27,7 @@ jobs:
         run: composer install --prefer-dist --no-progress --no-scripts
 
       - name: Run PHPStan
-        run: vendor/bin/phpstan analyse --generate-baseline
+        run: vendor/bin/phpstan analyse --level=4  src tests
   test:
     name: Run PHPUnit Tests
     runs-on: ubuntu-latest
@@ -56,17 +56,19 @@ jobs:
         with:
           php-version: "8.2"
           extensions: pdo, pdo_pgsql, pgsql
+      - name: Create environment file
+        run: |
+          echo "DATABASE_URL=postgresql://test_user:test_pass@localhost:5432/test_db?serverVersion=15&charset=utf8" > .env
 
       - name: Install dependencies
         run: composer install --prefer-dist --no-progress --no-scripts
-        env:
-          DATABASE_URL: "postgresql://test_user:test_pass@localhost:5432/test_db?serverVersion=15&charset=utf8"
 
       - name: Run tests
         run: ./vendor/bin/phpunit --testdox
 
   symfony-ci:
     runs-on: ubuntu-latest
+    needs: test
     steps:
       - name: Deploy via SSH
         uses: D3rHase/ssh-command-action@v0.2.2
