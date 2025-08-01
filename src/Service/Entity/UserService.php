@@ -4,7 +4,6 @@ namespace App\Service\Entity;
 
 use App\Dto\Entity\User\UserDto;
 use App\Entity\User;
-use App\Exception\NotFound\UserNotFoundException;
 use App\Mapper\Entity\UserMapper;
 use App\Model\Response\Entity\User\UserDetail;
 use App\Repository\UserRepository;
@@ -101,16 +100,6 @@ class UserService
         $this->userRepository->store($user);
 
         return $this->userMapper->mapToDetail($user, new UserDetail());
-    }
-
-    private function find(int $id): User
-    {
-        $user = $this->userRepository->find($id);
-        if (null === $user) {
-            throw new UserNotFoundException();
-        }
-
-        return $user;
     }
 
     public function findForm(int $id): User

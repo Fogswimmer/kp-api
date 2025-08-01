@@ -29,7 +29,7 @@ class CacheController extends AbstractController
     {
         return $this->json($this->cacheTranslation(
             'genres', $locale,
-            fn () => Genres::list($this->translator,
+            fn (): array => Genres::list($this->translator,
                 $locale)
         ));
     }
@@ -43,7 +43,7 @@ class CacheController extends AbstractController
     {
         return $this->json($this->cacheTranslation('genders',
             $locale,
-            fn () => Gender::list(
+            fn (): array => Gender::list(
                 $this->translator,
                 $locale)
         ));
@@ -58,7 +58,7 @@ class CacheController extends AbstractController
     {
         return $this->json($this->cacheTranslation('specialties',
             $locale,
-            fn () => Specialty::list(
+            fn (): array => Specialty::list(
                 $this->translator,
                 $locale)
         ));
@@ -73,7 +73,7 @@ class CacheController extends AbstractController
     {
         return $this->json($this->cacheTranslation('countries',
             $locale,
-            fn () => Countries::getNames(
+            fn (): array => Countries::getNames(
                 $locale)
         ));
     }

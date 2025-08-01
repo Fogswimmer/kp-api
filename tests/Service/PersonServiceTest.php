@@ -5,7 +5,6 @@ namespace App\Tests\Service;
 use App\EntityListener\PersonListener;
 use App\Factory\PersonFactory;
 use App\Mapper\Entity\PersonMapper;
-use App\Repository\FilmRepository;
 use App\Repository\PersonRepository;
 use App\Repository\UserRepository;
 use App\Service\Entity\PersonService;
@@ -22,7 +21,6 @@ class PersonServiceTest extends KernelTestCase
 
     private PersonService $personService;
     private PersonRepository|MockObject $repositoryMock;
-    private FilmRepository|MockObject $filmRepositoryMock;
     private PersonMapper|MockObject $personMapperMock;
     private FileSystemService|MockObject $fileSystemServiceMock;
     private UserRepository|MockObject $userRepositoryMock;
@@ -34,7 +32,7 @@ class PersonServiceTest extends KernelTestCase
         parent::setUp();
 
         $this->repositoryMock = $this->createMock(PersonRepository::class);
-        $this->filmRepositoryMock = $this->createMock(FilmRepository::class);
+
         $this->personMapperMock = $this->createMock(PersonMapper::class);
         $this->fileSystemServiceMock = $this->createMock(FileSystemService::class);
         $this->userRepositoryMock = $this->createMock(UserRepository::class);
@@ -43,7 +41,7 @@ class PersonServiceTest extends KernelTestCase
 
         $this->personService = new PersonService(
             $this->repositoryMock,
-            $this->filmRepositoryMock,
+
             $this->personMapperMock,
             $this->fileSystemServiceMock,
             $this->userRepositoryMock,

@@ -15,7 +15,6 @@ use App\Exception\NotFound\AssessmentNotFoundException;
 use App\Exception\NotFound\FilmNotFoundException;
 use App\Exception\NotFound\PersonNotFoundException;
 use App\Mapper\Entity\FilmMapper;
-use App\Mapper\Entity\PersonMapper;
 use App\Model\Response\Entity\Film\FilmDetail;
 use App\Model\Response\Entity\Film\FilmForm;
 use App\Model\Response\Entity\Film\FilmList;
@@ -37,7 +36,6 @@ class FilmService
         private AssessmentRepository $assessmentRepository,
         private UserRepository $userRepository,
         private PersonRepository $personRepository,
-        private PersonMapper $personMapper,
         private FileSystemService $fileSystemService,
         private ActorRoleRepository $actorRoleRepository,
         private FilmListener $filmListener,
@@ -52,10 +50,6 @@ class FilmService
         #[CurrentUser] User $user,
     ): FilmDetail {
         $film = $this->repository->find($id);
-
-        if (null === $user) {
-            throw new \Exception();
-        }
 
         $assessment = new Assessment();
         $assessment
@@ -126,7 +120,7 @@ class FilmService
         $films = $this->repository->findLatest($count);
 
         $items = array_map(
-            fn (Film $film) => $this->filmMapper->mapToListItem($film),
+            fn (Film $film): \App\Model\Response\Entity\Film\FilmListItem => $this->filmMapper->mapToListItem($film),
             $films
         );
 
@@ -143,7 +137,7 @@ class FilmService
         $films = $this->repository->findTop($count);
 
         $items = array_map(
-            fn (Film $film) => $this->filmMapper->mapToListItem($film),
+            fn (Film $film): \App\Model\Response\Entity\Film\FilmListItem => $this->filmMapper->mapToListItem($film),
             $films
         );
 
@@ -170,7 +164,7 @@ class FilmService
         $films = $this->repository->findBy(['id' => $ids]);
 
         $items = array_map(
-            fn (Film $film) => $this->filmMapper->mapToListItem($film),
+            fn (Film $film): \App\Model\Response\Entity\Film\FilmListItem => $this->filmMapper->mapToListItem($film),
             $films
         );
 
@@ -194,7 +188,7 @@ class FilmService
         }
         $locale = $filmQueryDto->locale ?? 'ru';
         $items = array_map(
-            fn (Film $film) => $this->filmMapper->mapToDetail($film, new FilmDetail(), $locale),
+            fn (Film $film): \App\Model\Response\Entity\Film\FilmDetail => $this->filmMapper->mapToDetail($film, new FilmDetail(), $locale),
             $films
         );
 

@@ -28,3 +28,7 @@
 .phpunit.cache
 ###< phpunit/phpunit ###
 *.local.*
+
+###> phpstan/phpstan ###
+phpstan.neon
+###< phpstan/phpstan ###

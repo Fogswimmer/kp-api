@@ -31,6 +31,7 @@ enum Genres: int implements TranslatableInterface
             self::DOCUMENTARY => $translator->trans('documentary', locale: $locale, domain: 'genres'),
         };
     }
+
     public static function getValues(): array
     {
         return array_column(self::cases(), 'value');
@@ -40,11 +41,12 @@ enum Genres: int implements TranslatableInterface
     {
         return in_array($value, self::getValues(), true);
     }
+
     public static function list(?TranslatorInterface $translator = null, ?string $locale = null): array
     {
         return array_map(function (self $case) use ($translator, $locale) {
             return [
-                'name' => $translator ? $case->trans($translator, $locale) : $case->name,
+                'name' => $case->trans($translator, $locale),
                 'value' => $case->value,
             ];
         }, self::cases());
@@ -76,6 +78,7 @@ enum Genres: int implements TranslatableInterface
     public static function random(): self
     {
         $cases = self::cases();
+
         return $cases[array_rand($cases)];
     }
 
@@ -83,7 +86,7 @@ enum Genres: int implements TranslatableInterface
     {
         $cases = self::cases();
         shuffle($cases);
+
         return array_slice($cases, 0, rand($min, min($max, count($cases))));
     }
-
 }

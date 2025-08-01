@@ -45,8 +45,8 @@ class ImageProcessorService
                 'body' => $formData->bodyToIterable(),
             ]);
 
-            $decodedImage = base64_decode($response->toArray()['image']) ?? null;
-            $extension = $response->toArray()['extension'] ?? null;
+            $decodedImage = base64_decode($response->toArray()['image']);
+            $extension = $response->toArray()['extension'];
             $fullpath = $path.DIRECTORY_SEPARATOR.$filename.'.'.$extension;
 
             file_put_contents($fullpath, $decodedImage);

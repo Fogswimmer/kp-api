@@ -63,7 +63,7 @@ class UserController extends AbstractController
         #[MapRequestPayload] ?UserDto $userDto
     ): Response {
         $token = $request->headers->get('Authorization');
-
+        $data = null;
         if (null === $token) {
             return $this->json(['error' => 'Token not found']);
         }

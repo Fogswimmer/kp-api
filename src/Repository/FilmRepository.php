@@ -41,7 +41,7 @@ class FilmRepository extends ServiceEntityRepository
                 ->setParameter('search', "%{$search}%");
         }
         $qb->orderBy("f.{$sortBy}", $order);
-        if ($limit !== 0) {
+        if ($limit !== null) {
             $qb
                 ->setMaxResults($limit)
                 ->setFirstResult($offset);
@@ -119,16 +119,16 @@ class FilmRepository extends ServiceEntityRepository
                     FROM film
                     WHERE id = :filmId
                 ) tf
-        WHERE f.id != :filmId
-        AND EXISTS (
-            SELECT 1
-            FROM jsonb_array_elements_text(f.genres::jsonb) fg
-            WHERE fg::int IN (
-                SELECT (jsonb_array_elements_text(tf.genres::jsonb))::int
+            WHERE f.id != :filmId
+            AND EXISTS (
+                SELECT 1
+                FROM jsonb_array_elements_text(f.genres::jsonb) fg
+                WHERE fg::int IN (
+                    SELECT (jsonb_array_elements_text(tf.genres::jsonb))::int
+                )
             )
-        )
-        ORDER BY common_genres_count DESC
-        LIMIT :count;
+            ORDER BY common_genres_count DESC
+            LIMIT :count;
         ';
 
         $stmt = $connection->prepare($query);

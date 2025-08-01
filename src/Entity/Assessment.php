@@ -14,7 +14,7 @@ class Assessment
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    private ?int $id = null;
+    private ?int $id;
 
     #[ORM\Column]
     private ?int $rating = null;

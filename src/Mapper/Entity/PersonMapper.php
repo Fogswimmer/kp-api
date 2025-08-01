@@ -22,7 +22,7 @@ class PersonMapper
     public function mapToEntityList(array $persons, $locale = null): PersonList
     {
         $items = array_map(
-            fn (Person $person) => $this->mapToEntityListItem($person, new PersonListItem(), $locale),
+            fn (Person $person): PersonListItem => $this->mapToEntityListItem($person, new PersonListItem(), $locale),
             $persons
         );
 
@@ -103,7 +103,7 @@ class PersonMapper
         $specialtyEnums = $this->specialtyIdsToEnums($person->getSpecialties());
 
         return array_map(
-            fn (Specialty $specialty) => $specialty->trans(
+            fn (Specialty $specialty): string => $specialty->trans(
                 $this->translator,
                 $locale,
                 $person->getGender(),
@@ -116,7 +116,7 @@ class PersonMapper
     {
         $films = $person->getFilms()->toArray();
 
-        return array_map(fn (Film $film) => $film->getId(), $films);
+        return array_map(fn (Film $film): ?int => $film->getId(), $films);
     }
 
     private function mapToFilmWorks(Person $person): array
@@ -142,7 +142,7 @@ class PersonMapper
             $films = $person->{$config['method']}()->toArray();
 
             if (!empty($films)) {
-                $filmWorks[$config['key']] = array_map(fn (Film $film) => [
+                $filmWorks[$config['key']] = array_map(fn (Film $film): array => [
                     'slug' => $film->getSlug(),
                     'name' => $film->getName(),
                     'internationalName' => $film->getInternationalName(),
@@ -170,7 +170,7 @@ class PersonMapper
 
     private function mapSpecialtiesToIds(array $specialties)
     {
-        return array_map(fn (int $specialty) => $specialty, $specialties);
+        return array_map(fn (int $specialty): int => $specialty, $specialties);
     }
 
     private function specialtyIdsToEnums(array $specialties)

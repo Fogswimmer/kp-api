@@ -25,7 +25,7 @@ class FilmMapper
     public function mapToEntityList(array $films): FilmList
     {
         $items = array_map(
-            fn (Film $film) => $this->mapToEntityListItem($film, new FilmListItem($film->getId())),
+            fn (Film $film): FilmListItem => $this->mapToEntityListItem($film, new FilmListItem($film->getId())),
             $films
         );
 
@@ -59,9 +59,9 @@ class FilmMapper
             ->setAge($film->getAge())
             ->setDuration($this->setFormattedDuration($film->getDuration()))
             ->setAssessments($this->mapAssessments($film->getAssessments()->toArray()))
-            ->setRating(number_format($film->getRating(), 1) ?? 0.0)
-            ->setPublisherData($film->getPublisher() ? $this->mapPublisherData($film->getPublisher()) : [])
-            ->setActorsData($film->getActors() ? $this->mapPersonsData($film->getActors()->toArray()) : [])
+            ->setRating(number_format($film->getRating(), 1) ?: 0.0)
+            ->setPublisherData($this->mapPublisherData($film->getPublisher()))
+            ->setActorsData($this->mapPersonsData($film->getActors()->toArray()))
             ->setTeamData($this->mapFilmTeam($film))
             ->setCreatedAt($film->getCreatedAt()->format('Y-m-d'))
             ->setUpdatedAt($film->getUpdatedAt()->format('Y-m-d'))
@@ -147,7 +147,7 @@ class FilmMapper
 
     private function mapActorsToIds(Film $film): array
     {
-        return array_map(fn (Person $actor) => $actor->getId(), $film->getActors()->toArray());
+        return array_map(fn (Person $actor): ?int => $actor->getId(), $film->getActors()->toArray());
     }
 
     private function mapAssessments(array $assessments): array
@@ -233,9 +233,9 @@ class FilmMapper
     {
         $mapPerson = function (?Person $person) {
             return $person ? [
-                'slug' => $person->getSlug() ?? null,
-                'name' => $person->getFullName() ?? null,
-                'internationalName' => $person->getInternationalName() ?? null,
+                'slug' => $person->getSlug(),
+                'name' => $person->getFullName(),
+                'internationalName' => $person->getInternationalName(),
                 'avatar' => $person->getAvatar() ?? null,
             ] : [];
         };
@@ -261,14 +261,14 @@ class FilmMapper
         $genreEnums = $this->mapGenreIdsToEnums($genres);
 
         return array_map(
-            fn (Genres $genre) => $genre->trans($this->translator),
+            fn (Genres $genre): string => $genre->trans($this->translator),
             $genreEnums
         );
     }
 
     private function convertAlpa2CodeToCountryName(string $countryCode): string
     {
-        $countryName = Countries::getName($countryCode) ?? '';
+        $countryName = Countries::getName($countryCode);
 
         return $countryName;
     }

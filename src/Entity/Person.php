@@ -30,7 +30,7 @@ class Person
     private ?string $firstname = null;
 
     #[ORM\Column(type: Types::SMALLINT, enumType: Gender::class)]
-    private ?Gender $gender = self::DEFAULT_GENDER;
+    private Gender $gender = self::DEFAULT_GENDER;
 
     #[ORM\Column(type: Types::DATETIME_IMMUTABLE)]
     private ?\DateTimeInterface $birthday = null;
@@ -324,12 +324,14 @@ class Person
     public function getAge(): ?int
     {
         $currentYear = date('Y');
+        $this->age = $currentYear - $this->birthday->format('Y');
 
-        return $currentYear - $this->birthday->format('Y');
+        return $this->age;
     }
 
     public function setAge(int $age): static
     {
+        $this->age = $age;
         $this->birthday = new \DateTimeImmutable(date('Y') - $age);
 
         return $this;

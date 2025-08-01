@@ -188,8 +188,8 @@ class PersonController extends AbstractController
         $data = null;
         $status = Response::HTTP_OK;
 
-        $data = $this->personService->update($id, $dto);
         try {
+            $data = $this->personService->update($id, $dto);
         } catch (\Throwable $e) {
             $this->logger->error($e);
             $data = $e->getMessage();

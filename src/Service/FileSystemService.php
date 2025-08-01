@@ -53,6 +53,7 @@ class FileSystemService
 
     public function getUploadsDirname(string $entityName): string
     {
+        $dirname = '';
         match ($entityName) {
             'person' => $dirname = $this->personPhotoDir,
             'film' => $dirname = $this->filmUploadsDir,

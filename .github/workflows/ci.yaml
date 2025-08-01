@@ -9,9 +9,52 @@ on:
 jobs:
   symfony-ci:
     runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: symfony
+          POSTGRES_PASSWORD: symfony
+          POSTGRES_DB: test_db
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
     steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.2"
+          extensions: pdo_pgsql, intl
+          tools: composer, phpunit
+          coverage: none
+
+      - name: Install dependencies
+        run: composer install --prefer-dist --no-progress --no-suggest
+
+      - name: Run linters (PHPStan + PHP CS Fixer)
+        run: |
+          ./vendor/bin/phpstan analyse src tests
+          ./vendor/bin/php-cs-fixer fix --dry-run --diff
+
+      - name: Prepare test environment
+        run: |
+          cp .env.test .env
+          php bin/console doctrine:database:create --env=test
+          php bin/console doctrine:migrations:migrate --no-interaction --env=test
+
+      - name: Run PHPUnit tests
+        run: ./vendor/bin/phpunit --testdox --colors=always
+
       - name: Debug start
-        run: echo "Workflow started"
+        run: echo "Workflow started (SSH deploy next)"
+
       - name: Deploy via SSH
         uses: D3rHase/ssh-command-action@v0.2.2
         with:

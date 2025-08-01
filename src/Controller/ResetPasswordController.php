@@ -75,6 +75,7 @@ class ResetPasswordController extends AbstractController
     public function verifyToken(
         string $token
     ): Response {
+        $user = null;
         try {
             $user = $this->resetPasswordHelper->validateTokenAndFetchUser($token);
         } catch (ResetPasswordExceptionInterface $e) {
@@ -93,6 +94,7 @@ class ResetPasswordController extends AbstractController
         UserPasswordHasherInterface $passwordHasher,
         string $token,
     ): Response {
+        $user = null;
         $user = $this->resetPasswordHelper->validateTokenAndFetchUser($token);
 
         if (!$user) {

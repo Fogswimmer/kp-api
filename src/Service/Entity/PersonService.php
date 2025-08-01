@@ -14,7 +14,6 @@ use App\Model\Response\Entity\Person\PersonDetail;
 use App\Model\Response\Entity\Person\PersonForm;
 use App\Model\Response\Entity\Person\PersonList;
 use App\Model\Response\Entity\Person\PersonPaginateList;
-use App\Repository\FilmRepository;
 use App\Repository\PersonRepository;
 use App\Repository\UserRepository;
 use App\Service\FileSystemService;
@@ -25,7 +24,6 @@ class PersonService
 {
     public function __construct(
         private PersonRepository $repository,
-        private FilmRepository $filmRepository,
         private PersonMapper $personMapper,
         private FileSystemService $fileSystemService,
         private UserRepository $userRepository,
@@ -289,7 +287,7 @@ class PersonService
                 $popularActors[] = $actor;
             }
         }
-        array_slice($popularActors, $count);
+        $popularActors = array_slice($popularActors, $count);
 
         return $this->personMapper->mapToEntityList($popularActors, $locale);
     }
@@ -306,7 +304,7 @@ class PersonService
             $currentPage = $personQueryDto->offset / $personQueryDto->limit + 1;
         }
         $items = array_map(
-            fn (Person $person) => $this->personMapper->mapToDetail($person, new PersonDetail(), $locale),
+            fn (Person $person): \App\Model\Response\Entity\Person\PersonDetail => $this->personMapper->mapToDetail($person, new PersonDetail(), $locale),
             $persons
         );
         foreach ($items as $item) {
