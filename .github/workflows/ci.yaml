@@ -7,84 +7,93 @@ on:
     branches: [main]
 
 jobs:
-  test:
-    name: Run PHPUnit Tests
+  # test:
+  #   name: Run PHPUnit Tests
+  #   runs-on: ubuntu-latest
+
+  #   services:
+  #     postgres:
+  #       image: postgres:15
+  #       env:
+  #         POSTGRES_DB: test_db
+  #         POSTGRES_USER: test_user
+  #         POSTGRES_PASSWORD: test_pass
+  #       ports:
+  #         - 5432:5432
+  #       options: >-
+  #         --health-cmd pg_isready
+  #         --health-interval 10s
+  #         --health-timeout 5s
+  #         --health-retries 5
+
+  #   env:
+  #     APP_ENV: test
+  #     DATABASE_URL: postgresql://test_user:test_pass@127.0.0.1:5432/test_db?serverVersion=15&charset=utf8
+
+  #   steps:
+  #     - name: Checkout code
+  #       uses: actions/checkout@v4
+
+  #     - name: Set up PHP
+  #       uses: shivammathur/setup-php@v2
+  #       with:
+  #         php-version: "8.2"
+  #         extensions: pdo, pdo_pgsql, pgsql
+  #         tools: composer
+
+  #     - name: Get composer cache directory
+  #       id: composer-cache
+  #       run: echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
+
+  #     - name: Cache composer dependencies
+  #       uses: actions/cache@v3
+  #       with:
+  #         path: ${{ steps.composer-cache.outputs.dir }}
+  #         key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
+  #         restore-keys: ${{ runner.os }}-composer-
+
+  #     - name: Create .env and .env.test file
+  #       run: |
+  #         echo "APP_ENV=test" >> $GITHUB_ENV
+  #         echo "DATABASE_URL=postgresql://test_user:test_pass@127.0.0.1:5432/test_db?
+
+  #     - name: Install dependencies
+  #       run: composer install --no-progress --prefer-dist --optimize-autoloader
+
+  #     - name: Wait for PostgreSQL
+  #       run: |
+  #         until pg_isready -h 127.0.0.1 -p 5432 -U test_user; do
+  #           echo "Waiting for PostgreSQL..."
+  #           sleep 2
+  #         done
+
+  #     - name: Setup test database
+  #       run: |
+  #         php bin/console doctrine:database:create --env=test --no-interaction
+  #         php bin/console doctrine:migrations:migrate --env=test --no-interaction
+  #         # php bin/console doctrine:schema:create --env=test --no-interaction
+
+  #     - name: Load fixtures (optional)
+  #       run: |
+  #         # php bin/console doctrine:fixtures:load --env=test --no-interaction
+
+  #     - name: Run PHPUnit tests
+  #       run: |
+  #         php bin/phpunit --testdox --coverage-text
+
+  #     - name: Upload coverage reports (optional)
+  #       if: success()
+  #       run: |
+  #         echo "Tests completed successfully"
+  build-test:
     runs-on: ubuntu-latest
 
-    services:
-      postgres:
-        image: postgres:15
-        env:
-          POSTGRES_DB: test_db
-          POSTGRES_USER: test_user
-          POSTGRES_PASSWORD: test_pass
-        ports:
-          - 5432:5432
-        options: >-
-          --health-cmd pg_isready
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
-
-    env:
-      APP_ENV: test
-      DATABASE_URL: postgresql://test_user:test_pass@127.0.0.1:5432/test_db?serverVersion=15&charset=utf8
-
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Set up PHP
-        uses: shivammathur/setup-php@v2
+      - uses: actions/checkout@v4
+      - uses: php-actions/composer@v6
+      - uses: php-actions/phpunit@v4
         with:
-          php-version: "8.2"
-          extensions: pdo, pdo_pgsql, pgsql
-          tools: composer
-
-      - name: Get composer cache directory
-        id: composer-cache
-        run: echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
-
-      - name: Cache composer dependencies
-        uses: actions/cache@v3
-        with:
-          path: ${{ steps.composer-cache.outputs.dir }}
-          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
-          restore-keys: ${{ runner.os }}-composer-
-
-      - name: Create .env and .env.test file
-        run: |
-          echo "APP_ENV=test" >> $GITHUB_ENV
-          echo "DATABASE_URL=postgresql://test_user:test_pass@127.0.0.1:5432/test_db?
-
-      - name: Install dependencies
-        run: composer install --no-progress --prefer-dist --optimize-autoloader
-
-      - name: Wait for PostgreSQL
-        run: |
-          until pg_isready -h 127.0.0.1 -p 5432 -U test_user; do
-            echo "Waiting for PostgreSQL..."
-            sleep 2
-          done
-
-      - name: Setup test database
-        run: |
-          php bin/console doctrine:database:create --env=test --no-interaction
-          php bin/console doctrine:migrations:migrate --env=test --no-interaction
-          # php bin/console doctrine:schema:create --env=test --no-interaction
-
-      - name: Load fixtures (optional)
-        run: |
-          # php bin/console doctrine:fixtures:load --env=test --no-interaction
-
-      - name: Run PHPUnit tests
-        run: |
-          php bin/phpunit --testdox --coverage-text
-
-      - name: Upload coverage reports (optional)
-        if: success()
-        run: |
-          echo "Tests completed successfully"
+          php_version: 8.2
 
   symfony-ci:
     runs-on: ubuntu-latest
