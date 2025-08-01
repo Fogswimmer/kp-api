@@ -9,12 +9,40 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_DB: test_db
+          POSTGRES_USER: test_user
+          POSTGRES_PASSWORD: test_pass
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
     steps:
       - uses: actions/checkout@v4
+
+      - name: Setup environment
+        run: |
+          echo "DATABASE_URL=postgresql://test_user:test_pass@127.0.0.1:5432/test_db?serverVersion=15&charset=utf8" >> $GITHUB_ENV
+          echo "APP_ENV=test" >> $GITHUB_ENV
+
       - uses: php-actions/composer@v6
+        with:
+          php_version: 8.2
+          php_extensions: pdo pdo_pgsql pgsql
+          args: --ignore-platform-reqs --no-scripts
+
       - uses: php-actions/phpunit@v4
         with:
           php_version: 8.2
+          php_extensions: pdo pdo_pgsql pgsql
+          configuration: phpunit.xml
+          bootstrap: vendor/autoload.php
 
   symfony-ci:
     runs-on: ubuntu-latest
