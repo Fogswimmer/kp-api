@@ -33,18 +33,29 @@ jobs:
           php-version: "8.2"
           extensions: pdo, pdo_pgsql, pgsql
 
-      - name: Set test environment
+      - name: Create .env file
         run: |
           echo "APP_ENV=test" >> $GITHUB_ENV
-          echo "DATABASE_URL=postgresql://test_user:test_pass@postgres:5432/test_db?serverVersion=15&charset=utf8" > .env
+          cat > .env << EOF
+          APP_ENV=test
+          DATABASE_URL=postgresql://test_user:test_pass@127.0.0.1:5432/test_db?serverVersion=15&charset=utf8
+          EOF
 
-      - name: Check Postgres connection
+      - name: Wait for PostgreSQL
         run: |
-          apt-get update && apt-get install -y postgresql-client
-          pg_isready -h 127.0.0.1 -p 5432 -U test_user
+          sudo apt-get update && sudo apt-get install -y postgresql-client
+          until pg_isready -h 127.0.0.1 -p 5432 -U test_user; do
+            echo "Waiting for PostgreSQL..."
+            sleep 2
+          done
 
       - name: Install dependencies
         run: composer install --prefer-dist --no-progress --no-scripts
+
+      - name: Create database schema
+        run: |
+          php bin/console doctrine:database:create --if-not-exists --no-interaction
+          php bin/console doctrine:schema:create --no-interaction
 
       - name: Run tests
         run: ./vendor/bin/phpunit --testdox
