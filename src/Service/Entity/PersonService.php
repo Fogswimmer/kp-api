@@ -287,7 +287,7 @@ class PersonService
                 $popularActors[] = $actor;
             }
         }
-        $popularActors = array_slice($popularActors, $count);
+        array_slice($popularActors, $count);
 
         return $this->personMapper->mapToEntityList($popularActors, $locale);
     }
