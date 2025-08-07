@@ -295,7 +295,7 @@ class PersonService
     public function filter(PersonQueryDto $personQueryDto): PersonPaginateList
     {
         $persons = $this->repository->filterByQueryParams($personQueryDto);
-        $total = $this->repository->total();
+        $total = $this->repository->countByQueryParams($personQueryDto);
         $totalPages = 1;
         $currentPage = 1;
         $locale = $personQueryDto->locale ?? 'ru';

@@ -71,6 +71,56 @@ class PersonRepository extends ServiceEntityRepository
         return $queryBuilder->getQuery()->getResult();
     }
 
+    public function countByQueryParams(PersonQueryDto $personQueryDto): int
+    {
+        $search = $personQueryDto->search;
+        $gender = $personQueryDto->gender ?? null;
+        $specialties = $personQueryDto->specialties ?: null;
+        $specialtiesArr = array_map('intval', explode(',', $specialties));
+
+        $qb = $this->createQueryBuilder('p')
+            ->select('COUNT(p.id)')
+            ->where('1 = 1');
+
+        if (!empty($search)) {
+            $search = trim(strtolower($search));
+            $qb
+                ->andWhere(
+                    $qb->expr()->orX(
+                        $qb->expr()->like('LOWER(p.firstname)', ':search'),
+                        $qb->expr()->like('LOWER(p.lastname)', ':search'),
+                        $qb->expr()->like('LOWER(p.internationalName)', ':search')
+                    )
+                )
+                ->setParameter('search', "%{$search}%");
+        }
+
+        if ($personQueryDto->sortBy === 'age') {
+            $qb->andWhere('p.birthday IS NOT NULL');
+        }
+
+        if ($gender !== null) {
+            $qb
+                ->andWhere('p.gender = :gender')
+                ->setParameter('gender', $gender);
+        }
+
+        if ($specialties !== null) {
+            $specialtiesFiltered = $this->filterBySpecialtyIds($specialtiesArr);
+            $specilatyIds = array_column($specialtiesFiltered, 'id');
+
+            if (!empty($specilatyIds)) {
+                $qb->andWhere('p.id IN (:ids)')
+                    ->setParameter('ids', $specilatyIds);
+            } else {
+                return 0;
+            }
+        }
+
+        return (int) $qb->getQuery()->getSingleScalarResult();
+    }
+
+
     public function total(): int
     {
         return $this
