@@ -66,6 +66,50 @@ class FilmRepository extends ServiceEntityRepository
         return $qb->getQuery()->getResult();
     }
 
+    public function countByQueryParams(FilmQueryDto $filmQueryDto): int
+    {
+        $search = $filmQueryDto->search ?: null;
+        $genres = $filmQueryDto->genres ?: null;
+        $countries = $filmQueryDto->countries ?: null;
+        $genresArr = array_map('intval', explode(',', $genres));
+        $countryCodes = explode(',', $countries);
+
+        $qb = $this->createQueryBuilder('f')
+            ->select('COUNT(f.id)')
+            ->where('1 = 1');
+
+        if ($search !== null) {
+            $search = trim(strtolower($search));
+            $qb->andWhere(
+                $qb->expr()->orX(
+                    $qb->expr()->like('LOWER(f.name)', ':search'),
+                    $qb->expr()->like('LOWER(f.internationalName)', ':search')
+                )
+            )
+                ->setParameter('search', "%{$search}%");
+        }
+
+        if ($genres !== null) {
+            $genreFiltered = $this->filterByGenreIds($genresArr);
+            $genreIds = array_column($genreFiltered, 'id');
+            if (!empty($genreIds)) {
+                $qb->andWhere('f.id IN (:ids)')
+                    ->setParameter('ids', $genreIds);
+            } else {
+                return 0;
+            }
+        }
+
+        if ($countries !== null) {
+            $qb->andWhere($qb->expr()->in('f.country', ':country'))
+                ->setParameter('country', $countryCodes);
+        }
+
+        return (int) $qb->getQuery()->getSingleScalarResult();
+    }
+
+
+
     public function total(): int
     {
         return $this

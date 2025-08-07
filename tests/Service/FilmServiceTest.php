@@ -125,10 +125,11 @@ class FilmServiceTest extends KernelTestCase
 
     public function testFilmsFiltering(): void
     {
-        $totalPages = 1;
+        $limit = 5;
+        $offset = 0;
         $filmQueryDto = new FilmQueryDto(
-            5,
-            0,
+            $limit,
+            $offset,
             '',
             'name',
             'asc',
@@ -137,25 +138,33 @@ class FilmServiceTest extends KernelTestCase
             'US, RU'
         );
 
-        $films = FilmFactory::createMany(6);
-        $total = count($films);
-        $totalPages = intval(ceil($total / $filmQueryDto->limit));
-        $currentPage = $filmQueryDto->offset / $filmQueryDto->limit + 1;
+        $filteredFilms = FilmFactory::createMany(5);
+        $totalCount = 7;
+
+        $expectedTotalPages = (int) ceil($totalCount / $limit);
+        $expectedCurrentPage = (int) floor($offset / $limit) + 1;
+
+        $this->repositoryMock
+            ->expects($this->once())
+            ->method('countByQueryParams')
+            ->with($filmQueryDto)
+            ->willReturn($totalCount);
 
         $this->repositoryMock
             ->expects($this->once())
             ->method('filterByQueryParams')
             ->with($filmQueryDto)
-            ->willReturn($films);
+            ->willReturn($filteredFilms);
 
         $result = $this->filmService->filter($filmQueryDto);
-        
-        $expectedTotalPages = ceil(count($result->getItems()) / $filmQueryDto->limit);
-
-        $this->assertEquals($expectedTotalPages,  $totalPages);
 
         $this->assertInstanceOf(FilmPaginateList::class, $result);
+        $this->assertCount(5, $result->getItems());
+
+        $this->assertEquals($expectedTotalPages, $result->getTotalPages());
+        $this->assertEquals($expectedCurrentPage, $result->getCurrentPage());
     }
+
 
     public function testSimilarGenresRequest(): void
     {
@@ -166,7 +175,7 @@ class FilmServiceTest extends KernelTestCase
         $films = FilmFactory::createMany(3);
 
         $rawFilms = array_map(
-            fn (Film $film) => $film->toArray(),
+            fn(Film $film) => $film->toArray(),
             $films
         );
 

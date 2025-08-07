@@ -120,7 +120,7 @@ class FilmService
         $films = $this->repository->findLatest($count);
 
         $items = array_map(
-            fn (Film $film): \App\Model\Response\Entity\Film\FilmListItem => $this->filmMapper->mapToListItem($film),
+            fn(Film $film): \App\Model\Response\Entity\Film\FilmListItem => $this->filmMapper->mapToListItem($film),
             $films
         );
 
@@ -137,7 +137,7 @@ class FilmService
         $films = $this->repository->findTop($count);
 
         $items = array_map(
-            fn (Film $film): \App\Model\Response\Entity\Film\FilmListItem => $this->filmMapper->mapToListItem($film),
+            fn(Film $film): \App\Model\Response\Entity\Film\FilmListItem => $this->filmMapper->mapToListItem($film),
             $films
         );
 
@@ -164,7 +164,7 @@ class FilmService
         $films = $this->repository->findBy(['id' => $ids]);
 
         $items = array_map(
-            fn (Film $film): \App\Model\Response\Entity\Film\FilmListItem => $this->filmMapper->mapToListItem($film),
+            fn(Film $film): \App\Model\Response\Entity\Film\FilmListItem => $this->filmMapper->mapToListItem($film),
             $films
         );
 
@@ -176,32 +176,39 @@ class FilmService
         return new FilmList($items);
     }
 
-    public function filter(FilmQueryDto $filmQueryDto): FilmPaginateList
-    {
-        $totalPages = 1;
-        $currentPage = 1;
-        $films = $this->repository->filterByQueryParams($filmQueryDto);
-        $total = count($films);
-        if ($filmQueryDto->limit !== 0) {
-            $totalPages = intval(ceil($total / $filmQueryDto->limit));
-            $currentPage = $filmQueryDto->offset / $filmQueryDto->limit + 1;
-        }
-        $locale = $filmQueryDto->locale ?? 'ru';
-        $items = array_map(
-            fn (Film $film): FilmDetail => 
-            $this->filmMapper->mapToDetail(
-                $film, new FilmDetail(), 
-                $locale),
-            $films
-        );
+public function filter(FilmQueryDto $filmQueryDto): FilmPaginateList
+{
+    $locale = $filmQueryDto->locale ?? 'ru';
 
-        foreach ($items as $item) {
-            $galleryPaths = $this->setGalleryPaths($item->getId());
-            $item->setGallery($galleryPaths);
-        }
+    $total = $this->repository->countByQueryParams($filmQueryDto);
+    $totalPages = 1;
+    $currentPage = 1;
 
-        return new FilmPaginateList($items, $totalPages, $currentPage);
+    if ($filmQueryDto->limit > 0) {
+        $totalPages = (int) ceil($total / $filmQueryDto->limit);
+        $currentPage = (int) floor($filmQueryDto->offset / $filmQueryDto->limit) + 1;
     }
+
+    $films = $this->repository->filterByQueryParams($filmQueryDto);
+
+    $items = array_map(
+        fn(Film $film): FilmDetail =>
+            $this->filmMapper->mapToDetail(
+                $film,
+                new FilmDetail(),
+                $locale
+            ),
+        $films
+    );
+
+    foreach ($items as $item) {
+        $galleryPaths = $this->setGalleryPaths($item->getId());
+        $item->setGallery($galleryPaths);
+    }
+
+    return new FilmPaginateList($items, $totalPages, $currentPage);
+}
+
 
     public function create(FilmDto $dto, #[CurrentUser] User $user): FilmForm
     {
@@ -404,11 +411,14 @@ class FilmService
 
         foreach ($files as $file) {
             ++$maxIndex;
-            $indexedFileName = 'picture-'.$maxIndex;
-            if (!$this->imageProcessorService->compressUploadedFile(
-                $file,
-                $indexedFileName,
-                $dirName)) {
+            $indexedFileName = 'picture-' . $maxIndex;
+            if (
+                !$this->imageProcessorService->compressUploadedFile(
+                    $file,
+                    $indexedFileName,
+                    $dirName
+                )
+            ) {
                 return null;
             }
         }
@@ -489,7 +499,7 @@ class FilmService
     {
         $subDirByIdPath = $this->createUploadsDir($id);
 
-        $galleryDirPath = $subDirByIdPath.DIRECTORY_SEPARATOR.'gallery';
+        $galleryDirPath = $subDirByIdPath . DIRECTORY_SEPARATOR . 'gallery';
         $this->fileSystemService->createDir($galleryDirPath);
 
         return $galleryDirPath;
@@ -500,7 +510,7 @@ class FilmService
         $filmBaseUploadsDir = $this->fileSystemService->getUploadsDirname('film');
 
         $stringId = strval($id);
-        $subDirByIdPath = $filmBaseUploadsDir.DIRECTORY_SEPARATOR.$stringId;
+        $subDirByIdPath = $filmBaseUploadsDir . DIRECTORY_SEPARATOR . $stringId;
 
         $this->fileSystemService->createDir($subDirByIdPath);
 
