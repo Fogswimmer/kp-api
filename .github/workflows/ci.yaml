@@ -14,8 +14,8 @@ jobs:
         image: postgres:15
         env:
           POSTGRES_DB: test_db
-          POSTGRES_USER: test_user
-          POSTGRES_PASSWORD: test_pass
+          POSTGRES_USER: symfony
+          POSTGRES_PASSWORD: secret
         ports:
           - 5432:5432
         options: >-
@@ -25,7 +25,7 @@ jobs:
           --health-retries 5
 
     env:
-      DATABASE_URL: postgresql://test_user:test_pass@127.0.0.1:5432/test_db?serverVersion=15&charset=utf8
+      DATABASE_URL: "postgresql://symfony:secret@127.0.0.1:5432/test_db?serverVersion=15&charset=utf8"
       APP_ENV: test
       KERNEL_CLASS: App\Kernel
     steps:

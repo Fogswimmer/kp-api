@@ -125,6 +125,7 @@ class FilmServiceTest extends KernelTestCase
 
     public function testFilmsFiltering(): void
     {
+        $totalPages = 1;
         $filmQueryDto = new FilmQueryDto(
             5,
             0,
@@ -137,6 +138,9 @@ class FilmServiceTest extends KernelTestCase
         );
 
         $films = FilmFactory::createMany(6);
+        $total = count($films);
+        $totalPages = intval(ceil($total / $filmQueryDto->limit));
+        $currentPage = $filmQueryDto->offset / $filmQueryDto->limit + 1;
 
         $this->repositoryMock
             ->expects($this->once())
@@ -145,6 +149,10 @@ class FilmServiceTest extends KernelTestCase
             ->willReturn($films);
 
         $result = $this->filmService->filter($filmQueryDto);
+        
+        $expectedTotalPages = ceil(count($result->getItems()) / $filmQueryDto->limit);
+
+        $this->assertEquals($expectedTotalPages,  $totalPages);
 
         $this->assertInstanceOf(FilmPaginateList::class, $result);
     }

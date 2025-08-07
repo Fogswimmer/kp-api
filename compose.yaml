@@ -1,16 +1,4 @@
 services:
-  symfony:
-    build: .
-    container_name: symfony
-    ports:
-      - "8080:80"
-    volumes:
-      - ./:/var/www/html
-    depends_on:
-      postgres:
-        condition: service_healthy
-    networks:
-      - app-network
   postgres:
     image: postgres:16
     container_name: postgres
@@ -26,6 +14,8 @@ services:
       retries: 5
     volumes:
       - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432" 
     networks:
       - app-network
   redis:

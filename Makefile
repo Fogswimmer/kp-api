@@ -15,7 +15,7 @@ uploads:
 jwt:
 	docker exec $(CONTAINER_NAME) php bin/console lexik:jwt:generate-keypair --overwrite
 test:
-	docker-compose -f compose.test.yaml up --build --abort-on-container-exit
+	docker exec $(CONTAINER_NAME) php bin/phpunit
 clear-cache:
 	docker exec symfony php bin/console cache:clear --no-warmup
 fixtures:
