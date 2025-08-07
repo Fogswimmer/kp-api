@@ -180,15 +180,18 @@ class FilmService
     {
         $totalPages = 1;
         $currentPage = 1;
-        $total = $this->repository->total();
         $films = $this->repository->filterByQueryParams($filmQueryDto);
+        $total = count($films);
         if ($filmQueryDto->limit !== 0) {
             $totalPages = intval(ceil($total / $filmQueryDto->limit));
             $currentPage = $filmQueryDto->offset / $filmQueryDto->limit + 1;
         }
         $locale = $filmQueryDto->locale ?? 'ru';
         $items = array_map(
-            fn (Film $film): \App\Model\Response\Entity\Film\FilmDetail => $this->filmMapper->mapToDetail($film, new FilmDetail(), $locale),
+            fn (Film $film): FilmDetail => 
+            $this->filmMapper->mapToDetail(
+                $film, new FilmDetail(), 
+                $locale),
             $films
         );
 

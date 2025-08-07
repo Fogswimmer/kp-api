@@ -5,9 +5,7 @@ services:
     ports:
       - "8080:80"
     volumes:
-      - ./symfony:/var/www/html
-    environment:
-      DATABASE_URL: "postgresql://symfony:secret@db:5432/symfony?sslmode=disable&serverVersion=15&charset=utf8"
+      - ./:/var/www/html
     depends_on:
       postgres:
         condition: service_healthy
