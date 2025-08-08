@@ -43,7 +43,7 @@ class PersonMapper
         ;
     }
 
-    public function mapToListItem(Person $person, $locale): PersonListItem
+    public function mapToListItem(Person $person, $locale = null): PersonListItem
     {
         return new PersonListItem(
             $person->getId(),
