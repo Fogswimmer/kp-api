@@ -83,7 +83,7 @@ class PersonServiceTest extends KernelTestCase
             ->with(['id' => array_column($rawPersons, 'id')])
             ->willReturn($persons);
 
-        $result = $this->personService->similarSpecialties($slug, $count);
+        $result = $this->personService->similarSpecialties($slug, $count, 'en');
 
         $this->assertInstanceOf(PersonList::class, $result);
         $this->assertCount(3, $result->getItems());
