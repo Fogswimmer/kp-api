@@ -10,6 +10,7 @@ use App\Entity\User;
 use App\Exception\NotFound\PersonNotFoundException;
 use App\Model\Response\Entity\Person\PersonDetail;
 use App\Model\Response\Entity\Person\PersonForm;
+use App\Model\Response\Entity\Person\PersonList;
 use App\Model\Response\Entity\Person\PersonPaginateList;
 use App\Service\Entity\PersonService;
 use Nelmio\ApiDocBundle\Attribute\Model;
@@ -411,6 +412,36 @@ class PersonController extends AbstractController
             $this->logger->error($e);
             $data = $e->getMessage();
             $status = Response::HTTP_INTERNAL_SERVER_ERROR;
+        }
+
+        return $this->json($data, $status);
+    }
+
+        /**
+     * Find persons of similar specialties.
+     */
+
+    #[Route(
+        path: '/api/persons/{slug}/similar-specialties',
+        name: 'api_person_similar_specialty',
+        requirements: ['slug' => '[a-z0-9-]+'],
+        methods: ['GET'],
+    )]
+    #[OA\Response(
+        response: 200,
+        description: 'Successful response',
+        content: new Model(type: PersonList::class)
+    )]
+    public function similarSpecialties(string $slug): Response
+    {
+        $status = Response::HTTP_OK;
+        $data = null;
+        $count = 5;
+        try {
+            $data = $this->personService->similarSpecialties($slug, $count);
+        } catch (PersonNotFoundException $e) {
+            $status = Response::HTTP_NOT_FOUND;
+            $this->logger->error($e);
         }
 
         return $this->json($data, $status);

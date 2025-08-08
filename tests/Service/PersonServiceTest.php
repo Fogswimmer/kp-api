@@ -2,9 +2,11 @@
 
 namespace App\Tests\Service;
 
+use App\Entity\Person;
 use App\EntityListener\PersonListener;
 use App\Factory\PersonFactory;
 use App\Mapper\Entity\PersonMapper;
+use App\Model\Response\Entity\Person\PersonList;
 use App\Repository\PersonRepository;
 use App\Repository\UserRepository;
 use App\Service\Entity\PersonService;
@@ -48,6 +50,43 @@ class PersonServiceTest extends KernelTestCase
             $this->personListenerMock,
             $this->imageProcessorService
         );
+    }
+
+        public function testSimilarSpecialtiesRequest(): void
+    {
+        $count = 3;
+
+        $targetPerson = PersonFactory::createOne();
+
+        $persons = PersonFactory::createMany(3);
+
+        $rawPersons = array_map(
+            fn(Person $person) => $person->toArray(),
+            $persons
+        );
+
+        $slug = $targetPerson->getSlug();
+
+        $this->repositoryMock
+            ->method('findBySlug')
+            ->with($slug)
+            ->willReturn($targetPerson);
+
+        $this->repositoryMock
+            ->expects($this->once())
+            ->method('findWithSimilarSpecialties')
+            ->with($targetPerson->getId(), $count)
+            ->willReturn($rawPersons);
+
+        $this->repositoryMock
+            ->method('findBy')
+            ->with(['id' => array_column($rawPersons, 'id')])
+            ->willReturn($persons);
+
+        $result = $this->personService->similarSpecialties($slug, $count);
+
+        $this->assertInstanceOf(PersonList::class, $result);
+        $this->assertCount(3, $result->getItems());
     }
 
     public function testCheckPersonsPresence(): void

@@ -14,7 +14,7 @@ class PersonPaginateList
 	/**
 	 * @param PersonDetail[] $items
 	 */
-	public function __construct(array $items, int $totalPages = null, ?int $currentPage = null)
+	public function __construct(array $items, int $totalPages = null, int $currentPage)
 	{
 		$this->items = $items;
 		$this->totalPages = $totalPages ?? count($items);

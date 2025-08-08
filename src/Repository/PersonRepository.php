@@ -130,6 +130,49 @@ class PersonRepository extends ServiceEntityRepository
             ->getSingleScalarResult();
     }
 
+    public function findBySlug(string $slug): ?Person
+    {
+        $person = $this->findOneBy(['slug' => $slug]);
+
+        return $person;
+    }
+
+    public function findWithSimilarSpecialties(int $personId, int $count): array
+    {
+        $connection = $this->getEntityManager()->getConnection();
+        $query = 'SELECT p.*, (
+            SELECT COUNT(*)
+            FROM jsonb_array_elements_text(p.specialties::jsonb) AS ps
+            WHERE tp::int IN (
+                SELECT (jsonb_array_elements_text(tp.specialties::jsonb))::int
+                )
+            ) AS common_specialties_count
+                FROM person p
+                CROSS JOIN (
+                    SELECT specialties
+                    FROM person
+                    WHERE id = :personId
+                ) tp
+            WHERE p.id != :personId
+            AND EXISTS (
+                SELECT 1
+                FROM jsonb_array_elements_text(p.specialties::jsonb) ps
+                WHERE ps::int IN (
+                    SELECT (jsonb_array_elements_text(tp.specialties::jsonb))::int
+                )
+            )
+            ORDER BY common_specialties_count DESC
+            LIMIT :count;
+        ';
+
+        $stmt = $connection->prepare($query);
+        $stmt->bindValue('personId', $personId, \PDO::PARAM_INT);
+        $stmt->bindValue('count', $count, \PDO::PARAM_INT);
+        $result = $stmt->executeQuery();
+
+        return $result->fetchAllAssociative();
+    }
+
     private function filterBySpecialtyIds(array $specialties): array
     {
         if (empty($specialties)) {
@@ -158,4 +201,5 @@ class PersonRepository extends ServiceEntityRepository
 
         return $result->fetchAllAssociative();
     }
+
 }

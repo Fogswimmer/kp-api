@@ -461,4 +461,16 @@ class Person
 
         return $this;
     }
+
+    public function toArray(): array
+    {
+        return [
+            'id' => $this->getId(),
+            'name' => $this->getFullName(),
+            'internationalName' => $this->getInternationalName(),
+            'avatar' => $this->getAvatar(),
+            'slug' => $this->getSlug(),
+            'bio' => $this->getBio(),
+        ];
+    }
 }

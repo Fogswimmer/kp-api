@@ -176,38 +176,38 @@ class FilmService
         return new FilmList($items);
     }
 
-public function filter(FilmQueryDto $filmQueryDto): FilmPaginateList
-{
-    $locale = $filmQueryDto->locale ?? 'ru';
+    public function filter(FilmQueryDto $filmQueryDto): FilmPaginateList
+    {
+        $locale = $filmQueryDto->locale ?? 'ru';
 
-    $total = $this->repository->countByQueryParams($filmQueryDto);
-    $totalPages = 1;
-    $currentPage = 1;
+        $total = $this->repository->countByQueryParams($filmQueryDto);
+        $totalPages = 1;
+        $currentPage = 1;
 
-    if ($filmQueryDto->limit > 0) {
-        $totalPages = (int) ceil($total / $filmQueryDto->limit);
-        $currentPage = (int) floor($filmQueryDto->offset / $filmQueryDto->limit) + 1;
-    }
+        if ($filmQueryDto->limit > 0) {
+            $totalPages = (int) ceil($total / $filmQueryDto->limit);
+            $currentPage = (int) floor($filmQueryDto->offset / $filmQueryDto->limit) + 1;
+        }
 
-    $films = $this->repository->filterByQueryParams($filmQueryDto);
+        $films = $this->repository->filterByQueryParams($filmQueryDto);
 
-    $items = array_map(
-        fn(Film $film): FilmDetail =>
+        $items = array_map(
+            fn(Film $film): FilmDetail =>
             $this->filmMapper->mapToDetail(
                 $film,
                 new FilmDetail(),
                 $locale
             ),
-        $films
-    );
+            $films
+        );
 
-    foreach ($items as $item) {
-        $galleryPaths = $this->setGalleryPaths($item->getId());
-        $item->setGallery($galleryPaths);
+        foreach ($items as $item) {
+            $galleryPaths = $this->setGalleryPaths($item->getId());
+            $item->setGallery($galleryPaths);
+        }
+
+        return new FilmPaginateList($items, $totalPages, $currentPage);
     }
-
-    return new FilmPaginateList($items, $totalPages, $currentPage);
-}
 
 
     public function create(FilmDto $dto, #[CurrentUser] User $user): FilmForm

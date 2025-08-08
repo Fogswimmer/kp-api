@@ -13,6 +13,7 @@ use App\Mapper\Entity\PersonMapper;
 use App\Model\Response\Entity\Person\PersonDetail;
 use App\Model\Response\Entity\Person\PersonForm;
 use App\Model\Response\Entity\Person\PersonList;
+use App\Model\Response\Entity\Person\PersonListItem;
 use App\Model\Response\Entity\Person\PersonPaginateList;
 use App\Repository\PersonRepository;
 use App\Repository\UserRepository;
@@ -136,10 +137,10 @@ class PersonService
     public function delete(int $id): void
     {
         $person = $this->repository->find($id);
-        $films = $person->getFilms();
+        $persons = $person->getpersons();
 
-        foreach ($films as $film) {
-            $person->removeFilm($film);
+        foreach ($persons as $person) {
+            $person->removeperson($person);
         }
 
         $galleryFiles = $this->fileSystemService->searchFiles(
@@ -283,7 +284,7 @@ class PersonService
         $actors = $this->listSpecialistsBySpecialty(Specialty::ACTOR);
         $popularActors = [];
         foreach ($actors as $actor) {
-            if (count($actor->getFilms()) > 2) {
+            if (count($actor->getpersons()) > 2) {
                 $popularActors[] = $actor;
             }
         }
@@ -294,17 +295,19 @@ class PersonService
 
     public function filter(PersonQueryDto $personQueryDto): PersonPaginateList
     {
-        $persons = $this->repository->filterByQueryParams($personQueryDto);
+        $locale = $personQueryDto->locale ?? 'ru';
         $total = $this->repository->countByQueryParams($personQueryDto);
         $totalPages = 1;
         $currentPage = 1;
-        $locale = $personQueryDto->locale ?? 'ru';
+        
         if ($personQueryDto->limit !== 0) {
             $totalPages = intval(ceil($total / $personQueryDto->limit));
             $currentPage = $personQueryDto->offset / $personQueryDto->limit + 1;
         }
+        
+        $persons = $this->repository->filterByQueryParams($personQueryDto);
         $items = array_map(
-            fn (Person $person): \App\Model\Response\Entity\Person\PersonDetail => $this->personMapper->mapToDetail($person, new PersonDetail(), $locale),
+            fn (Person $person): PersonDetail => $this->personMapper->mapToDetail($person, new PersonDetail(), $locale),
             $persons
         );
         foreach ($items as $item) {
@@ -327,6 +330,33 @@ class PersonService
         }
 
         return $this->repository->findAll() !== [];
+    }
+
+        public function similarSpecialties(string $slug, int $count): PersonList
+    {
+        $person = $this->repository->findBySlug($slug);
+
+        if (!$person) {
+            throw new PersonNotFoundException();
+        }
+
+        $personsRaw = $this->repository->findWithSimilarSpecialties($person->getId(), $count);
+
+        $ids = array_column($personsRaw, 'id');
+
+        $persons = $this->repository->findBy(['id' => $ids]);
+
+        $items = array_map(
+            fn(person $person): PersonListItem => $this->personMapper->mapToListItem($person),
+            $persons
+        );
+
+        foreach ($items as $item) {
+            $photosPaths = $this->setPhotosPaths($item->getId());
+            $item->setPhotos($photosPaths);
+        }
+
+        return new PersonList($items);
     }
 
     private function setPhotosPaths(int $id): array
