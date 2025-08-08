@@ -175,10 +175,14 @@ class PersonService
         foreach ($files as $file) {
             ++$maxIndex;
             $indexedFileName = "photo-{$maxIndex}";
-            if (!$this->imageProcessorService->compressUploadedFile(
-                $file,
-                $indexedFileName,
-                $dirName, 70)) {
+            if (
+                !$this->imageProcessorService->compressUploadedFile(
+                    $file,
+                    $indexedFileName,
+                    $dirName,
+                    70
+                )
+            ) {
                 return null;
             }
         }
@@ -196,10 +200,14 @@ class PersonService
             $this->fileSystemService->removeFile($currentFile);
         }
 
-        if (!$this->imageProcessorService->compressUploadedFile(
-            $file,
-            'cover_'.uniqid(),
-            $dirName, 95)) {
+        if (
+            !$this->imageProcessorService->compressUploadedFile(
+                $file,
+                'cover_' . uniqid(),
+                $dirName,
+                95
+            )
+        ) {
             return null;
         }
 
@@ -299,15 +307,15 @@ class PersonService
         $total = $this->repository->countByQueryParams($personQueryDto);
         $totalPages = 1;
         $currentPage = 1;
-        
+
         if ($personQueryDto->limit !== 0) {
             $totalPages = intval(ceil($total / $personQueryDto->limit));
             $currentPage = $personQueryDto->offset / $personQueryDto->limit + 1;
         }
-        
+
         $persons = $this->repository->filterByQueryParams($personQueryDto);
         $items = array_map(
-            fn (Person $person): PersonDetail => $this->personMapper->mapToDetail($person, new PersonDetail(), $locale),
+            fn(Person $person): PersonDetail => $this->personMapper->mapToDetail($person, new PersonDetail(), $locale),
             $persons
         );
         foreach ($items as $item) {
@@ -332,7 +340,7 @@ class PersonService
         return $this->repository->findAll() !== [];
     }
 
-        public function similarSpecialties(string $slug, int $count): PersonList
+    public function similarSpecialties(string $slug, int $count, ?string $locale): PersonList
     {
         $person = $this->repository->findBySlug($slug);
 
@@ -347,7 +355,7 @@ class PersonService
         $persons = $this->repository->findBy(['id' => $ids]);
 
         $items = array_map(
-            fn(person $person): PersonListItem => $this->personMapper->mapToListItem($person),
+            fn(person $person): PersonListItem => $this->personMapper->mapToListItem($person, $locale),
             $persons
         );
 
@@ -377,7 +385,7 @@ class PersonService
     {
         $subDirByIdPath = $this->createUploadsDir($id);
 
-        $photosDirPath = $subDirByIdPath.DIRECTORY_SEPARATOR.'photos';
+        $photosDirPath = $subDirByIdPath . DIRECTORY_SEPARATOR . 'photos';
         $this->fileSystemService->createDir($photosDirPath);
 
         return $photosDirPath;
@@ -398,7 +406,7 @@ class PersonService
         $personBaseUploadsDir = $this->fileSystemService->getUploadsDirname('person');
 
         $stringId = strval($id);
-        $subDirByIdPath = $personBaseUploadsDir.DIRECTORY_SEPARATOR.$stringId;
+        $subDirByIdPath = $personBaseUploadsDir . DIRECTORY_SEPARATOR . $stringId;
 
         $this->fileSystemService->createDir($subDirByIdPath);
 

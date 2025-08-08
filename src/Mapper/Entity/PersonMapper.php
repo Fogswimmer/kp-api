@@ -43,7 +43,7 @@ class PersonMapper
         ;
     }
 
-    public function mapToListItem(Person $person): PersonListItem
+    public function mapToListItem(Person $person, $locale): PersonListItem
     {
         return new PersonListItem(
             $person->getId(),
@@ -51,7 +51,7 @@ class PersonMapper
             $person->getAvatar(),
             $person->getSlug(),
             $person->getInternationalName(),
-            $person->getPublisher() ? $this->mapPublisherData($person->getPublisher()) : [],
+            $this->mapSpecialtyNamesIncludingGender($person, $locale),
         );
     }
 

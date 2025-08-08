@@ -64,5 +64,4 @@ jobs:
             cd ${{secrets.PROJECT_FOLDER}};
             git pull;
             cd ..;
-            docker compose down --remove-orphans;
-            docker compose up -d;
+            docker compose restart symfony;

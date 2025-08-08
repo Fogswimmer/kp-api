@@ -417,7 +417,7 @@ class PersonController extends AbstractController
         return $this->json($data, $status);
     }
 
-        /**
+    /**
      * Find persons of similar specialties.
      */
 
@@ -432,13 +432,20 @@ class PersonController extends AbstractController
         description: 'Successful response',
         content: new Model(type: PersonList::class)
     )]
-    public function similarSpecialties(string $slug): Response
-    {
+    public function similarSpecialties(
+        string $slug,
+        #[MapQueryString]
+        LocaleDto $dto
+    ): Response {
         $status = Response::HTTP_OK;
         $data = null;
         $count = 5;
         try {
-            $data = $this->personService->similarSpecialties($slug, $count);
+            $data = $this->personService->similarSpecialties(
+                $slug,
+                $count,
+                $dto->locale
+            );
         } catch (PersonNotFoundException $e) {
             $status = Response::HTTP_NOT_FOUND;
             $this->logger->error($e);
