@@ -292,7 +292,7 @@ class PersonService
         $actors = $this->listSpecialistsBySpecialty(Specialty::ACTOR);
         $popularActors = [];
         foreach ($actors as $actor) {
-            if (count($actor->getPersons()) > 2) {
+            if (count($actor->getFilms()) > 2) {
                 $popularActors[] = $actor;
             }
         }
