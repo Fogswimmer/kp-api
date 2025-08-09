@@ -137,7 +137,7 @@ class PersonService
     public function delete(int $id): void
     {
         $person = $this->repository->find($id);
-        $persons = $person->getpersons();
+        $persons = $person->getPersons();
 
         foreach ($persons as $person) {
             $person->removeperson($person);
@@ -292,7 +292,7 @@ class PersonService
         $actors = $this->listSpecialistsBySpecialty(Specialty::ACTOR);
         $popularActors = [];
         foreach ($actors as $actor) {
-            if (count($actor->getpersons()) > 2) {
+            if (count($actor->getPersons()) > 2) {
                 $popularActors[] = $actor;
             }
         }
