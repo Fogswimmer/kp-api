@@ -84,7 +84,7 @@ class FilmMapper
             ->setGenreIds($film->getGenres())
             ->setReleaseYear($film->getReleaseYear())
             ->setActorIds($this->mapActorsToIds($film))
-            ->setDirectedById($film->getDirectedBy() ? $film->getDirectedBy()->getId() : null)
+            ->setDirectorId($film->getDirectedBy() ? $film->getDirectedBy()->getId() : null)
             ->setWriterId($film->getWriter() ? $film->getWriter()->getId() : null)
             ->setProducerId($film->getProducer() ? $film->getProducer()->getId() : null)
             ->setComposerId($film->getComposer() ? $film->getComposer()->getId() : null)

@@ -20,7 +20,7 @@ class FilmForm
     public ?array $actorIds = [];
 
     #[OA\Property(example: 2)]
-    public ?int $directedById = null;
+    public ?int $directorId = null;
 
     #[OA\Property(example: 4)]
     public ?int $producerId = null;
@@ -119,14 +119,14 @@ class FilmForm
         return $this;
     }
 
-    public function getDirectedById(): int
+    public function getdirectorId(): int
     {
-        return $this->directedById;
+        return $this->directorId;
     }
 
-    public function setDirectedById(?int $directedById): static
+    public function setdirectorId(?int $directorId): static
     {
-        $this->directedById = $directedById;
+        $this->directorId = $directorId;
 
         return $this;
     }
