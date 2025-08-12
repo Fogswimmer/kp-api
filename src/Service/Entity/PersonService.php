@@ -134,13 +134,14 @@ class PersonService
         return $this->findForm($person->getSlug());
     }
 
+
     public function delete(int $id): void
     {
         $person = $this->repository->find($id);
-        $persons = $person->getPersons();
+        $films = $person->getFilms();
 
-        foreach ($persons as $person) {
-            $person->removeperson($person);
+        foreach ($films as $film) {
+            $person->removeFilm($film);
         }
 
         $galleryFiles = $this->fileSystemService->searchFiles(
