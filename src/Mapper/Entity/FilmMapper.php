@@ -45,7 +45,7 @@ class FilmMapper
         ;
     }
 
-    public function mapToDetail(Film $film, FilmDetail $model, string $locale = 'ru'): FilmDetail
+    public function mapToDetail(Film $film, FilmDetail $model, string $locale): FilmDetail
     {
         return $model
             ->setId($film->getId())
@@ -71,8 +71,7 @@ class FilmMapper
             ->setAssessmentsGraph($this->createAssessmentsGraph($film->getAssessments()->toArray()))
             ->setBudget($film->getBudget())
             ->setFees($film->getFees())
-            ->setCountry($film->getCountry()
-                ?: $this->convertAlpa2CodeToCountryName($film->getCountry(), $locale))
+            ->setCountry($this->convertAlpa2CodeToCountryName($film->getCountry(), $locale))
             ->setCountryCode($film->getCountry());
     }
 
@@ -267,7 +266,7 @@ class FilmMapper
         );
     }
 
-    private function convertAlpa2CodeToCountryName(string $countryCode, $locale = 'ru'): string
+    private function convertAlpa2CodeToCountryName(string $countryCode, $locale): string
     {
         $countryName = Countries::getName($countryCode, $locale);
 
