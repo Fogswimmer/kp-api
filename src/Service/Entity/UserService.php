@@ -9,6 +9,7 @@ use App\Model\Response\Entity\User\UserDetail;
 use App\Repository\UserRepository;
 use App\Service\FileSystemService;
 use App\Service\ImageProcessorService;
+use Symfony\Component\Intl\Countries;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 class UserService
@@ -107,6 +108,15 @@ class UserService
         $user = $this->userRepository->find($id);
 
         return $user;
+    }
+
+    public function getCountryByIp(string $ip, $locale): string
+    {
+        $details = json_decode(file_get_contents("http://ipinfo.io/{$ip}"));
+
+        $countryCode = $details->country;
+
+        return Countries::getName($countryCode, $locale);
     }
 
     private function specifyUserAvatarsPath(int $id): string

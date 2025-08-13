@@ -52,7 +52,7 @@ class PersonServiceTest extends KernelTestCase
         );
     }
 
-        public function testSimilarSpecialtiesRequest(): void
+    public function testSimilarSpecialtiesRequest(): void
     {
         $count = 3;
 
@@ -61,7 +61,7 @@ class PersonServiceTest extends KernelTestCase
         $persons = PersonFactory::createMany(3);
 
         $rawPersons = array_map(
-            fn(Person $person) => $person->toArray(),
+            fn (Person $person) => $person->toArray(),
             $persons
         );
 

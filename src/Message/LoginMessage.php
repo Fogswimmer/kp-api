@@ -12,16 +12,20 @@ class LoginMessage
     private string $email;
     private string $locale;
 
+    private string $country;
+
     public function __construct(
         $username,
         $ip,
         $locale,
-        $email
+        $email,
+        $country,
     ) {
         $this->username = $username;
         $this->ip = $ip;
         $this->locale = $locale;
         $this->email = $email;
+        $this->country = $country;
     }
 
     public function getUserName(): string
@@ -42,5 +46,10 @@ class LoginMessage
     public function getEmail(): string
     {
         return $this->email;
+    }
+
+    public function getCountry(): string
+    {
+        return $this->country;
     }
 }

@@ -21,7 +21,7 @@ class LoginMessageHandler
         $subject = $this->translator->trans('subject', [], 'login', $message->getLocale());
         $text = $this->translator->trans(
             'text',
-            ['%username%' => $message->getUsername(), '%ip%' => $message->getIp()],
+            ['%username%' => $message->getUsername(), '%ip%' => $message->getIp(), '%country%' => $message->getCountry()],
             'login', $message->getLocale());
 
         $this->notificationService->sendEmail($message->getEmail(), $subject, $text);

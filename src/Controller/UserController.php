@@ -46,11 +46,15 @@ class UserController extends AbstractController
         $uname = $user->getDisplayName() ?: $user->getUsername();
         $ip = $request->getClientIp();
 
+        $country = $this->userService->getCountryByIp($ip, $localeDto->locale);
+
         $message = new LoginMessage(
             $uname,
             $ip,
             $localeDto->locale,
-            $user->getEmail());
+            $user->getEmail(),
+            $country
+        );
 
         $this->bus->dispatch($message);
 

@@ -1,2 +1,2 @@
 subject: New login
-text: Hello, %username%! You have just logged in from %ip% . If it was not you, please change your password.
+text: Hello, %username%! You have just logged in from %ip% (%country%). If it was not you, please change your password.

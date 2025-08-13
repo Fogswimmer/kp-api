@@ -71,7 +71,8 @@ class FilmMapper
             ->setAssessmentsGraph($this->createAssessmentsGraph($film->getAssessments()->toArray()))
             ->setBudget($film->getBudget())
             ->setFees($film->getFees())
-            ->setCountry($film->getCountry() ? $this->convertAlpa2CodeToCountryName($film->getCountry()) : null)
+            ->setCountry($film->getCountry()
+                ?: $this->convertAlpa2CodeToCountryName($film->getCountry(), $locale))
             ->setCountryCode($film->getCountry());
     }
 
@@ -84,10 +85,10 @@ class FilmMapper
             ->setGenreIds($film->getGenres())
             ->setReleaseYear($film->getReleaseYear())
             ->setActorIds($this->mapActorsToIds($film))
-            ->setDirectorId($film->getDirectedBy() ? $film->getDirectedBy()->getId() : null)
-            ->setWriterId($film->getWriter() ? $film->getWriter()->getId() : null)
-            ->setProducerId($film->getProducer() ? $film->getProducer()->getId() : null)
-            ->setComposerId($film->getComposer() ? $film->getComposer()->getId() : null)
+            ->setDirectorId($film->getDirectedBy() ?: $film->getDirectedBy()->getId())
+            ->setWriterId($film->getWriter() ?: $film->getWriter()->getId())
+            ->setProducerId($film->getProducer() ?: $film->getProducer()->getId())
+            ->setComposerId($film->getComposer() ?: $film->getComposer()->getId())
             ->setDuration($this->setFormattedDuration($film->getDuration()))
             ->setDescription($film->getDescription())
             ->setAge($film->getAge())
@@ -266,9 +267,9 @@ class FilmMapper
         );
     }
 
-    private function convertAlpa2CodeToCountryName(string $countryCode): string
+    private function convertAlpa2CodeToCountryName(string $countryCode, $locale): string
     {
-        $countryName = Countries::getName($countryCode);
+        $countryName = Countries::getName($countryCode, $locale);
 
         return $countryName;
     }

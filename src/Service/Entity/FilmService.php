@@ -18,6 +18,7 @@ use App\Mapper\Entity\FilmMapper;
 use App\Model\Response\Entity\Film\FilmDetail;
 use App\Model\Response\Entity\Film\FilmForm;
 use App\Model\Response\Entity\Film\FilmList;
+use App\Model\Response\Entity\Film\FilmListItem;
 use App\Model\Response\Entity\Film\FilmPaginateList;
 use App\Repository\ActorRoleRepository;
 use App\Repository\AssessmentRepository;
@@ -120,7 +121,7 @@ class FilmService
         $films = $this->repository->findLatest($count);
 
         $items = array_map(
-            fn(Film $film): \App\Model\Response\Entity\Film\FilmListItem => $this->filmMapper->mapToListItem($film),
+            fn (Film $film): \App\Model\Response\Entity\Film\FilmListItem => $this->filmMapper->mapToListItem($film),
             $films
         );
 
@@ -137,7 +138,7 @@ class FilmService
         $films = $this->repository->findTop($count);
 
         $items = array_map(
-            fn(Film $film): \App\Model\Response\Entity\Film\FilmListItem => $this->filmMapper->mapToListItem($film),
+            fn (Film $film): \App\Model\Response\Entity\Film\FilmListItem => $this->filmMapper->mapToListItem($film),
             $films
         );
 
@@ -164,7 +165,7 @@ class FilmService
         $films = $this->repository->findBy(['id' => $ids]);
 
         $items = array_map(
-            fn(Film $film): \App\Model\Response\Entity\Film\FilmListItem => $this->filmMapper->mapToListItem($film),
+            fn (Film $film): FilmListItem => $this->filmMapper->mapToListItem($film),
             $films
         );
 
@@ -192,8 +193,7 @@ class FilmService
         $films = $this->repository->filterByQueryParams($filmQueryDto);
 
         $items = array_map(
-            fn(Film $film): FilmDetail =>
-            $this->filmMapper->mapToDetail(
+            fn (Film $film): FilmDetail => $this->filmMapper->mapToDetail(
                 $film,
                 new FilmDetail(),
                 $locale
@@ -208,7 +208,6 @@ class FilmService
 
         return new FilmPaginateList($items, $totalPages, $currentPage);
     }
-
 
     public function create(FilmDto $dto, #[CurrentUser] User $user): FilmForm
     {
@@ -411,7 +410,7 @@ class FilmService
 
         foreach ($files as $file) {
             ++$maxIndex;
-            $indexedFileName = 'picture-' . $maxIndex;
+            $indexedFileName = 'picture-'.$maxIndex;
             if (
                 !$this->imageProcessorService->compressUploadedFile(
                     $file,
@@ -499,7 +498,7 @@ class FilmService
     {
         $subDirByIdPath = $this->createUploadsDir($id);
 
-        $galleryDirPath = $subDirByIdPath . DIRECTORY_SEPARATOR . 'gallery';
+        $galleryDirPath = $subDirByIdPath.DIRECTORY_SEPARATOR.'gallery';
         $this->fileSystemService->createDir($galleryDirPath);
 
         return $galleryDirPath;
@@ -510,7 +509,7 @@ class FilmService
         $filmBaseUploadsDir = $this->fileSystemService->getUploadsDirname('film');
 
         $stringId = strval($id);
-        $subDirByIdPath = $filmBaseUploadsDir . DIRECTORY_SEPARATOR . $stringId;
+        $subDirByIdPath = $filmBaseUploadsDir.DIRECTORY_SEPARATOR.$stringId;
 
         $this->fileSystemService->createDir($subDirByIdPath);
 
