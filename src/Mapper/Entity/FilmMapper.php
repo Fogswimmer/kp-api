@@ -25,7 +25,7 @@ class FilmMapper
     public function mapToEntityList(array $films): FilmList
     {
         $items = array_map(
-            fn (Film $film): FilmListItem => $this->mapToEntityListItem($film, new FilmListItem($film->getId())),
+            fn(Film $film): FilmListItem => $this->mapToEntityListItem($film, new FilmListItem($film->getId())),
             $films
         );
 
@@ -85,10 +85,10 @@ class FilmMapper
             ->setGenreIds($film->getGenres())
             ->setReleaseYear($film->getReleaseYear())
             ->setActorIds($this->mapActorsToIds($film))
-            ->setDirectorId($film->getDirectedBy() ?: $film->getDirectedBy()->getId())
-            ->setWriterId($film->getWriter() ?: $film->getWriter()->getId())
-            ->setProducerId($film->getProducer() ?: $film->getProducer()->getId())
-            ->setComposerId($film->getComposer() ?: $film->getComposer()->getId())
+            ->setDirectorId($film->getDirectedBy()?->$film->getDirectedBy()->getId())
+            ->setWriterId($film->getWriter()?->$film->getWriter()->getId())
+            ->setProducerId($film->getProducer()?->$film->getProducer()->getId())
+            ->setComposerId($film->getComposer()?->$film->getComposer()->getId())
             ->setDuration($this->setFormattedDuration($film->getDuration()))
             ->setDescription($film->getDescription())
             ->setAge($film->getAge())
@@ -148,7 +148,7 @@ class FilmMapper
 
     private function mapActorsToIds(Film $film): array
     {
-        return array_map(fn (Person $actor): ?int => $actor->getId(), $film->getActors()->toArray());
+        return array_map(fn(Person $actor): ?int => $actor->getId(), $film->getActors()->toArray());
     }
 
     private function mapAssessments(array $assessments): array
@@ -252,7 +252,7 @@ class FilmMapper
     private function mapGenreIdsToEnums(array $genreIds): array
     {
         return array_map(
-            fn (int $genreId) => Genres::from($genreId),
+            fn(int $genreId) => Genres::from($genreId),
             $genreIds
         );
     }
@@ -262,7 +262,7 @@ class FilmMapper
         $genreEnums = $this->mapGenreIdsToEnums($genres);
 
         return array_map(
-            fn (Genres $genre): string => $genre->trans($this->translator),
+            fn(Genres $genre): string => $genre->trans($this->translator),
             $genreEnums
         );
     }
