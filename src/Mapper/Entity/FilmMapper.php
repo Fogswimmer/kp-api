@@ -267,7 +267,7 @@ class FilmMapper
         );
     }
 
-    private function convertAlpa2CodeToCountryName(string $countryCode, $locale): string
+    private function convertAlpa2CodeToCountryName(string $countryCode, $locale = 'ru'): string
     {
         $countryName = Countries::getName($countryCode, $locale);
 
