@@ -2,14 +2,11 @@
 
 namespace App\Tests\Service;
 
-use App\Dto\Entity\Film\FilmDto;
 use App\Dto\Entity\Film\FilmQueryDto;
 use App\Entity\Film;
 use App\EntityListener\FilmListener;
 use App\Factory\FilmFactory;
-use App\Factory\UserFactory;
 use App\Mapper\Entity\FilmMapper;
-use App\Model\Response\Entity\Film\FilmForm;
 use App\Model\Response\Entity\Film\FilmList;
 use App\Model\Response\Entity\Film\FilmPaginateList;
 use App\Repository\ActorRoleRepository;
@@ -99,7 +96,7 @@ class FilmServiceTest extends KernelTestCase
             ->with($count)
             ->willReturn($films);
 
-        $result = $this->filmService->latest($count);
+        $result = $this->filmService->latest($count, 'en');
 
         $this->assertInstanceOf(FilmList::class, $result);
         $this->assertCount($count, $result->getItems());
@@ -117,7 +114,7 @@ class FilmServiceTest extends KernelTestCase
             ->with($count)
             ->willReturn($films);
 
-        $result = $this->filmService->top($count);
+        $result = $this->filmService->top($count, 'en');
 
         $this->assertInstanceOf(FilmList::class, $result);
         $this->assertCount($count, $result->getItems());
@@ -197,7 +194,7 @@ class FilmServiceTest extends KernelTestCase
             ->with(['id' => array_column($rawFilms, 'id')])
             ->willReturn($films);
 
-        $result = $this->filmService->similarGenres($slug, $count);
+        $result = $this->filmService->similarGenres($slug, $count, 'en');
 
         $this->assertInstanceOf(FilmList::class, $result);
         $this->assertCount(3, $result->getItems());

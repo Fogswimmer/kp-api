@@ -116,12 +116,12 @@ class FilmService
         return $form;
     }
 
-    public function latest(int $count): FilmList
+    public function latest(int $count, string $locale): FilmList
     {
         $films = $this->repository->findLatest($count);
 
         $items = array_map(
-            fn(Film $film): \App\Model\Response\Entity\Film\FilmListItem => $this->filmMapper->mapToListItem($film),
+            fn(Film $film): FilmListItem => $this->filmMapper->mapToListItem($film, $locale),
             $films
         );
 
@@ -133,12 +133,12 @@ class FilmService
         return new FilmList($items);
     }
 
-    public function top(int $count): FilmList
+    public function top(int $count, string $locale): FilmList
     {
         $films = $this->repository->findTop($count);
 
         $items = array_map(
-            fn(Film $film): \App\Model\Response\Entity\Film\FilmListItem => $this->filmMapper->mapToListItem($film),
+            fn(Film $film): FilmListItem => $this->filmMapper->mapToListItem($film, $locale),
             $films
         );
 
@@ -150,7 +150,7 @@ class FilmService
         return new FilmList($items);
     }
 
-    public function similarGenres(string $slug, int $count): FilmList
+    public function similarGenres(string $slug, int $count, string $locale): FilmList
     {
         $film = $this->repository->findBySlug($slug);
 
@@ -165,7 +165,7 @@ class FilmService
         $films = $this->repository->findBy(['id' => $ids]);
 
         $items = array_map(
-            fn(Film $film): FilmListItem => $this->filmMapper->mapToListItem($film),
+            fn(Film $film): FilmListItem => $this->filmMapper->mapToListItem($film, $locale),
             $films
         );
 
