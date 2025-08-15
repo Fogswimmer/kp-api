@@ -24,10 +24,14 @@ class FilmMapper
 
     public function mapToEntityList(array $films, string $locale): FilmList
     {
+
         $items = array_map(
-            fn(Film $film): FilmListItem => $this->mapToEntityListItem($film, new FilmListItem($film->getId())),
             fn(Film $film): FilmListItem =>
-            $this->mapToEntityListItem($film, new FilmListItem($film->getId()), $locale),
+            $this->mapToEntityListItem(
+                $film,
+                new FilmListItem($film->getId()),
+                $locale
+            ),
             $films
         );
 

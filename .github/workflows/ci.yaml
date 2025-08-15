@@ -28,6 +28,7 @@ jobs:
       DATABASE_URL: "postgresql://symfony:secret@127.0.0.1:5432/test_db?serverVersion=15&charset=utf8"
       APP_ENV: test
       KERNEL_CLASS: App\Kernel
+      ELASTIC_SEARCH_URL: "http://127.0.0.1:9200"
     steps:
       - uses: actions/checkout@v4
       - uses: php-actions/composer@v6

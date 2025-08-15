@@ -121,7 +121,7 @@ class FilmService
         $films = $this->repository->findLatest($count);
 
         $items = array_map(
-            fn(Film $film): \App\Model\Response\Entity\Film\FilmListItem => $this->filmMapper->mapToListItem($film),
+            fn(Film $film): FilmListItem => $this->filmMapper->mapToListItem($film, $locale),
             $films
         );
 
@@ -138,7 +138,7 @@ class FilmService
         $films = $this->repository->findTop($count);
 
         $items = array_map(
-            fn(Film $film): \App\Model\Response\Entity\Film\FilmListItem => $this->filmMapper->mapToListItem($film),
+            fn(Film $film): FilmListItem => $this->filmMapper->mapToListItem($film, $locale),
             $films
         );
 
@@ -165,7 +165,7 @@ class FilmService
         $films = $this->repository->findBy(['id' => $ids]);
 
         $items = array_map(
-            fn(Film $film): FilmListItem => $this->filmMapper->mapToListItem($film),
+            fn(Film $film): FilmListItem => $this->filmMapper->mapToListItem($film, $locale),
             $films
         );
 
