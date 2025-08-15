@@ -5,7 +5,7 @@ namespace App\Tests\Service;
 use App\Dto\Entity\Film\FilmDto;
 use App\Dto\Entity\Film\FilmQueryDto;
 use App\Entity\Film;
-use App\EntityListener\FilmListener;
+use App\EventListener\FilmListener;
 use App\Factory\FilmFactory;
 use App\Factory\UserFactory;
 use App\Mapper\Entity\FilmMapper;

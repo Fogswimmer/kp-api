@@ -3,7 +3,7 @@
 namespace App\Tests\Service;
 
 use App\Entity\Person;
-use App\EntityListener\PersonListener;
+use App\EventListener\PersonListener;
 use App\Factory\PersonFactory;
 use App\Mapper\Entity\PersonMapper;
 use App\Model\Response\Entity\Person\PersonList;
@@ -61,7 +61,7 @@ class PersonServiceTest extends KernelTestCase
         $persons = PersonFactory::createMany(3);
 
         $rawPersons = array_map(
-            fn (Person $person) => $person->toArray(),
+            fn(Person $person) => $person->toArray(),
             $persons
         );
 

@@ -9,7 +9,7 @@ use App\Entity\ActorRole;
 use App\Entity\Assessment;
 use App\Entity\Film;
 use App\Entity\User;
-use App\EntityListener\FilmListener;
+use App\EventListener\FilmListener;
 use App\Exception\Denied\AccessDeniedException;
 use App\Exception\NotFound\AssessmentNotFoundException;
 use App\Exception\NotFound\FilmNotFoundException;
@@ -121,7 +121,7 @@ class FilmService
         $films = $this->repository->findLatest($count);
 
         $items = array_map(
-            fn (Film $film): \App\Model\Response\Entity\Film\FilmListItem => $this->filmMapper->mapToListItem($film),
+            fn(Film $film): FilmListItem => $this->filmMapper->mapToListItem($film),
             $films
         );
 
@@ -138,7 +138,7 @@ class FilmService
         $films = $this->repository->findTop($count);
 
         $items = array_map(
-            fn (Film $film): \App\Model\Response\Entity\Film\FilmListItem => $this->filmMapper->mapToListItem($film),
+            fn(Film $film): FilmListItem => $this->filmMapper->mapToListItem($film),
             $films
         );
 
@@ -165,7 +165,7 @@ class FilmService
         $films = $this->repository->findBy(['id' => $ids]);
 
         $items = array_map(
-            fn (Film $film): FilmListItem => $this->filmMapper->mapToListItem($film),
+            fn(Film $film): FilmListItem => $this->filmMapper->mapToListItem($film),
             $films
         );
 
@@ -193,7 +193,7 @@ class FilmService
         $films = $this->repository->filterByQueryParams($filmQueryDto);
 
         $items = array_map(
-            fn (Film $film): FilmDetail => $this->filmMapper->mapToDetail(
+            fn(Film $film): FilmDetail => $this->filmMapper->mapToDetail(
                 $film,
                 new FilmDetail(),
                 $locale
@@ -410,7 +410,7 @@ class FilmService
 
         foreach ($files as $file) {
             ++$maxIndex;
-            $indexedFileName = 'picture-'.$maxIndex;
+            $indexedFileName = 'picture-' . $maxIndex;
             if (
                 !$this->imageProcessorService->compressUploadedFile(
                     $file,
@@ -418,7 +418,7 @@ class FilmService
                     $dirName
                 )
             ) {
-                return null;
+                $this->fileSystemService->upload($file, $dirName, $indexedFileName);
             }
         }
 
@@ -498,7 +498,7 @@ class FilmService
     {
         $subDirByIdPath = $this->createUploadsDir($id);
 
-        $galleryDirPath = $subDirByIdPath.DIRECTORY_SEPARATOR.'gallery';
+        $galleryDirPath = $subDirByIdPath . DIRECTORY_SEPARATOR . 'gallery';
         $this->fileSystemService->createDir($galleryDirPath);
 
         return $galleryDirPath;
@@ -509,7 +509,7 @@ class FilmService
         $filmBaseUploadsDir = $this->fileSystemService->getUploadsDirname('film');
 
         $stringId = strval($id);
-        $subDirByIdPath = $filmBaseUploadsDir.DIRECTORY_SEPARATOR.$stringId;
+        $subDirByIdPath = $filmBaseUploadsDir . DIRECTORY_SEPARATOR . $stringId;
 
         $this->fileSystemService->createDir($subDirByIdPath);
 

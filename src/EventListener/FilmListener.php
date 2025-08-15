@@ -1,6 +1,6 @@
 <?php
 
-namespace App\EntityListener;
+namespace App\EventListener;
 
 use App\Entity\Film;
 use Symfony\Component\String\Slugger\SluggerInterface;
@@ -31,10 +31,10 @@ class FilmListener
         if ($film->getInternationalName() !== null) {
             $slug = $this->slugger->slug($film->getInternationalName())->lower();
             if ($film->getSlug() === $slug) {
-                $slug = $this->slugger->slug($film->getInternationalName())->lower().'-'.$uniqueId;
+                $slug = $this->slugger->slug($film->getInternationalName())->lower() . '-' . $uniqueId;
             }
         } else {
-            $slug = $this->slugger->slug($film->getName())->lower().'-'.$uniqueId;
+            $slug = $this->slugger->slug($film->getName())->lower() . '-' . $uniqueId;
         }
 
         return $slug;

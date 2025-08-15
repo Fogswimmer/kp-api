@@ -25,7 +25,7 @@ class PersonFixtures extends Fixture implements DependentFixtureInterface
                 ->setAge($faker->numberBetween(18, 80))
                 ->setInternationalName($faker->name())
                 ->setGender(Gender::random())
-                ->setBio($faker->text(200))
+                ->setBio($faker->text(100))
                 ->setPublisher($adminUser);
 
             foreach (Specialty::randomMany() as $specialty) {

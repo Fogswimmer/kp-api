@@ -65,7 +65,7 @@ class FilmFixtures extends Fixture implements DependentFixtureInterface
                 ->setAge($faker->randomElement($ageRestrictions))
                 ->setReleaseYear($faker->year())
                 ->setDuration($duration)
-                ->setSlogan($faker->sentence(5))
+                ->setSlogan($faker->sentence(2))
                 ->setDirectedBy(!empty($directors) ? $faker->randomElement($directors) : null)
                 ->setProducer(!empty($producers) ? $faker->randomElement($producers) : null)
                 ->setWriter(!empty($writers) ? $faker->randomElement($writers) : null)
@@ -74,7 +74,13 @@ class FilmFixtures extends Fixture implements DependentFixtureInterface
                 ->setPublisher(!empty($users) ? $faker->randomElement($users) : null);
 
             if (!empty($actors)) {
-                foreach ($faker->randomElements($actors, min(count($actors), $faker->numberBetween(1, 5))) as $actor) {
+                foreach ($faker->randomElements(
+                    $actors,
+                    min(
+                        count($actors),
+                        $faker->numberBetween(1, 5)
+                    )
+                ) as $actor) {
                     $film->addActor($actor);
                 }
             }

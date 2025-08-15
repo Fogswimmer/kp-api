@@ -25,7 +25,7 @@ class FilmMapper
     public function mapToEntityList(array $films): FilmList
     {
         $items = array_map(
-            fn (Film $film): FilmListItem => $this->mapToEntityListItem($film, new FilmListItem($film->getId())),
+            fn(Film $film): FilmListItem => $this->mapToEntityListItem($film, new FilmListItem($film->getId())),
             $films
         );
 
@@ -148,7 +148,7 @@ class FilmMapper
 
     private function mapActorsToIds(Film $film): array
     {
-        return array_map(fn (Person $actor): ?int => $actor->getId(), $film->getActors()->toArray());
+        return array_map(fn(Person $actor): ?int => $actor->getId(), $film->getActors()->toArray());
     }
 
     private function mapAssessments(array $assessments): array
@@ -252,7 +252,7 @@ class FilmMapper
     private function mapGenreIdsToEnums(array $genreIds): array
     {
         return array_map(
-            fn (int $genreId) => Genres::from($genreId),
+            fn(int $genreId) => Genres::from($genreId),
             $genreIds
         );
     }
@@ -262,13 +262,16 @@ class FilmMapper
         $genreEnums = $this->mapGenreIdsToEnums($genres);
 
         return array_map(
-            fn (Genres $genre): string => $genre->trans($this->translator),
+            fn(Genres $genre): string => $genre->trans($this->translator),
             $genreEnums
         );
     }
 
-    private function convertAlpa2CodeToCountryName(string $countryCode, $locale): string
+    private function convertAlpa2CodeToCountryName(?string $countryCode, $locale): string
     {
+        if (!$countryCode) {
+            return '';
+        }
         $countryName = Countries::getName($countryCode, $locale);
 
         return $countryName;

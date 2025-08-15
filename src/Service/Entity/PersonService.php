@@ -6,7 +6,7 @@ use App\Dto\Entity\Person\PersonDto;
 use App\Dto\Entity\Person\PersonQueryDto;
 use App\Entity\Person;
 use App\Entity\User;
-use App\EntityListener\PersonListener;
+use App\EventListener\PersonListener;
 use App\Enum\Specialty;
 use App\Exception\NotFound\PersonNotFoundException;
 use App\Mapper\Entity\PersonMapper;
@@ -184,7 +184,7 @@ class PersonService
                     70
                 )
             ) {
-                return null;
+                $this->fileSystemService->upload($file, $dirName, $indexedFileName);
             }
         }
 
@@ -209,7 +209,7 @@ class PersonService
                 95
             )
         ) {
-            return null;
+            $this->fileSystemService->upload($file, $dirName, 'cover');
         }
 
         $fullPath = $this->fileSystemService->searchFiles($dirName, 'cover')[0] ?? '';
