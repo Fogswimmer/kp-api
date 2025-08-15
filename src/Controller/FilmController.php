@@ -61,11 +61,11 @@ class FilmController extends AbstractController
      */
     #[
         Route(
-            path: '/api/films/get/{slug}',
-            name: 'api_film',
-            methods: ['GET'],
-            requirements: ['slug' => '[a-z0-9-]+']
-        )
+        path: '/api/films/get/{slug}',
+        name: 'api_film',
+        methods: ['GET'],
+        requirements: ['slug' => '[a-z0-9-]+']
+    )
     ]
     #[OA\Response(
         response: 200,
@@ -92,11 +92,11 @@ class FilmController extends AbstractController
      */
     #[
         Route(
-            path: '/api/films/{slug}/form',
-            name: 'api_film_form',
-            methods: ['GET'],
-            requirements: ['slug' => '[a-z0-9-]+']
-        )
+        path: '/api/films/{slug}/form',
+        name: 'api_film_form',
+        methods: ['GET'],
+        requirements: ['slug' => '[a-z0-9-]+']
+    )
     ]
     #[OA\Response(
         response: 200,
@@ -131,13 +131,13 @@ class FilmController extends AbstractController
         description: 'Successful response',
         content: new Model(type: FilmList::class)
     )]
-    public function latest(): Response
+    public function latest(LocaleDto $dto): Response
     {
         $status = Response::HTTP_OK;
         $data = null;
         $count = 5;
         try {
-            $data = $this->filmService->latest($count);
+            $data = $this->filmService->latest($count, $dto->locale);
         } catch (FilmNotFoundException $e) {
             $status = Response::HTTP_NOT_FOUND;
             $this->logger->error($e);
@@ -159,13 +159,13 @@ class FilmController extends AbstractController
         description: 'Successful response',
         content: new Model(type: FilmList::class)
     )]
-    public function top(): Response
+    public function top(LocaleDto $dto): Response
     {
         $status = Response::HTTP_OK;
         $data = null;
         $count = 5;
         try {
-            $data = $this->filmService->top($count);
+            $data = $this->filmService->top($count, $dto->locale);
         } catch (FilmNotFoundException $e) {
             $status = Response::HTTP_NOT_FOUND;
             $this->logger->error($e);
@@ -173,7 +173,7 @@ class FilmController extends AbstractController
 
         return $this->json($data, $status);
     }
-    
+
     /**
      * Find films by similar genres.
      */
@@ -189,13 +189,13 @@ class FilmController extends AbstractController
         description: 'Successful response',
         content: new Model(type: FilmList::class)
     )]
-    public function similarGenres(string $slug): Response
+    public function similarGenres(string $slug, #[MapQueryString] LocaleDto $dto): Response
     {
         $status = Response::HTTP_OK;
         $data = null;
         $count = 5;
         try {
-            $data = $this->filmService->similarGenres($slug, $count);
+            $data = $this->filmService->similarGenres($slug, $count, $dto->locale);
         } catch (FilmNotFoundException $e) {
             $status = Response::HTTP_NOT_FOUND;
             $this->logger->error($e);

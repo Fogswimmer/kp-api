@@ -119,12 +119,12 @@ class FilmForm
         return $this;
     }
 
-    public function getdirectorId(): int
+    public function getDirectorId(): int
     {
         return $this->directorId;
     }
 
-    public function setdirectorId(?int $directorId): static
+    public function setDirectorId(?int $directorId): static
     {
         $this->directorId = $directorId;
 

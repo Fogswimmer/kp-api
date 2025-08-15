@@ -22,17 +22,19 @@ class FilmMapper
     ) {
     }
 
-    public function mapToEntityList(array $films): FilmList
+    public function mapToEntityList(array $films, string $locale): FilmList
     {
         $items = array_map(
             fn(Film $film): FilmListItem => $this->mapToEntityListItem($film, new FilmListItem($film->getId())),
+            fn(Film $film): FilmListItem =>
+            $this->mapToEntityListItem($film, new FilmListItem($film->getId()), $locale),
             $films
         );
 
         return new FilmList(array_values($items));
     }
 
-    public function mapToEntityListItem(Film $film, FilmListItem $model): FilmListItem
+    public function mapToEntityListItem(Film $film, FilmListItem $model, string $locale): FilmListItem
     {
         return $model
             ->setId($film->getId())
@@ -41,18 +43,18 @@ class FilmMapper
             ->setPoster($film->getPoster())
             ->setSlug($film->getSlug())
             ->setInternationalName($film->getInternationalName())
-            ->setGenreNames($this->mapGenresToNames($film->getGenres()))
+            ->setGenreNames($this->mapGenresToNames($film->getGenres(), $locale))
         ;
     }
 
-    public function mapToDetail(Film $film, FilmDetail $model, string $locale = 'ru'): FilmDetail
+    public function mapToDetail(Film $film, FilmDetail $model, string $locale): FilmDetail
     {
         return $model
             ->setId($film->getId())
             ->setName($film->getName())
             ->setSlogan($film->getSlogan())
             ->setGenreIds($film->getGenres())
-            ->setGenreNames($this->mapGenresToNames($film->getGenres()))
+            ->setGenreNames($this->mapGenresToNames($film->getGenres(), $locale))
             ->setReleaseYear($film->getReleaseYear())
             ->setDescription($film->getDescription())
             ->setRating($film->getRating() ?? 0.0)
@@ -71,8 +73,7 @@ class FilmMapper
             ->setAssessmentsGraph($this->createAssessmentsGraph($film->getAssessments()->toArray()))
             ->setBudget($film->getBudget())
             ->setFees($film->getFees())
-            ->setCountry($film->getCountry()
-                ?: $this->convertAlpa2CodeToCountryName($film->getCountry(), $locale))
+            ->setCountry($this->convertAlpa2CodeToCountryName($film->getCountry(), $locale))
             ->setCountryCode($film->getCountry());
     }
 
@@ -85,10 +86,10 @@ class FilmMapper
             ->setGenreIds($film->getGenres())
             ->setReleaseYear($film->getReleaseYear())
             ->setActorIds($this->mapActorsToIds($film))
-            ->setDirectorId($film->getDirectedBy() ?: $film->getDirectedBy()->getId())
-            ->setWriterId($film->getWriter() ?: $film->getWriter()->getId())
-            ->setProducerId($film->getProducer() ?: $film->getProducer()->getId())
-            ->setComposerId($film->getComposer() ?: $film->getComposer()->getId())
+            ->setDirectorId($film->getDirectedBy()->getId())
+            ->setWriterId($film->getWriter()->getId())
+            ->setProducerId($film->getProducer()->getId())
+            ->setComposerId($film->getComposer()->getId())
             ->setDuration($this->setFormattedDuration($film->getDuration()))
             ->setDescription($film->getDescription())
             ->setAge($film->getAge())
@@ -100,7 +101,7 @@ class FilmMapper
             ->setCountryCode($film->getCountry());
     }
 
-    public function mapToListItem(Film $film): FilmListItem
+    public function mapToListItem(Film $film, string $locale): FilmListItem
     {
         return new FilmListItem(
             $film->getId(),
@@ -114,7 +115,7 @@ class FilmMapper
             ),
             $film->getSlug(),
             $film->getInternationalName(),
-            $this->mapGenresToNames($film->getGenres())
+            $this->mapGenresToNames($film->getGenres(), $locale)
         );
     }
 
@@ -257,7 +258,7 @@ class FilmMapper
         );
     }
 
-    private function mapGenresToNames(array $genres): array
+    private function mapGenresToNames(array $genres, string $locale): array
     {
         $genreEnums = $this->mapGenreIdsToEnums($genres);
 
