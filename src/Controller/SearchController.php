@@ -16,25 +16,25 @@ use Symfony\Component\Routing\Annotation\Route;
 #[Route('/api/search')]
 class SearchController extends AbstractController
 {
-    public function __construct(
-        private FilmSearchService $filmSearchService
-    ) {
-    }
+    // public function __construct(
+    //     private FilmSearchService $filmSearchService
+    // ) {
+    // }
 
-    #[Route('/films', name: 'api_search_films', methods: ['GET'])]
-    public function searchFilms(
-        #[MapQueryString()] FilmQueryDto $dto
-    ): JsonResponse {
+    // #[Route('/films', name: 'api_search_films', methods: ['GET'])]
+    // public function searchFilms(
+    //     #[MapQueryString()] FilmQueryDto $dto
+    // ): JsonResponse {
 
 
-        $films = $this->filmSearchService->searchFilms($dto);
+    //     $films = $this->filmSearchService->searchFilms($dto);
 
-        return $this->json(array_map(fn($film) => [
-            'id' => $film->getId(),
-            'name' => $film->getName(),
-            'internationalName' => $film->getInternationalName(),
-            'releaseYear' => $film->getReleaseYear(),
-            'country' => $film->getCountry(),
-        ], $films));
-    }
+    //     return $this->json(array_map(fn($film) => [
+    //         'id' => $film->getId(),
+    //         'name' => $film->getName(),
+    //         'internationalName' => $film->getInternationalName(),
+    //         'releaseYear' => $film->getReleaseYear(),
+    //         'country' => $film->getCountry(),
+    //     ], $films));
+    // }
 }

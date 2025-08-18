@@ -16,7 +16,7 @@ class FilmPaginateList
     /**
      * @param FilmDetail[] $items
      */
-    public function __construct(array $items, ?int $totalPages = null, int $currentPage)
+    public function __construct(array $items, int $currentPage, ?int $totalPages = null)
     {
         $this->items = $items;
         $this->totalPages = $totalPages ?? count($items);

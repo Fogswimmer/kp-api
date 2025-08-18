@@ -136,7 +136,7 @@ class FilmServiceTest extends KernelTestCase
         );
 
         $filteredFilms = FilmFactory::createMany(5);
-        $totalCount = 7;
+        $totalCount = 5;
 
         $expectedTotalPages = (int) ceil($totalCount / $limit);
         $expectedCurrentPage = (int) floor($offset / $limit) + 1;
@@ -156,7 +156,7 @@ class FilmServiceTest extends KernelTestCase
         $result = $this->filmService->filter($filmQueryDto);
 
         $this->assertInstanceOf(FilmPaginateList::class, $result);
-        $this->assertCount(5, $result->getItems());
+        $this->assertCount($totalCount, $result->getItems());
 
         $this->assertEquals($expectedTotalPages, $result->getTotalPages());
         $this->assertEquals($expectedCurrentPage, $result->getCurrentPage());

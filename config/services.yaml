@@ -16,10 +16,10 @@ services:
       - { name: doctrine.event_subscriber, connection: default }
     calls:
       - [setAnnotationReader, ["@annotation_reader"]]
-  Elastic\Elasticsearch\Client:
-    factory: ['Elastic\Elasticsearch\ClientBuilder', "fromConfig"]
-    arguments:
-      - hosts: "%elasticsearch.hosts%"
+  # Elastic\Elasticsearch\Client:
+  #   factory: ['Elastic\Elasticsearch\ClientBuilder', "fromConfig"]
+  #   arguments:
+  #     - hosts: "%elasticsearch.hosts%"
   _defaults:
     autowire: true
     autoconfigure: true
