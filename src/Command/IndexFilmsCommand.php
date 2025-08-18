@@ -21,23 +21,23 @@ class IndexFilmsCommand extends Command
         parent::__construct();
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output): int
-    {
-        $io = new SymfonyStyle($input, $output);
+    // protected function execute(InputInterface $input, OutputInterface $output): int
+    // {
+    //     $io = new SymfonyStyle($input, $output);
 
-        $films = $this->filmRepository->findAll();
-        $total = count($films);
+    //     $films = $this->filmRepository->findAll();
+    //     $total = count($films);
 
-        $io->progressStart($total);
+    //     $io->progressStart($total);
 
-        foreach ($films as $film) {
-            $this->filmSearchService->indexFilm($film);
-            $io->progressAdvance();
-        }
+    //     foreach ($films as $film) {
+    //         $this->filmSearchService->indexFilm($film);
+    //         $io->progressAdvance();
+    //     }
 
-        $io->progressFinish();
-        $io->success("Indexed: {$total} films");
+    //     $io->progressFinish();
+    //     $io->success("Indexed: {$total} films");
 
-        return Command::SUCCESS;
-    }
+    //     return Command::SUCCESS;
+    // }
 }

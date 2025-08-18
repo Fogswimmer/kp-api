@@ -184,7 +184,6 @@ class FilmService
         $total = $this->repository->countByQueryParams($filmQueryDto);
         $totalPages = 1;
         $currentPage = 1;
-
         if ($filmQueryDto->limit > 0) {
             $totalPages = (int) ceil($total / $filmQueryDto->limit);
             $currentPage = (int) floor($filmQueryDto->offset / $filmQueryDto->limit) + 1;
@@ -206,7 +205,7 @@ class FilmService
             $item->setGallery($galleryPaths);
         }
 
-        return new FilmPaginateList($items, $totalPages, $currentPage);
+        return new FilmPaginateList($items, $currentPage, $totalPages);
     }
 
     public function create(FilmDto $dto, #[CurrentUser] User $user): FilmForm
