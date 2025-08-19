@@ -7,6 +7,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Serializer\Attribute\Ignore;
@@ -15,8 +16,11 @@ use Symfony\Component\Serializer\Attribute\Ignore;
 #[ORM\Table(name: '`user`')]
 #[ORM\UniqueConstraint(name: 'UNIQ_IDENTIFIER_USERNAME', fields: ['username'])]
 #[ORM\HasLifecycleCallbacks]
+#[UniqueEntity(fields: ['username'], message: 'There is already an account with this username')]
 class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
+    private const IS_DEFAULT_VERIFIED = false;
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
@@ -73,6 +77,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
     private ?\DateTimeInterface $lastLogin = null;
+
+    #[ORM\Column(nullable: true)]
+    private ?bool $isVerified = self::IS_DEFAULT_VERIFIED;
 
     public function __construct()
     {
@@ -313,6 +320,18 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setLastLogin(?\DateTimeInterface $lastLogin): static
     {
         $this->lastLogin = $lastLogin;
+
+        return $this;
+    }
+
+    public function isVerified(): ?bool
+    {
+        return $this->isVerified;
+    }
+
+    public function setIsVerified(bool $isVerified): static
+    {
+        $this->isVerified = $isVerified;
 
         return $this;
     }

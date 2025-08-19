@@ -1,0 +1,4 @@
+subject_login: New login
+text_login: Hello, %username%! You have just logged in from %ip% (%country%). If it was not you, please change your password.
+subject_verify_email: Verify email
+text_verify_email: Hello, %username%! Please click on the link -  %link% - to verify your email. %expires%.

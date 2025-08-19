@@ -19,7 +19,7 @@ class UserService
         private readonly UserPasswordHasherInterface $passwordHasher,
         private FileSystemService $fileSystemService,
         private readonly UserMapper $userMapper,
-        private ImageProcessorService $imageProcessorService
+        private ImageProcessorService $imageProcessorService,
     ) {
     }
 
@@ -33,7 +33,7 @@ class UserService
         return $user;
     }
 
-    public function register(UserDto $userDto): void
+    public function register(UserDto $userDto): User
     {
         $user = new User();
         $user
@@ -41,22 +41,17 @@ class UserService
             ->setRoles(['ROLE_USER'])
             ->setPassword($this
                 ->passwordHasher
-            ->hashPassword($user, $userDto->password));
+                ->hashPassword($user, $userDto->password));
 
-        if (null !== $userDto->email) {
-            $user->setEmail($userDto->email);
-        }
-        if (null !== $userDto->about) {
-            $user->setAbout($userDto->about);
-        }
-        if (null !== $userDto->age) {
-            $user->setAge($userDto->age);
-        }
-        if (null !== $userDto->displayName) {
-            $user->setDisplayName($userDto->displayName);
-        }
+
+        $user->setEmail($userDto->email)
+            ->setAbout($userDto->about)
+            ->setAge($userDto->age)
+            ->setDisplayName($userDto->displayName);
 
         $this->userRepository->store($user);
+
+        return $user;
     }
 
     public function uploadAvatar(User $user, $file): ?UserDetail
@@ -68,10 +63,13 @@ class UserService
             $this->fileSystemService->removeFile($currentFile);
         }
 
-        if (!$this->imageProcessorService->compressUploadedFile(
-            $file,
-            'avatar-'.uniqid(),
-            $dirname)) {
+        if (
+            !$this->imageProcessorService->compressUploadedFile(
+                $file,
+                'avatar-' . uniqid(),
+                $dirname
+            )
+        ) {
             return null;
         }
         $fullPath = $this->fileSystemService->searchFiles($dirname, 'avatar-*')[0] ?? '';
@@ -123,7 +121,7 @@ class UserService
     {
         $subDirByIdPath = $this->createUploadsDir($id);
 
-        $avatarDirPath = $subDirByIdPath.DIRECTORY_SEPARATOR;
+        $avatarDirPath = $subDirByIdPath . DIRECTORY_SEPARATOR;
         $this->fileSystemService->createDir($avatarDirPath);
 
         return $avatarDirPath;
@@ -134,7 +132,7 @@ class UserService
         $userMainUploadsDir = $this->fileSystemService->getUploadsDirname('user');
 
         $stringId = strval($id);
-        $subDirByIdPath = $userMainUploadsDir.DIRECTORY_SEPARATOR.$stringId.DIRECTORY_SEPARATOR.'avatar';
+        $subDirByIdPath = $userMainUploadsDir . DIRECTORY_SEPARATOR . $stringId . DIRECTORY_SEPARATOR . 'avatar';
 
         $this->fileSystemService->createDir($subDirByIdPath);
 

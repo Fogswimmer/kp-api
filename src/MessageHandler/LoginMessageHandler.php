@@ -18,11 +18,13 @@ class LoginMessageHandler
 
     public function __invoke(LoginMessage $message)
     {
-        $subject = $this->translator->trans('subject', [], 'login', $message->getLocale());
+        $subject = $this->translator->trans('subject_login', [], 'auth', $message->getLocale());
         $text = $this->translator->trans(
-            'text',
+            'text_login',
             ['%username%' => $message->getUsername(), '%ip%' => $message->getIp(), '%country%' => $message->getCountry()],
-            'login', $message->getLocale());
+            'auth',
+            $message->getLocale()
+        );
 
         $this->notificationService->sendEmail($message->getEmail(), $subject, $text);
     }

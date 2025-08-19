@@ -6,8 +6,10 @@ use App\Dto\Common\LocaleDto;
 use App\Dto\Entity\User\UserDto;
 use App\Entity\User;
 use App\Mapper\Entity\UserMapper;
+use App\Message\EmailVerificationMessage;
 use App\Message\LoginMessage;
 use App\Model\Response\Entity\User\UserDetail;
+use App\Security\EmailVerifier;
 use App\Service\Entity\UserService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -17,6 +19,7 @@ use Symfony\Component\HttpKernel\Attribute\MapRequestPayload;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\CurrentUser;
+use SymfonyCasts\Bundle\VerifyEmail\Exception\VerifyEmailExceptionInterface;
 
 class UserController extends AbstractController
 {
@@ -24,6 +27,7 @@ class UserController extends AbstractController
         private readonly UserService $userService,
         private readonly UserMapper $userMapper,
         private MessageBusInterface $bus,
+        private EmailVerifier $emailVerifier
     ) {
     }
 
@@ -82,13 +86,21 @@ class UserController extends AbstractController
     }
 
     #[Route('/api/register', name: 'api_register', methods: ['POST'])]
-    public function register(#[MapRequestPayload] ?UserDto $userDto): Response
+    public function register(#[MapRequestPayload] ?UserDto $userDto, LocaleDto $dto): Response
     {
         $status = Response::HTTP_OK;
         $data = null;
 
         try {
-            $this->userService->register($userDto);
+            $user = $this->userService->register($userDto);
+            $message = new EmailVerificationMessage(
+                $user->getUsername(),
+                $user->getEmail(),
+                $dto->locale ?? 'ru',
+                $user->getId(),
+                'api_verify_email'
+            );
+            $this->bus->dispatch($message);
             $data = ['message' => 'User created'];
             $status = Response::HTTP_CREATED;
         } catch (\Exception $e) {
@@ -97,6 +109,22 @@ class UserController extends AbstractController
         }
 
         return $this->json($data, $status);
+    }
+
+
+    #[Route('api/verify/email', name: 'api_verify_email')]
+    public function verifyUserEmail(Request $request): Response
+    {
+        $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY');
+
+        try {
+            $this->emailVerifier->handleEmailConfirmation($request, $this->getUser());
+        } catch (VerifyEmailExceptionInterface $exception) {
+
+            return $this->redirectToRoute('api_register');
+        }
+
+        return $this->redirectToRoute('api_register');
     }
 
     #[Route('api/users/{id}/avatar', name: 'api_user_avatar', methods: ['POST'])]
